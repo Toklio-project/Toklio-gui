@@ -53,7 +53,7 @@ Rectangle {
     property alias addressText : pageReceive.current_address
 
     function makeQRCodeString() {
-        var s = "monero:"
+        var s = "Toklio:"
         var nfields = 0
         s += current_address;
         var amount = amountToReceiveLine.text.trim()
@@ -135,8 +135,8 @@ Rectangle {
         var expectedAmount = walletManager.amountFromString(amountToReceiveLine.text)
         if (expectedAmount && expectedAmount != amount) {
             var displayTotalAmount = walletManager.displayAmount(totalAmount)
-            if (amount > expectedAmount) toReceiveSatisfiedLine.text += qsTr("With more Monero");
-            else if (amount < expectedAmount) toReceiveSatisfiedLine.text = qsTr("With not enough Monero")
+            if (amount > expectedAmount) toReceiveSatisfiedLine.text += qsTr("With more Toklio");
+            else if (amount < expectedAmount) toReceiveSatisfiedLine.text = qsTr("With not enough Toklio")
             toReceiveSatisfiedLine.text += ": " + "<br>" +
                     qsTr("Expected") + ": " + amountToReceiveLine.text + "<br>" +
                     qsTr("Total received") + ": " + displayTotalAmount + translationManager.emptyString;

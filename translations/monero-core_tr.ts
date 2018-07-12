@@ -554,8 +554,8 @@
     </message>
     <message>
         <location filename="../pages/Mining.qml" line="74"/>
-        <source>Mining with your computer helps strengthen the Monero network. The more that people mine, the harder it is for the network to be attacked, and every little bit helps.&lt;br&gt; &lt;br&gt;Mining also gives you a small chance to earn some Monero. Your computer will create hashes looking for block solutions. If you find a block, you will get the associated reward. Good luck!</source>
-        <translation>Bilgisayarınızla birlikte madencilik yapmak Monero ağını güçlendirmeye yardımcı olur. İnsanların benimsediği derecede, ağın saldırıya ne kadar zorlaşırsa, ve insanlara biraz yardımcı olur. &lt;br&gt; &lt;br&gt; Madencilik ayrıca bazı Monero kazanmak için küçük bir şans verir. Bilgisayarınız blok çözümleri arayan karma değerler oluşturacaktır. Bir blok bulursanız, size verilen ödülleri alacaksınız. İyi şanslar!</translation>
+        <source>Mining with your computer helps strengthen the Toklio network. The more that people mine, the harder it is for the network to be attacked, and every little bit helps.&lt;br&gt; &lt;br&gt;Mining also gives you a small chance to earn some Toklio. Your computer will create hashes looking for block solutions. If you find a block, you will get the associated reward. Good luck!</source>
+        <translation>Bilgisayarınızla birlikte madencilik yapmak Toklio ağını güçlendirmeye yardımcı olur. İnsanların benimsediği derecede, ağın saldırıya ne kadar zorlaşırsa, ve insanlara biraz yardımcı olur. &lt;br&gt; &lt;br&gt; Madencilik ayrıca bazı Toklio kazanmak için küçük bir şans verir. Bilgisayarınız blok çözümleri arayan karma değerler oluşturacaktır. Bir blok bulursanız, size verilen ödülleri alacaksınız. İyi şanslar!</translation>
     </message>
     <message>
         <location filename="../pages/Mining.qml" line="87"/>
@@ -783,13 +783,13 @@
     </message>
     <message>
         <location filename="../pages/Receive.qml" line="138"/>
-        <source>With more Monero</source>
-        <translation>Daha fazla Monero ile</translation>
+        <source>With more Toklio</source>
+        <translation>Daha fazla Toklio ile</translation>
     </message>
     <message>
         <location filename="../pages/Receive.qml" line="139"/>
-        <source>With not enough Monero</source>
-        <translation>Yeterli Monero olmadan</translation>
+        <source>With not enough Toklio</source>
+        <translation>Yeterli Toklio olmadan</translation>
     </message>
     <message>
         <location filename="../pages/Receive.qml" line="141"/>
@@ -1140,8 +1140,8 @@ Eski cüzdan önbellek dosyası yeniden adlandırılacak ve daha sonra geri yük
     </message>
     <message>
         <location filename="../pages/Settings.qml" line="645"/>
-        <source>Embedded Monero version: </source>
-        <translation>Gömülü Monero sürümü: </translation>
+        <source>Embedded Toklio version: </source>
+        <translation>Gömülü Toklio sürümü: </translation>
     </message>
     <message>
         <location filename="../pages/Settings.qml" line="657"/>
@@ -1225,8 +1225,8 @@ Eski cüzdan önbellek dosyası yeniden adlandırılacak ve daha sonra geri yük
     </message>
     <message>
         <location filename="../pages/SharedRingDB.qml" line="97"/>
-        <source>This page allows you to interact with the shared ring database. This database is meant for use by Monero wallets as well as wallets from Monero clones which reuse the Monero keys.</source>
-        <translation>Bu sayfa paylaşılan halka veritabanı ile etkileşim içindir. Bu veritabanı Monero ve Monero anahtarlarını kullanan Monero klonlarının cüzdanları içindir.</translation>
+        <source>This page allows you to interact with the shared ring database. This database is meant for use by Toklio wallets as well as wallets from Toklio clones which reuse the Toklio keys.</source>
+        <translation>Bu sayfa paylaşılan halka veritabanı ile etkileşim içindir. Bu veritabanı Toklio ve Toklio anahtarlarını kullanan Toklio klonlarının cüzdanları içindir.</translation>
     </message>
     <message>
         <location filename="../pages/SharedRingDB.qml" line="110"/>
@@ -1242,8 +1242,8 @@ Eski cüzdan önbellek dosyası yeniden adlandırılacak ve daha sonra geri yük
     </message>
     <message>
         <location filename="../pages/SharedRingDB.qml" line="113"/>
-        <source>In order to obscure which inputs in a Monero transaction are being spent, a third party should not be able to tell which inputs in a ring are already known to be spent. Being able to do so would weaken the protection afforded by ring signatures. If all but one of the inputs are known to be already spent, then the input being actually spent becomes apparent, thereby nullifying the effect of ring signatures, one of the three main layers of privacy protection Monero uses.&lt;br&gt;To help transactions avoid those inputs, a list of known spent ones can be used to avoid using them in new transactions. Such a list is maintained by the Monero project and is available on the getmonero.org website, and you can import this list here.&lt;br&gt;Alternatively, you can scan the blockchain (and the blockchain of key-reusing Monero clones) yourself using the monero-blockchain-blackball tool to create a list of known spent outputs.&lt;br&gt;</source>
-        <translation>Monero işleminde hangi girdilerin harcanacağını gizlemek için, üçüncü bir taraf, bir halkada hangi girdilerin zaten harcanmış olduğunu söyleyememelidir. Bunu yapabilmek, halka imzaların sağladığı korumayı zayıflatabilir. Girişlerden birinin dışında kalanın zaten harcanmış olduğu biliniyorsa, o zaman harcanan girdi görünür hale gelir ve böylece Monero kullanımının gizlilik korumasının üç ana katmanından biri olan halka imzaların etkisini ortadan kaldırır.&lt;br&gt; İşlemlerin bu girdilerden kaçınmasına yardım etmek için, harcandığı bilinen girdilerin bir listesi yeni işlemlerde kullanmaktan kaçınmak için kullanılabilir. Böyle bir liste Monero projesi tarafından korunur ve getmonero.org web sitesinde mevcuttur ve bu listeyi buradan içe aktarabilirsiniz.&lt;br&gt; Alternatif olarak, bilinen harcanan çıktıların bir listesini oluşturmak için monero-blockchain-blackball aracını kullanarak block zincirini (ve anahtarı tekrar kullanan Monero klonlarının blok zincirini), kendiniz de tarayabilirsiniz.&lt;br&gt;</translation>
+        <source>In order to obscure which inputs in a Toklio transaction are being spent, a third party should not be able to tell which inputs in a ring are already known to be spent. Being able to do so would weaken the protection afforded by ring signatures. If all but one of the inputs are known to be already spent, then the input being actually spent becomes apparent, thereby nullifying the effect of ring signatures, one of the three main layers of privacy protection Toklio uses.&lt;br&gt;To help transactions avoid those inputs, a list of known spent ones can be used to avoid using them in new transactions. Such a list is maintained by the Toklio project and is available on the getmonero.org website, and you can import this list here.&lt;br&gt;Alternatively, you can scan the blockchain (and the blockchain of key-reusing Toklio clones) yourself using the monero-blockchain-blackball tool to create a list of known spent outputs.&lt;br&gt;</source>
+        <translation>Toklio işleminde hangi girdilerin harcanacağını gizlemek için, üçüncü bir taraf, bir halkada hangi girdilerin zaten harcanmış olduğunu söyleyememelidir. Bunu yapabilmek, halka imzaların sağladığı korumayı zayıflatabilir. Girişlerden birinin dışında kalanın zaten harcanmış olduğu biliniyorsa, o zaman harcanan girdi görünür hale gelir ve böylece Toklio kullanımının gizlilik korumasının üç ana katmanından biri olan halka imzaların etkisini ortadan kaldırır.&lt;br&gt; İşlemlerin bu girdilerden kaçınmasına yardım etmek için, harcandığı bilinen girdilerin bir listesi yeni işlemlerde kullanmaktan kaçınmak için kullanılabilir. Böyle bir liste Toklio projesi tarafından korunur ve getmonero.org web sitesinde mevcuttur ve bu listeyi buradan içe aktarabilirsiniz.&lt;br&gt; Alternatif olarak, bilinen harcanan çıktıların bir listesini oluşturmak için monero-blockchain-blackball aracını kullanarak block zincirini (ve anahtarı tekrar kullanan Toklio klonlarının blok zincirini), kendiniz de tarayabilirsiniz.&lt;br&gt;</translation>
     </message>
     <message>
         <location filename="../pages/SharedRingDB.qml" line="134"/>
@@ -1308,12 +1308,12 @@ Eski cüzdan önbellek dosyası yeniden adlandırılacak ve daha sonra geri yük
     </message>
     <message>
         <location filename="../pages/SharedRingDB.qml" line="245"/>
-        <source>In order to avoid nullifying the protection afforded by Monero&apos;s ring signatures, an output should not be spent with different rings on different blockchains. While this is normally not a concern, it can become one when a key-reusing Monero clone allows you do spend existing outputs. In this case, you need to ensure this existing outputs uses the same ring on both chains.&lt;br&gt;This will be done automatically by Monero and any key-reusing software which is not trying to actively strip you of your privacy.&lt;br&gt;If you are using a key-reusing Monero clone too, and this clone does not include this protection, you can still ensure your transactions are protected by spending on the clone first, then manually adding the ring on this page, which allows you to then spend your Monero safely.&lt;br&gt;If you do not use a key-reusing Monero clone without these safety features, then you do not need to do anything as it is all automated.&lt;br&gt;</source>
-        <translation>Monero&apos;nun halka imzalarının sağladığı korumayı geçersiz kılmaktan kaçınmak için, bir çıktı farklı blok zincirlarinde farklı halkalarla harcanmamalıdır. Bu normalde bir endişe yaratmasa da, anahtarı yeniden kullananan bir Monero klonu varolan çıktıları harcamaya izin verdiğinde bir tane haline gelebilir. Bu durumda, bu mevcut çıktıların her iki zincirde de aynı halkayı kullanmasını sağlamanız gerekir. Bu, Monero tarafından otomatik olarak ve gizliliğinizden sizi aktif olarak engellemeye çalışan anahtar yeniden kullanılan bir yazılım tarafından otomatik olarak yapılacaktır.&lt;br&gt; Anahtarı yeniden kullanan bir Monero klonu da kullanıyorsanız ve bu klonun bu korumayı içermemesi durumunda, işlemlerinizi önce klonla harcayıp sonra bu sayfada halkayı manuel olarak ekleyerek koruyabildiğinizden emin olabilirsiniz. Böylece işleminizin gizliliği güvende kalmış olur.&lt;br&gt; Bu güvenlik özellikleri olmadan anahtarı yeniden kullanan bir Monero klonu kullanmıyorsanız, tümü otomatikleştirilmiş olduğu için hiçbir şey yapmanıza gerek yoktur.&lt;br&gt;</translation>
+        <source>In order to avoid nullifying the protection afforded by Toklio&apos;s ring signatures, an output should not be spent with different rings on different blockchains. While this is normally not a concern, it can become one when a key-reusing Toklio clone allows you do spend existing outputs. In this case, you need to ensure this existing outputs uses the same ring on both chains.&lt;br&gt;This will be done automatically by Toklio and any key-reusing software which is not trying to actively strip you of your privacy.&lt;br&gt;If you are using a key-reusing Toklio clone too, and this clone does not include this protection, you can still ensure your transactions are protected by spending on the clone first, then manually adding the ring on this page, which allows you to then spend your Toklio safely.&lt;br&gt;If you do not use a key-reusing Toklio clone without these safety features, then you do not need to do anything as it is all automated.&lt;br&gt;</source>
+        <translation>Toklio&apos;nun halka imzalarının sağladığı korumayı geçersiz kılmaktan kaçınmak için, bir çıktı farklı blok zincirlarinde farklı halkalarla harcanmamalıdır. Bu normalde bir endişe yaratmasa da, anahtarı yeniden kullananan bir Toklio klonu varolan çıktıları harcamaya izin verdiğinde bir tane haline gelebilir. Bu durumda, bu mevcut çıktıların her iki zincirde de aynı halkayı kullanmasını sağlamanız gerekir. Bu, Toklio tarafından otomatik olarak ve gizliliğinizden sizi aktif olarak engellemeye çalışan anahtar yeniden kullanılan bir yazılım tarafından otomatik olarak yapılacaktır.&lt;br&gt; Anahtarı yeniden kullanan bir Toklio klonu da kullanıyorsanız ve bu klonun bu korumayı içermemesi durumunda, işlemlerinizi önce klonla harcayıp sonra bu sayfada halkayı manuel olarak ekleyerek koruyabildiğinizden emin olabilirsiniz. Böylece işleminizin gizliliği güvende kalmış olur.&lt;br&gt; Bu güvenlik özellikleri olmadan anahtarı yeniden kullanan bir Toklio klonu kullanmıyorsanız, tümü otomatikleştirilmiş olduğu için hiçbir şey yapmanıza gerek yoktur.&lt;br&gt;</translation>
     </message>
     <message>
         <location filename="../pages/SharedRingDB.qml" line="267"/>
-        <source>This records rings used by outputs spent on Monero on a key reusing chain, so that the same ring may be reused to avoid privacy issues.</source>
+        <source>This records rings used by outputs spent on Toklio on a key reusing chain, so that the same ring may be reused to avoid privacy issues.</source>
         <translation>Bu, anahtarı yeniden kullanan zincirde harcanan çıktılarla kullanılan halkaları kaydeder, böylece aynı halka gizlilik sorunlarını önlemek için yeniden kullanılabilir.</translation>
     </message>
     <message>
@@ -1735,8 +1735,8 @@ Eski cüzdan önbellek dosyası yeniden adlandırılacak ve daha sonra geri yük
     </message>
     <message>
         <location filename="../pages/Transfer.qml" line="622"/>
-        <source>Monero sent successfully</source>
-        <translation>Monero başarı ile gönderildi</translation>
+        <source>Toklio sent successfully</source>
+        <translation>Toklio başarı ile gönderildi</translation>
     </message>
     <message>
         <location filename="../pages/Transfer.qml" line="492"/>
@@ -1992,13 +1992,13 @@ Harcama Kanıtı ile ilgili davada, alıcı adresini belirtmeniz gerekmez. </tra
     <name>WizardConfigure</name>
     <message>
         <location filename="../wizard/WizardConfigure.qml" line="79"/>
-        <source>We’re almost there - let’s just configure some Monero preferences</source>
-        <translation>Neredeyse geldik - sadece bazı Monero tercihlerini yapılandıralım</translation>
+        <source>We’re almost there - let’s just configure some Toklio preferences</source>
+        <translation>Neredeyse geldik - sadece bazı Toklio tercihlerini yapılandıralım</translation>
     </message>
     <message>
         <location filename="../wizard/WizardConfigure.qml" line="97"/>
-        <source>Kickstart the Monero blockchain?</source>
-        <translation>Monero&apos;nun blokaj zincirini başlatmak mı?</translation>
+        <source>Kickstart the Toklio blockchain?</source>
+        <translation>Toklio&apos;nun blokaj zincirini başlatmak mı?</translation>
     </message>
     <message>
         <location filename="../wizard/WizardConfigure.qml" line="113"/>
@@ -2012,8 +2012,8 @@ Harcama Kanıtı ile ilgili davada, alıcı adresini belirtmeniz gerekmez. </tra
     </message>
     <message>
         <location filename="../wizard/WizardConfigure.qml" line="140"/>
-        <source>Disk conservation mode uses substantially less disk-space, but the same amount of bandwidth as a regular Monero instance. However, storing the full blockchain is beneficial to the security of the Monero network. If you are on a device with limited disk space, then this option is appropriate for you.</source>
-        <translation>Disk koruma modu, normal bir Monero örneğiyle aynı disk alanı genişliğini, ancak aynı miktarda bant genişliğini kullanır. Bununla birlikte, tam blok zincirin depolanması, Monero ağının güvenliğine yararlıdır. Sınırlı disk alanı olan bir cihazdaysanız, bu seçenek sizin için uygundur.</translation>
+        <source>Disk conservation mode uses substantially less disk-space, but the same amount of bandwidth as a regular Toklio instance. However, storing the full blockchain is beneficial to the security of the Toklio network. If you are on a device with limited disk space, then this option is appropriate for you.</source>
+        <translation>Disk koruma modu, normal bir Toklio örneğiyle aynı disk alanı genişliğini, ancak aynı miktarda bant genişliğini kullanır. Bununla birlikte, tam blok zincirin depolanması, Toklio ağının güvenliğine yararlıdır. Sınırlı disk alanı olan bir cihazdaysanız, bu seçenek sizin için uygundur.</translation>
     </message>
     <message>
         <location filename="../wizard/WizardConfigure.qml" line="153"/>
@@ -2022,8 +2022,8 @@ Harcama Kanıtı ile ilgili davada, alıcı adresini belirtmeniz gerekmez. </tra
     </message>
     <message>
         <location filename="../wizard/WizardConfigure.qml" line="169"/>
-        <source>Mining secures the Monero network, and also pays a small reward for the work done. This option will let Monero mine when your computer is on mains power and is idle. It will stop mining when you continue working.</source>
-        <translation>Madencilik, Monero ağını güvence altına alır ve yapılan iş için küçük bir ödül de verir. Bu seçenek, bilgisayarınız ana güçte iken ve boşta olduğunda Monero&apos;ya izin verir. Çalışmaya devam ettiğinizde madenciliği durduracaktır.</translation>
+        <source>Mining secures the Toklio network, and also pays a small reward for the work done. This option will let Toklio mine when your computer is on mains power and is idle. It will stop mining when you continue working.</source>
+        <translation>Madencilik, Toklio ağını güvence altına alır ve yapılan iş için küçük bir ödül de verir. Bu seçenek, bilgisayarınız ana güçte iken ve boşta olduğunda Toklio&apos;ya izin verir. Çalışmaya devam ettiğinizde madenciliği durduracaktır.</translation>
     </message>
 </context>
 <context>
@@ -2046,8 +2046,8 @@ Harcama Kanıtı ile ilgili davada, alıcı adresini belirtmeniz gerekmez. </tra
     <name>WizardDaemonSettings</name>
     <message>
         <location filename="../wizard/WizardDaemonSettings.qml" line="114"/>
-        <source>To be able to communicate with the Monero network your wallet needs to be connected to a Monero node. For best privacy it&apos;s recommended to run your own node.                         &lt;br&gt;&lt;br&gt;                         If you don&apos;t have the option to run your own node, there&apos;s an option to connect to a remote node.</source>
-        <translation>Monero ağıyla iletişim kurabilmek için cüzdanınızın bir Monero düğümüne bağlı olması gerekir. En iyi gizlilik için kendi düğümünü çalıştırmanız önerilir. Kendi düğümünü çalıştırma seçeneğine sahip değilseniz, uzaktaki bir düğüme bağlanma seçeneği vardır.</translation>
+        <source>To be able to communicate with the Toklio network your wallet needs to be connected to a Toklio node. For best privacy it&apos;s recommended to run your own node.                         &lt;br&gt;&lt;br&gt;                         If you don&apos;t have the option to run your own node, there&apos;s an option to connect to a remote node.</source>
+        <translation>Toklio ağıyla iletişim kurabilmek için cüzdanınızın bir Toklio düğümüne bağlı olması gerekir. En iyi gizlilik için kendi düğümünü çalıştırmanız önerilir. Kendi düğümünü çalıştırma seçeneğine sahip değilseniz, uzaktaki bir düğüme bağlanma seçeneği vardır.</translation>
     </message>
     <message>
         <location filename="../wizard/WizardDaemonSettings.qml" line="126"/>
@@ -2079,8 +2079,8 @@ Harcama Kanıtı ile ilgili davada, alıcı adresini belirtmeniz gerekmez. </tra
     <name>WizardDonation</name>
     <message>
         <location filename="../wizard/WizardDonation.qml" line="93"/>
-        <source>Monero development is solely supported by donations</source>
-        <translation>Monero gelişimi sadece bağışlarla destekleniyor</translation>
+        <source>Toklio development is solely supported by donations</source>
+        <translation>Toklio gelişimi sadece bağışlarla destekleniyor</translation>
     </message>
     <message>
         <location filename="../wizard/WizardDonation.qml" line="113"/>
@@ -2094,8 +2094,8 @@ Harcama Kanıtı ile ilgili davada, alıcı adresini belirtmeniz gerekmez. </tra
     </message>
     <message>
         <location filename="../wizard/WizardDonation.qml" line="162"/>
-        <source>For every transaction, a small transaction fee is charged. This option lets you add an additional amount, as a percentage of that fee, to your transaction to support Monero development. For instance, a 50% autodonation take a transaction fee of 0.005 XMR and add a 0.0025 XMR to support Monero development.</source>
-        <translation>Her işlem için küçük bir işlem ücreti alınır. Bu seçenek, Monero&apos;nun geliştirilmesini desteklemek için işleminize, bu ücretin bir yüzdesi olarak ek bir miktar eklemenize izin verir. Örneğin 50% otomatik bağış, 0.005 XMR işlem ücreti alır ve Monero gelişimini desteklemek için 0.0025 XMR ekler.</translation>
+        <source>For every transaction, a small transaction fee is charged. This option lets you add an additional amount, as a percentage of that fee, to your transaction to support Toklio development. For instance, a 50% autodonation take a transaction fee of 0.005 TOKL and add a 0.0025 TOKL to support Toklio development.</source>
+        <translation>Her işlem için küçük bir işlem ücreti alınır. Bu seçenek, Toklio&apos;nun geliştirilmesini desteklemek için işleminize, bu ücretin bir yüzdesi olarak ek bir miktar eklemenize izin verir. Örneğin 50% otomatik bağış, 0.005 TOKL işlem ücreti alır ve Toklio gelişimini desteklemek için 0.0025 TOKL ekler.</translation>
     </message>
     <message>
         <location filename="../wizard/WizardDonation.qml" line="174"/>
@@ -2104,8 +2104,8 @@ Harcama Kanıtı ile ilgili davada, alıcı adresini belirtmeniz gerekmez. </tra
     </message>
     <message>
         <location filename="../wizard/WizardDonation.qml" line="190"/>
-        <source>Mining secures the Monero network, and also pays a small reward for the work done. This option will let Monero mine when your computer is on mains power and is idle. It will stop mining when you continue working.</source>
-        <translation>Madencilik, Monero ağını güvence altına alır ve yapılan iş için küçük bir ödül de verir. Bu seçenek, bilgisayarınız ana güçte iken ve boşta kaldığında Monero&apos;ya izin verir. Çalışmaya devam ettiğinizde madenciliği durduracaktır.</translation>
+        <source>Mining secures the Toklio network, and also pays a small reward for the work done. This option will let Toklio mine when your computer is on mains power and is idle. It will stop mining when you continue working.</source>
+        <translation>Madencilik, Toklio ağını güvence altına alır ve yapılan iş için küçük bir ödül de verir. Bu seçenek, bilgisayarınız ana güçte iken ve boşta kaldığında Toklio&apos;ya izin verir. Çalışmaya devam ettiğinizde madenciliği durduracaktır.</translation>
     </message>
 </context>
 <context>
@@ -2197,8 +2197,8 @@ Harcama Kanıtı ile ilgili davada, alıcı adresini belirtmeniz gerekmez. </tra
     </message>
     <message>
         <location filename="../wizard/WizardMain.qml" line="367"/>
-        <source>USE MONERO</source>
-        <translation>MONERO KULLANIN</translation>
+        <source>USE TOKLIO</source>
+        <translation>TOKLIO KULLANIN</translation>
     </message>
     <message>
         <location filename="../wizard/WizardMain.qml" line="380"/>
@@ -2303,8 +2303,8 @@ Harcama Kanıtı ile ilgili davada, alıcı adresini belirtmeniz gerekmez. </tra
     <name>WizardOptions</name>
     <message>
         <location filename="../wizard/WizardOptions.qml" line="75"/>
-        <source>Welcome to Monero!</source>
-        <translation>Monero&apos;ya hoşgeldiniz!</translation>
+        <source>Welcome to Toklio!</source>
+        <translation>Toklio&apos;ya hoşgeldiniz!</translation>
     </message>
     <message>
         <location filename="../wizard/WizardOptions.qml" line="86"/>
@@ -2378,8 +2378,8 @@ Harcama Kanıtı ile ilgili davada, alıcı adresini belirtmeniz gerekmez. </tra
     <name>WizardWelcome</name>
     <message>
         <location filename="../wizard/WizardWelcome.qml" line="73"/>
-        <source>Welcome to Monero!</source>
-        <translation>Monero&apos;ya hoşgeldiniz!</translation>
+        <source>Welcome to Toklio!</source>
+        <translation>Toklio&apos;ya hoşgeldiniz!</translation>
     </message>
     <message>
         <location filename="../wizard/WizardWelcome.qml" line="83"/>
@@ -2556,8 +2556,8 @@ Spending address index: </source>
     </message>
     <message>
         <location filename="../main.qml" line="788"/>
-        <source>Monero sent successfully: %1 transaction(s) </source>
-        <translation>Monero başarı ile gönderildi: %1 işlem</translation>
+        <source>Toklio sent successfully: %1 transaction(s) </source>
+        <translation>Toklio başarı ile gönderildi: %1 işlem</translation>
     </message>
     <message>
         <location filename="../main.qml" line="818"/>
@@ -2661,7 +2661,7 @@ Spending address index: </source>
     <message>
         <location filename="../main.qml" line="1783"/>
         <source>New version of monero-wallet-gui is available: %1&lt;br&gt;%2</source>
-        <translation>Monero-wallet-gui&apos;nin yeni sürümü mevcut: %1&lt;br&gt;%2</translation>
+        <translation>Toklio-wallet-gui&apos;nin yeni sürümü mevcut: %1&lt;br&gt;%2</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1815"/>
@@ -2732,8 +2732,8 @@ Spending address index: </source>
     </message>
     <message>
         <location filename="../main.qml" line="1285"/>
-        <source>Monero</source>
-        <translation>Monero</translation>
+        <source>Toklio</source>
+        <translation>Toklio</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1441"/>
