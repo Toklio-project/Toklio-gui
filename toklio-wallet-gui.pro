@@ -7,7 +7,7 @@ TEMPLATE = app
 
 QT += qml quick widgets
 
-WALLET_ROOT=$$PWD/monero
+WALLET_ROOT=$$PWD/Toklio
 
 CONFIG += c++11 link_pkgconfig
 packagesExist(libpcsclite) {
@@ -245,6 +245,7 @@ win32 {
         -lssl \
         -lcrypto \
         -Wl,-Bdynamic \
+        -lwinscard \
         -lws2_32 \
         -lwsock32 \
         -lIphlpapi \
@@ -439,7 +440,7 @@ OTHER_FILES += \
 
 DISTFILES += \
     notes.txt \
-    monero/src/wallet/CMakeLists.txt \
+    Toklio/src/wallet/CMakeLists.txt \
     components/MobileHeader.qml
 
 
