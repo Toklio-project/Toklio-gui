@@ -2204,7 +2204,7 @@ For the case with Spend Proof, you don&apos;t need to specify the recipient addr
     <message>
         <location filename="../wizard/WizardMain.qml" line="367"/>
         <source>USE TOKLIO</source>
-        <translation>開始使用MONERO</translation>
+        <translation>開始使用TOKLIO</translation>
     </message>
     <message>
         <location filename="../wizard/WizardMain.qml" line="380"/>

@@ -555,7 +555,7 @@
     <message>
         <location filename="../pages/Mining.qml" line="74"/>
         <source>Mining with your computer helps strengthen the Toklio network. The more that people mine, the harder it is for the network to be attacked, and every little bit helps.&lt;br&gt; &lt;br&gt;Mining also gives you a small chance to earn some Toklio. Your computer will create hashes looking for block solutions. If you find a block, you will get the associated reward. Good luck!</source>
-        <translation>Minadi per via komputilo helpas plisekurigi la Toklio-reton. Ju pli da homoj minas, des mapli atakebla iĝas la reto, kaj ĉiu malgranda helpo utilas. &lt;br&gt; &lt;br&gt;La minado ankaŭ donas al vi etan ŝancon ricevi rekompencon je Moneroj. Via komputilo kreos haketojn, serĉante bloksolvojn. Se vi trovas blokon, vi ricevos la asociitan rekompencon. Bonŝancon!</translation>
+        <translation>Minadi per via komputilo helpas plisekurigi la Toklio-reton. Ju pli da homoj minas, des mapli atakebla iĝas la reto, kaj ĉiu malgranda helpo utilas. &lt;br&gt; &lt;br&gt;La minado ankaŭ donas al vi etan ŝancon ricevi rekompencon je Toklio. Via komputilo kreos haketojn, serĉante bloksolvojn. Se vi trovas blokon, vi ricevos la asociitan rekompencon. Bonŝancon!</translation>
     </message>
     <message>
         <location filename="../pages/Mining.qml" line="87"/>
@@ -1326,7 +1326,7 @@ Se vi ne uzas ŝlosilreuzantan Toklio-klonon, kiu ne enhavas tiujn sekuraĵojn, 
     <message>
         <location filename="../pages/SharedRingDB.qml" line="267"/>
         <source>This records rings used by outputs spent on Toklio on a key reusing chain, so that the same ring may be reused to avoid privacy issues.</source>
-        <translation>Tio registras la ringojn kiuj uziĝis por elspezi Moneron sur ŝlosilreuzanta ĉeno, tiel ke la sama ringo uziĝu denove, por malhelpi privatecproblemojn.</translation>
+        <translation>Tio registras la ringojn kiuj uziĝis por elspezi Toklio sur ŝlosilreuzanta ĉeno, tiel ke la sama ringo uziĝu denove, por malhelpi privatecproblemojn.</translation>
     </message>
     <message>
         <location filename="../pages/SharedRingDB.qml" line="278"/>
@@ -1763,7 +1763,7 @@ Se vi ne uzas ŝlosilreuzantan Toklio-klonon, kiu ne enhavas tiujn sekuraĵojn, 
     <message>
         <location filename="../pages/Transfer.qml" line="622"/>
         <source>Toklio sent successfully</source>
-        <translation>Sukcese sendis Moneron</translation>
+        <translation>Sukcese sendis Toklio</translation>
     </message>
     <message>
         <location filename="../pages/Transfer.qml" line="460"/>
@@ -2203,7 +2203,7 @@ Kaze de Elspezpruvo, vi ne bezonas precizi la ricevantan adreson.</translation>
     <message>
         <location filename="../wizard/WizardMain.qml" line="367"/>
         <source>USE TOKLIO</source>
-        <translation>UZU MONERON</translation>
+        <translation>UZU TOKLIO</translation>
     </message>
     <message>
         <location filename="../wizard/WizardMain.qml" line="380"/>
@@ -2688,7 +2688,7 @@ Kaze de Elspezpruvo, vi ne bezonas precizi la ricevantan adreson.</translation>
     <message>
         <location filename="../main.qml" line="788"/>
         <source>Toklio sent successfully: %1 transaction(s) </source>
-        <translation>Sukcese sendis Moneron: %1 transakcio(j)</translation>
+        <translation>Sukcese sendis Toklio: %1 transakcio(j)</translation>
     </message>
     <message>
         <location filename="../main.qml" line="862"/>

@@ -555,7 +555,7 @@
     <message>
         <location filename="../pages/Mining.qml" line="74"/>
         <source>Mining with your computer helps strengthen the Toklio network. The more that people mine, the harder it is for the network to be attacked, and every little bit helps.&lt;br&gt; &lt;br&gt;Mining also gives you a small chance to earn some Toklio. Your computer will create hashes looking for block solutions. If you find a block, you will get the associated reward. Good luck!</source>
-        <translation>Brytning med din dator hjälper till att stärka Moneros nätverk. Ju fler som bryter desto svårare blir det att angripa nätverket, och varje litet bidrag hjälper till.&lt;br&gt; &lt;br&gt;Brytningen ger dig även möjlighet att tjäna lite Toklio. Din dator letar då efter lösningar för block genom att skapa hashar. Om du hittar ett block får du motsvarande blockersättning. Lycka till!</translation>
+        <translation>Brytning med din dator hjälper till att stärka Toklio nätverk. Ju fler som bryter desto svårare blir det att angripa nätverket, och varje litet bidrag hjälper till.&lt;br&gt; &lt;br&gt;Brytningen ger dig även möjlighet att tjäna lite Toklio. Din dator letar då efter lösningar för block genom att skapa hashar. Om du hittar ett block får du motsvarande blockersättning. Lycka till!</translation>
     </message>
     <message>
         <location filename="../pages/Mining.qml" line="87"/>
@@ -1226,7 +1226,7 @@ Den gamla plånbokens cachefil döps om och kan återställas senare.
     <message>
         <location filename="../pages/SharedRingDB.qml" line="97"/>
         <source>This page allows you to interact with the shared ring database. This database is meant for use by Toklio wallets as well as wallets from Toklio clones which reuse the Toklio keys.</source>
-        <translation>Denna sida låter dig interagera med den delade ringdatabasen. Denna databas är avsedd att användas av både Toklio-plånböcker, och plånböcker för Toklio-kloner som återanvänder Moneros nycklar.</translation>
+        <translation>Denna sida låter dig interagera med den delade ringdatabasen. Denna databas är avsedd att användas av både Toklio-plånböcker, och plånböcker för Toklio-kloner som återanvänder Toklio nycklar.</translation>
     </message>
     <message>
         <location filename="../pages/SharedRingDB.qml" line="110"/>
@@ -1309,7 +1309,7 @@ Den gamla plånbokens cachefil döps om och kan återställas senare.
     <message>
         <location filename="../pages/SharedRingDB.qml" line="245"/>
         <source>In order to avoid nullifying the protection afforded by Toklio&apos;s ring signatures, an output should not be spent with different rings on different blockchains. While this is normally not a concern, it can become one when a key-reusing Toklio clone allows you do spend existing outputs. In this case, you need to ensure this existing outputs uses the same ring on both chains.&lt;br&gt;This will be done automatically by Toklio and any key-reusing software which is not trying to actively strip you of your privacy.&lt;br&gt;If you are using a key-reusing Toklio clone too, and this clone does not include this protection, you can still ensure your transactions are protected by spending on the clone first, then manually adding the ring on this page, which allows you to then spend your Toklio safely.&lt;br&gt;If you do not use a key-reusing Toklio clone without these safety features, then you do not need to do anything as it is all automated.&lt;br&gt;</source>
-        <translation>För att undvika att upphäva det skydd som Moneros ringsignaturer tillhandahåller får en och samma utgång inte spenderas med olika ringar på olika blockkedjor. Även om detta normalt sett inte är något problem kan det bli det när en Toklio-klon som återanvänder nycklar tillåter att du spenderar existerande utgångar. I detta fall måste du se till att denna existerande utgång använder samma ring på båda kedjorna.&lt;br&gt;Detta görs automatiskt av Toklio och all programvara som återanvänder nycklar men inte avsiktligt försöker ta ifrån dig din integritet.&lt;br&gt;Om du även använder en Toklio-klon som återanvänder nycklar, och denna klon inte inkluderar detta skydd, kan du ändå se till att dina transaktioner är skyddade genom att först spendera på klonen och sedan manuellt lägga till ringen på denna sida. Därefter kan du spendera dina Toklio på ett säkert sätt.&lt;br&gt;Om du inte använder en Toklio-klon som saknar dessa säkerhetsfunktioner men som ändå återanvänder nycklar, så behöver du inte göra något eftersom det sker helt automatiskt.&lt;br&gt;</translation>
+        <translation>För att undvika att upphäva det skydd som Toklio ringsignaturer tillhandahåller får en och samma utgång inte spenderas med olika ringar på olika blockkedjor. Även om detta normalt sett inte är något problem kan det bli det när en Toklio-klon som återanvänder nycklar tillåter att du spenderar existerande utgångar. I detta fall måste du se till att denna existerande utgång använder samma ring på båda kedjorna.&lt;br&gt;Detta görs automatiskt av Toklio och all programvara som återanvänder nycklar men inte avsiktligt försöker ta ifrån dig din integritet.&lt;br&gt;Om du även använder en Toklio-klon som återanvänder nycklar, och denna klon inte inkluderar detta skydd, kan du ändå se till att dina transaktioner är skyddade genom att först spendera på klonen och sedan manuellt lägga till ringen på denna sida. Därefter kan du spendera dina Toklio på ett säkert sätt.&lt;br&gt;Om du inte använder en Toklio-klon som saknar dessa säkerhetsfunktioner men som ändå återanvänder nycklar, så behöver du inte göra något eftersom det sker helt automatiskt.&lt;br&gt;</translation>
     </message>
     <message>
         <location filename="../pages/SharedRingDB.qml" line="267"/>
@@ -2004,7 +2004,7 @@ I fallet med spenderbevis behöver du inte ange mottagaradressen.</translation>
     <message>
         <location filename="../wizard/WizardConfigure.qml" line="97"/>
         <source>Kickstart the Toklio blockchain?</source>
-        <translation>Kickstarta Moneros blockkedja?</translation>
+        <translation>Kickstarta Toklio blockkedja?</translation>
     </message>
     <message>
         <location filename="../wizard/WizardConfigure.qml" line="113"/>
@@ -2019,7 +2019,7 @@ I fallet med spenderbevis behöver du inte ange mottagaradressen.</translation>
     <message>
         <location filename="../wizard/WizardConfigure.qml" line="140"/>
         <source>Disk conservation mode uses substantially less disk-space, but the same amount of bandwidth as a regular Toklio instance. However, storing the full blockchain is beneficial to the security of the Toklio network. If you are on a device with limited disk space, then this option is appropriate for you.</source>
-        <translation>Disksparläge använder väsentligen mindre diskutrymme, men utnyttjar samma bandbredd som en vanlig Toklio-instans. Att spara hela blockkedjan förbättrar säkerheten för hela Moneros nätverk. Om du använder en enhet med begränsat diskutrymme så passar detta alternativ för dig.</translation>
+        <translation>Disksparläge använder väsentligen mindre diskutrymme, men utnyttjar samma bandbredd som en vanlig Toklio-instans. Att spara hela blockkedjan förbättrar säkerheten för hela Toklio nätverk. Om du använder en enhet med begränsat diskutrymme så passar detta alternativ för dig.</translation>
     </message>
     <message>
         <location filename="../wizard/WizardConfigure.qml" line="153"/>
@@ -2029,7 +2029,7 @@ I fallet med spenderbevis behöver du inte ange mottagaradressen.</translation>
     <message>
         <location filename="../wizard/WizardConfigure.qml" line="169"/>
         <source>Mining secures the Toklio network, and also pays a small reward for the work done. This option will let Toklio mine when your computer is on mains power and is idle. It will stop mining when you continue working.</source>
-        <translation>Brytningen säkrar Moneros nätverk, och betalar även en liten ersättning för det arbete som utförs. Detta alternativ låter Toklio bryta när din dator är nätansluten men inaktiv. Brytningen stoppas när du fortsätter att arbeta igen.</translation>
+        <translation>Brytningen säkrar Toklio nätverk, och betalar även en liten ersättning för det arbete som utförs. Detta alternativ låter Toklio bryta när din dator är nätansluten men inaktiv. Brytningen stoppas när du fortsätter att arbeta igen.</translation>
     </message>
 </context>
 <context>
@@ -2053,7 +2053,7 @@ I fallet med spenderbevis behöver du inte ange mottagaradressen.</translation>
     <message>
         <location filename="../wizard/WizardDaemonSettings.qml" line="114"/>
         <source>To be able to communicate with the Toklio network your wallet needs to be connected to a Toklio node. For best privacy it&apos;s recommended to run your own node.                         &lt;br&gt;&lt;br&gt;                         If you don&apos;t have the option to run your own node, there&apos;s an option to connect to a remote node.</source>
-        <translation>Plånboken måste vara ansluten till en Toklio-nod för att för att kunna kommunicera med Moneros nätverk. För högsta sekretess rekommenderas att du kör din egen nod.                         &lt;br&gt;&lt;br&gt;                         Om du inte har möjlighet att köra din egen nod finns alternativet att ansluta till en fjärrnod.</translation>
+        <translation>Plånboken måste vara ansluten till en Toklio-nod för att för att kunna kommunicera med Toklio nätverk. För högsta sekretess rekommenderas att du kör din egen nod.                         &lt;br&gt;&lt;br&gt;                         Om du inte har möjlighet att köra din egen nod finns alternativet att ansluta till en fjärrnod.</translation>
     </message>
     <message>
         <location filename="../wizard/WizardDaemonSettings.qml" line="126"/>
@@ -2111,7 +2111,7 @@ I fallet med spenderbevis behöver du inte ange mottagaradressen.</translation>
     <message>
         <location filename="../wizard/WizardDonation.qml" line="190"/>
         <source>Mining secures the Toklio network, and also pays a small reward for the work done. This option will let Toklio mine when your computer is on mains power and is idle. It will stop mining when you continue working.</source>
-        <translation>Brytningen säkrar Moneros nätverk, och betalar även en liten ersättning för det arbete som utförs. Detta alternativ låter Toklio bryta när din dator är nätansluten men inaktiv. Brytningen stoppas när du fortsätter att arbeta igen.</translation>
+        <translation>Brytningen säkrar Toklio nätverk, och betalar även en liten ersättning för det arbete som utförs. Detta alternativ låter Toklio bryta när din dator är nätansluten men inaktiv. Brytningen stoppas när du fortsätter att arbeta igen.</translation>
     </message>
 </context>
 <context>
