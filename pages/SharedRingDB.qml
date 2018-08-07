@@ -106,7 +106,7 @@ Rectangle {
         LabelSubheader {
             Layout.fillWidth: true
             textFormat: Text.RichText
-            text: "<style type='text/css'>a {text-decoration: none; color: #2f89f2; font-size: 14px;}</style>" +
+            text: "<style type='text/css'>a {text-decoration: none; color: #FF6C3C; font-size: 14px;}</style>" +
                   qsTr("Blackballed outputs") + " <a href='#'>" + qsTr("Help") + "</a>" + translationManager.emptyString
             onLinkActivated: {
                 sharedRingDBDialog.title  = qsTr("Blackballed outputs") + translationManager.emptyString;
@@ -120,7 +120,7 @@ Rectangle {
                     "transactions. Such a list is maintained by the Monero project and is available on the getmonero.org website, " +
                     "and you can import this list here.<br>" +
                     "Alternatively, you can scan the blockchain (and the blockchain of key-reusing Monero clones) yourself " +
-                    "using the monero-blockchain-blackball tool to create a list of known spent outputs.<br>"
+                    "using the toklio-blockchain-blackball tool to create a list of known spent outputs.<br>"
                 )
                 sharedRingDBDialog.icon = StandardIcon.Information
                 sharedRingDBDialog.open()
@@ -238,7 +238,7 @@ Rectangle {
             Layout.fillWidth: true
             Layout.topMargin: 24 * scaleRatio
             textFormat: Text.RichText
-            text: "<style type='text/css'>a {text-decoration: none; color: #2f89f2; font-size: 14px;}</style>" +
+            text: "<style type='text/css'>a {text-decoration: none; color: #FF6C3C; font-size: 14px;}</style>" +
                   qsTr("Rings") + " <a href='#'>" + qsTr("Help") + "</a>" + translationManager.emptyString
             onLinkActivated: {
                 sharedRingDBDialog.title  = qsTr("Rings") + translationManager.emptyString;

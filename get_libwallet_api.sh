@@ -11,36 +11,36 @@ INSTALL_DIR=$ROOT_DIR/wallet
 MONERO_DIR=$ROOT_DIR/Toklio
 BUILD_LIBWALLET=false
 
-# init and update toklio submodule
+# init and update Toklio submodule
 if [ ! -d $MONERO_DIR/src ]; then
     git submodule init Toklio
 fi
 git submodule update --remote
 git -C $MONERO_DIR fetch
-git -C $MONERO_DIR checkout master
+git -C $MONERO_DIR checkout release-v0.12
 
-# get toklio core tag
+# get Toklio core tag
 get_tag
-# create local toklio branch
+# create local Toklio branch
 git -C $MONERO_DIR checkout -B $VERSIONTAG
 
 git -C $MONERO_DIR submodule init
 git -C $MONERO_DIR submodule update
 
-# Merge toklio PR dependencies
+# Merge Toklio PR dependencies
 
 # Workaround for git username requirements
 # Save current user settings and revert back when we are done with merging PR's
 OLD_GIT_USER=$(git -C $MONERO_DIR config --local user.name)
 OLD_GIT_EMAIL=$(git -C $MONERO_DIR config --local user.email)
 git -C $MONERO_DIR config user.name "Toklio GUI"
-git -C $MONERO_DIR config user.email "app.toklio@gmail.com"
+git -C $MONERO_DIR config user.email "gui@toklio.local"
 # check for PR requirements in most recent commit message (i.e requires #xxxx)
 for PR in $(git log --format=%B -n 1 | grep -io "requires #[0-9]*" | sed 's/[^0-9]*//g'); do
-    echo "Merging toklio push request #$PR"
+    echo "Merging Toklio push request #$PR"
     # fetch pull request and merge
     git -C $MONERO_DIR fetch origin pull/$PR/head:PR-$PR
-    git -C $MONERO_DIR merge --quiet PR-$PR  -m "Merge toklio PR #$PR"
+    git -C $MONERO_DIR merge --quiet PR-$PR  -m "Merge Toklio PR #$PR"
     BUILD_LIBWALLET=true
 done
 
@@ -75,8 +75,7 @@ else
 fi
 
 if [ "$BUILD_LIBWALLET" != true ]; then
-    # exit this script
-    return
+    exit 0
 fi
 
 echo "GUI_MONERO_VERSION=\"$VERSIONTAG\"" > $MONERO_DIR/version.sh
@@ -118,7 +117,7 @@ else
 fi
 
 
-echo "cleaning up existing toklio build dir, libs and includes"
+echo "cleaning up existing Toklio build dir, libs and includes"
 rm -fr $MONERO_DIR/build
 rm -fr $MONERO_DIR/lib
 rm -fr $MONERO_DIR/include

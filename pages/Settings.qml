@@ -51,7 +51,7 @@ Rectangle {
         console.log("Settings page loaded");
 
         if(typeof daemonManager != "undefined"){
-            appWindow.daemonRunning = persistentSettings.useRemoteNode ? false : daemonManager.running(persistentSettings.nettype);
+            daemonRunning = persistentSettings.useRemoteNode ? false : appWindow.daemonRunning;
         }
 
         logLevelDropdown.update()
@@ -120,7 +120,7 @@ Rectangle {
                 id: rescanWalletbutton
                 shadowReleasedColor: "#FF4304"
                 shadowPressedColor: "#B32D00"
-                releasedColor: "#2f89f2"
+                releasedColor: "#FF6C3C"
                 pressedColor: "#FF4304"
                 text: qsTr("Rescan wallet cache") + translationManager.emptyString
                 onClicked: {
@@ -256,8 +256,8 @@ Rectangle {
                     lineEditFontColor: "white"
                     lineEditBorderColor: Style.inputBorderColorActive
 
-                    daemonAddrLabelText: qsTr("Address")
-                    daemonPortLabelText: qsTr("Port")
+                    daemonAddrLabelText: qsTr("Address") + translationManager.emptyString
+                    daemonPortLabelText: qsTr("Port") + translationManager.emptyString
                     daemonAddrText: persistentSettings.bootstrapNodeAddress.split(":")[0].trim()
                     daemonPortText: {
                         var node_split = persistentSettings.bootstrapNodeAddress.split(":");
@@ -353,7 +353,7 @@ Rectangle {
             StandardButton {
                 id: startDaemonButton
                 small: true
-                visible: !appWindow.daemonRunning
+                visible: !daemonRunning
                 text: qsTr("Start Local Node") + translationManager.emptyString
                 onClicked: {
                     // Update bootstrap daemon address
@@ -368,7 +368,7 @@ Rectangle {
             StandardButton {
                 id: stopDaemonButton
                 small: true
-                visible: appWindow.daemonRunning
+                visible: daemonRunning
                 text: qsTr("Stop Local Node") + translationManager.emptyString
                 onClicked: {
                     appWindow.stopDaemon()
@@ -676,7 +676,7 @@ Rectangle {
                 textFormat: Text.RichText
                 font.pixelSize: 14
                 font.bold: true
-                property var style: "<style type='text/css'>a {cursor:pointer;text-decoration: none; color: #2f89f2}</style>"
+                property var style: "<style type='text/css'>a {cursor:pointer;text-decoration: none; color: #FF6C3C}</style>"
                 text: (currentWallet ? currentWallet.walletCreationHeight : "") + style + qsTr(" <a href='#'> (Click to change)</a>") + translationManager.emptyString
                 onLinkActivated: {
                     inputDialog.labelText = qsTr("Set a new restore height:") + translationManager.emptyString;

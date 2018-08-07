@@ -9,9 +9,9 @@ class NetworkType : public QObject
 
 public:
     enum Type : uint8_t {
-        MAINNET = Toklio::MAINNET,
-        TESTNET = Toklio::TESTNET,
-        STAGENET = Toklio::STAGENET
+        MAINNET = Monero::MAINNET,
+        TESTNET = Monero::TESTNET,
+        STAGENET = Monero::STAGENET
     };
     Q_ENUM(Type)
 };

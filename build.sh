@@ -64,7 +64,7 @@ source ./utils.sh
 pushd $(pwd)
 ROOT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 MONERO_DIR=Toklio
-MONEROD_EXEC=tokliod
+MONEROD_EXEC=tokliodd
 
 MAKE='make'
 if [[ $platform == *bsd* ]]; then
@@ -72,7 +72,7 @@ if [[ $platform == *bsd* ]]; then
 fi
 
 # build libwallet
-#./get_libwallet_api.sh $BUILD_TYPE
+./get_libwallet_api.sh $BUILD_TYPE
  
 # build zxcvbn
 if [ "$DISABLE_PASS_STRENGTH_METER" != true ]; then
@@ -112,7 +112,7 @@ fi
 $QMAKE ../toklio-wallet-gui.pro "$CONFIG" || exit
 $MAKE || exit 
 
-# Copy monerod to bin folder
+# Copy tokliod to bin folder
 if [ "$platform" != "mingw32" ] && [ "$ANDROID" != true ]; then
 cp ../$MONERO_DIR/bin/$MONEROD_EXEC $BIN_PATH
 fi

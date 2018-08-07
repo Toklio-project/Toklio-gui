@@ -34,7 +34,7 @@ DaemonManager *DaemonManager::instance(const QStringList *args)
 
 bool DaemonManager::start(const QString &flags, NetworkType::Type nettype, const QString &dataDir, const QString &bootstrapNodeAddress)
 {
-    // prepare command line arguments and pass to monerod
+    // prepare command line arguments and pass to tokliod
     QStringList arguments;
 
     // Start daemon with --detach flag on non-windows platforms
@@ -298,7 +298,7 @@ DaemonManager::DaemonManager(QObject *parent)
     : QObject(parent)
 {
 
-    // Platform depetent path to monerod
+    // Platform depetent path to tokliod
 #ifdef Q_OS_WIN
     m_monerod = QApplication::applicationDirPath() + "/tokliod.exe";
 #elif defined(Q_OS_UNIX)

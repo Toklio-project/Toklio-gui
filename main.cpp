@@ -100,7 +100,7 @@ int main(int argc, char *argv[])
 
     MainApp app(argc, argv);
 
-    app.setApplicationName("toklio-gui");
+    app.setApplicationName("toklio-core");
     app.setOrganizationDomain("tokl.io");
     app.setOrganizationName("Toklio-project");
 
@@ -119,11 +119,11 @@ int main(int argc, char *argv[])
     parser.addHelpOption();
     parser.process(app);
 
-    Toklio::Utils::onStartup();
+    Monero::Utils::onStartup();
 
     // Log settings
     const QString logPath = getLogPath(parser.value(logPathOption));
-    Toklio::Wallet::init(argv[0], "toklio-wallet-gui", logPath.toStdString().c_str(), true);
+    Monero::Wallet::init(argv[0], "toklio-wallet-gui", logPath.toStdString().c_str(), true);
     qInstallMessageHandler(messageHandler);
 
 
@@ -265,7 +265,7 @@ int main(int argc, char *argv[])
     if (accountName.isEmpty())
         accountName = qgetenv("USERNAME"); // Windows
     if (accountName.isEmpty())
-        accountName = "My toklio Account";
+        accountName = "My Toklio Account";
 
     engine.rootContext()->setContextProperty("defaultAccountName", accountName);
     engine.rootContext()->setContextProperty("applicationDirectory", QApplication::applicationDirPath());

@@ -5,7 +5,7 @@
 #include <QList>
 #include <QDateTime>
 
-namespace Toklio {
+namespace Monero {
 class TransactionHistory;
 }
 
@@ -41,11 +41,11 @@ public slots:
 
 
 private:
-    explicit TransactionHistory(Toklio::TransactionHistory * pimpl, QObject *parent = 0);
+    explicit TransactionHistory(Monero::TransactionHistory * pimpl, QObject *parent = 0);
 
 private:
     friend class Wallet;
-    Toklio::TransactionHistory * m_pimpl;
+    Monero::TransactionHistory * m_pimpl;
     mutable QList<TransactionInfo*> m_tinfo;
     mutable QDateTime   m_firstDateTime;
     mutable QDateTime   m_lastDateTime;

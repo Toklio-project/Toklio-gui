@@ -36,7 +36,7 @@ QVariant AddressBookModel::data(const QModelIndex &index, int role) const
         return QVariant();
     }
 
-    Toklio::AddressBookRow * ar = m_addressBook->getRow(index.row());
+    Monero::AddressBookRow * ar = m_addressBook->getRow(index.row());
 
     QVariant result = "";
     switch (role) {
@@ -60,7 +60,7 @@ QVariant AddressBookModel::data(const QModelIndex &index, int role) const
 
 bool AddressBookModel::deleteRow(int row)
 {
-    m_addressBook->deleteRow(row);
+    return m_addressBook->deleteRow(row);
 }
 
 int AddressBookModel::lookupPaymentID(const QString &payment_id) const
