@@ -64,7 +64,7 @@ source ./utils.sh
 pushd $(pwd)
 ROOT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 MONERO_DIR=Toklio
-MONEROD_EXEC=tokliodd
+MONEROD_EXEC=tokliod
 
 MAKE='make'
 if [[ $platform == *bsd* ]]; then
