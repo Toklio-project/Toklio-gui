@@ -2173,8 +2173,8 @@ U slučaju sa Dokazom Troška, ne morate navesti adresu primaoca.</translation>
     </message>
     <message>
         <location filename="../wizard/WizardDonation.qml" line="162"/>
-        <source>For every transaction, a small transaction fee is charged. This option lets you add an additional amount, as a percentage of that fee, to your transaction to support Toklio development. For instance, a 50% autodonation take a transaction fee of 0.005 XMR and add a 0.0025 XMR to support Toklio development.</source>
-        <translation>Uz svaku transakciju, mala provizija se naplaćuje. Ova opcija omogućava da uz dodatak male sume kao procenat te provizije pomognete razvoj Monera. Na primer, 50% auto-donacije od transakcione provizije od 0.005 XMR će dodati još 0.0025 XMR u svrhu pomoći razvoja Monera.</translation>
+        <source>For every transaction, a small transaction fee is charged. This option lets you add an additional amount, as a percentage of that fee, to your transaction to support Toklio development. For instance, a 50% autodonation take a transaction fee of 0.005 TOKL and add a 0.0025 TOKL to support Toklio development.</source>
+        <translation>Uz svaku transakciju, mala provizija se naplaćuje. Ova opcija omogućava da uz dodatak male sume kao procenat te provizije pomognete razvoj Monera. Na primer, 50% auto-donacije od transakcione provizije od 0.005 TOKL će dodati još 0.0025 TOKL u svrhu pomoći razvoja Monera.</translation>
     </message>
     <message>
         <location filename="../wizard/WizardDonation.qml" line="174"/>

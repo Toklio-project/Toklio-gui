@@ -2172,8 +2172,8 @@ For the case of outgoing payments, you can get a &apos;Spend Proof&apos; that pr
     </message>
     <message>
         <location filename="../wizard/WizardDonation.qml" line="162"/>
-        <source>For every transaction, a small transaction fee is charged. This option lets you add an additional amount, as a percentage of that fee, to your transaction to support Toklio development. For instance, a 50% autodonation take a transaction fee of 0.005 XMR and add a 0.0025 XMR to support Toklio development.</source>
-        <translation>For hver transaktion, ville der blive trukket et lille gebyr. Denne mulighed lader dig tilføje et ekstra beløb, som en procentdel af den gebyr til din transaktion for at støtte Toklio udvikling. F.eks. ville en 50% autodonation tag en transaktions gebyr på 0,005 XMR og lægge 0,0025 XMR oveni for at støtte Toklio&apos;s udvikling.</translation>
+        <source>For every transaction, a small transaction fee is charged. This option lets you add an additional amount, as a percentage of that fee, to your transaction to support Toklio development. For instance, a 50% autodonation take a transaction fee of 0.005 TOKL and add a 0.0025 TOKL to support Toklio development.</source>
+        <translation>For hver transaktion, ville der blive trukket et lille gebyr. Denne mulighed lader dig tilføje et ekstra beløb, som en procentdel af den gebyr til din transaktion for at støtte Toklio udvikling. F.eks. ville en 50% autodonation tag en transaktions gebyr på 0,005 TOKL og lægge 0,0025 TOKL oveni for at støtte Toklio&apos;s udvikling.</translation>
     </message>
     <message>
         <location filename="../wizard/WizardDonation.qml" line="174"/>

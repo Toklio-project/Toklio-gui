@@ -2176,8 +2176,8 @@ V případě odchozích plateb můžete získat doklad o výdajích, který dokl
     </message>
     <message>
         <location filename="../wizard/WizardDonation.qml" line="162"/>
-        <source>For every transaction, a small transaction fee is charged. This option lets you add an additional amount, as a percentage of that fee, to your transaction to support Toklio development. For instance, a 50% autodonation take a transaction fee of 0.005 XMR and add a 0.0025 XMR to support Toklio development.</source>
-        <translation>Pro každou transakci je účtován malý transakční poplatek. Tato volba vám umožní přidat částku z tohoto poplatku do vaší transakce na podporu vývoje společnosti Toklio. Například 50% autodonace převezme transakční poplatek 0,005 XMR a přidá 0,0025 XMR k podpoře vývoje společnosti Toklio.</translation>
+        <source>For every transaction, a small transaction fee is charged. This option lets you add an additional amount, as a percentage of that fee, to your transaction to support Toklio development. For instance, a 50% autodonation take a transaction fee of 0.005 TOKL and add a 0.0025 TOKL to support Toklio development.</source>
+        <translation>Pro každou transakci je účtován malý transakční poplatek. Tato volba vám umožní přidat částku z tohoto poplatku do vaší transakce na podporu vývoje společnosti Toklio. Například 50% autodonace převezme transakční poplatek 0,005 TOKL a přidá 0,0025 TOKL k podpoře vývoje společnosti Toklio.</translation>
     </message>
     <message>
         <location filename="../wizard/WizardDonation.qml" line="174"/>

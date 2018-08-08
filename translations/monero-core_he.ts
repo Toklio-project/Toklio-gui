@@ -2173,8 +2173,8 @@ For the case of outgoing payments, you can get a &apos;Spend Proof&apos; that pr
     </message>
     <message>
         <location filename="../wizard/WizardDonation.qml" line="162"/>
-        <source>For every transaction, a small transaction fee is charged. This option lets you add an additional amount, as a percentage of that fee, to your transaction to support Toklio development. For instance, a 50% autodonation take a transaction fee of 0.005 XMR and add a 0.0025 XMR to support Toklio development.</source>
-        <translation>לכל העברה קיימת עמלה. אופציה זו מאפשרת לך להוסיף, בנוסף לעמלה, אחוז מסוים מעמלה זו כדי לתמוך בפיתוח של מונרו. למשל, תרומה אוטומטית של 50% עבור עמלה בסך 0.005 XMR תוסיף עוד 0.0025 XMR שיישלחו לצוות הפיתוח של מונרו.</translation>
+        <source>For every transaction, a small transaction fee is charged. This option lets you add an additional amount, as a percentage of that fee, to your transaction to support Toklio development. For instance, a 50% autodonation take a transaction fee of 0.005 TOKL and add a 0.0025 TOKL to support Toklio development.</source>
+        <translation>לכל העברה קיימת עמלה. אופציה זו מאפשרת לך להוסיף, בנוסף לעמלה, אחוז מסוים מעמלה זו כדי לתמוך בפיתוח של מונרו. למשל, תרומה אוטומטית של 50% עבור עמלה בסך 0.005 TOKL תוסיף עוד 0.0025 TOKL שיישלחו לצוות הפיתוח של מונרו.</translation>
     </message>
     <message>
         <location filename="../wizard/WizardDonation.qml" line="174"/>

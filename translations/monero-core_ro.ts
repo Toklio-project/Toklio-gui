@@ -2174,8 +2174,8 @@ Pentru cazurile cu Dovadă de plată, nu e necesară adresa destinatarului.</tra
     </message>
     <message>
         <location filename="../wizard/WizardDonation.qml" line="162"/>
-        <source>For every transaction, a small transaction fee is charged. This option lets you add an additional amount, as a percentage of that fee, to your transaction to support Toklio development. For instance, a 50% autodonation take a transaction fee of 0.005 XMR and add a 0.0025 XMR to support Toklio development.</source>
-        <translation>Pentru fiecare tranzacție se plătește un mic comision de tranzacție. Această setare îți permite să adaugi o mică sumă la tranzacție, ca procent din comisionul respectiv, pentru a susține dezvoltarea Toklio. De exemplu, pentru un comision de 0.005 XMR, o donație automată de 50% adaugă 0.0025 XMR pentru susținerea dezvoltării Toklio.</translation>
+        <source>For every transaction, a small transaction fee is charged. This option lets you add an additional amount, as a percentage of that fee, to your transaction to support Toklio development. For instance, a 50% autodonation take a transaction fee of 0.005 TOKL and add a 0.0025 TOKL to support Toklio development.</source>
+        <translation>Pentru fiecare tranzacție se plătește un mic comision de tranzacție. Această setare îți permite să adaugi o mică sumă la tranzacție, ca procent din comisionul respectiv, pentru a susține dezvoltarea Toklio. De exemplu, pentru un comision de 0.005 TOKL, o donație automată de 50% adaugă 0.0025 TOKL pentru susținerea dezvoltării Toklio.</translation>
     </message>
     <message>
         <location filename="../wizard/WizardDonation.qml" line="174"/>

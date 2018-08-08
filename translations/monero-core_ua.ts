@@ -2145,8 +2145,8 @@ For the case with Spend Proof, you don&apos;t need to specify the recipient addr
     </message>
     <message>
         <location filename="../wizard/WizardDonation.qml" line="162"/>
-        <source>For every transaction, a small transaction fee is charged. This option lets you add an additional amount, as a percentage of that fee, to your transaction to support Toklio development. For instance, a 50% autodonation take a transaction fee of 0.005 XMR and add a 0.0025 XMR to support Toklio development.</source>
-        <translation>За кожну транзакцію стягується невелика комісія. Ця опція дозволяє вам додати додаткову суму у відсотках від цієї комісії до транзакції, для підтримки розробки Toklio. Наприклад, 50% автодотаціі беруть плату за транзакцію 0,005 XMR і додають 0,0025 XMR на користь підтримки розробки Toklio.</translation>
+        <source>For every transaction, a small transaction fee is charged. This option lets you add an additional amount, as a percentage of that fee, to your transaction to support Toklio development. For instance, a 50% autodonation take a transaction fee of 0.005 TOKL and add a 0.0025 TOKL to support Toklio development.</source>
+        <translation>За кожну транзакцію стягується невелика комісія. Ця опція дозволяє вам додати додаткову суму у відсотках від цієї комісії до транзакції, для підтримки розробки Toklio. Наприклад, 50% автодотаціі беруть плату за транзакцію 0,005 TOKL і додають 0,0025 TOKL на користь підтримки розробки Toklio.</translation>
     </message>
     <message>
         <location filename="../wizard/WizardDonation.qml" line="174"/>
@@ -2705,7 +2705,7 @@ Spending address index: </source>
     <message>
         <location filename="../main.qml" line="864"/>
         <source>This address received %1 Toklio, with %2 confirmation(s).</source>
-        <translation>Цей адрес отримав %1 XMR, із %2 підтвердженнями(и)</translation>
+        <translation>Цей адрес отримав %1 TOKL, із %2 підтвердженнями(и)</translation>
     </message>
     <message>
         <location filename="../main.qml" line="875"/>
@@ -2781,7 +2781,7 @@ Spending address index: </source>
     <message>
         <location filename="../main.qml" line="861"/>
         <source>This address received %1 Toklio, but the transaction is not yet mined</source>
-        <translation>Цей адрес отримав %1 XMR, але транзакція ще не була підтверджена майнерами</translation>
+        <translation>Цей адрес отримав %1 TOKL, але транзакція ще не була підтверджена майнерами</translation>
     </message>
     <message>
         <location filename="../main.qml" line="868"/>

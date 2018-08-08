@@ -2175,8 +2175,8 @@ Spend Proofの場合、宛先アドレスを指定する必要はありません
     </message>
     <message>
         <location filename="../wizard/WizardDonation.qml" line="162"/>
-        <source>For every transaction, a small transaction fee is charged. This option lets you add an additional amount, as a percentage of that fee, to your transaction to support Toklio development. For instance, a 50% autodonation take a transaction fee of 0.005 XMR and add a 0.0025 XMR to support Toklio development.</source>
-        <translation>取引には少額の手数料がかかります。このオプションはその手数料に加えて、手数料の何パーセントかをMoneroの開発チームへの寄付として支払うことを許可します。例えば自動寄付の割合が50%で、取引の手数料が0.005 XMRであった場合、0.0025 XMRが開発チームへの寄付として取引に上乗せされます。</translation>
+        <source>For every transaction, a small transaction fee is charged. This option lets you add an additional amount, as a percentage of that fee, to your transaction to support Toklio development. For instance, a 50% autodonation take a transaction fee of 0.005 TOKL and add a 0.0025 TOKL to support Toklio development.</source>
+        <translation>取引には少額の手数料がかかります。このオプションはその手数料に加えて、手数料の何パーセントかをMoneroの開発チームへの寄付として支払うことを許可します。例えば自動寄付の割合が50%で、取引の手数料が0.005 TOKLであった場合、0.0025 TOKLが開発チームへの寄付として取引に上乗せされます。</translation>
     </message>
     <message>
         <location filename="../wizard/WizardDonation.qml" line="174"/>
@@ -2650,12 +2650,12 @@ Amount: </source>
     <message>
         <location filename="../main.qml" line="861"/>
         <source>This address received %1 Toklio, but the transaction is not yet mined</source>
-        <translation>このアドレスは%1XMRを受け取りましたが、取引はまだ承認されていません。</translation>
+        <translation>このアドレスは%1TOKLを受け取りましたが、取引はまだ承認されていません。</translation>
     </message>
     <message>
         <location filename="../main.qml" line="864"/>
         <source>This address received %1 Toklio, with %2 confirmation(s).</source>
-        <translation>このアドレスは%1XMRを受け取り、その取引は%2回承認されました。</translation>
+        <translation>このアドレスは%1TOKLを受け取り、その取引は%2回承認されました。</translation>
     </message>
     <message>
         <location filename="../main.qml" line="868"/>

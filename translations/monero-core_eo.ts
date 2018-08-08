@@ -2216,8 +2216,8 @@ Kaze de Elspezpruvo, vi ne bezonas precizi la ricevantan adreson.</translation>
     </message>
     <message>
         <location filename="../wizard/WizardDonation.qml" line="162"/>
-        <source>For every transaction, a small transaction fee is charged. This option lets you add an additional amount, as a percentage of that fee, to your transaction to support Toklio development. For instance, a 50% autodonation take a transaction fee of 0.005 XMR and add a 0.0025 XMR to support Toklio development.</source>
-        <translation>Por ĉiu transakcio, oni devas pagi malgrandan transakcikoston. Tiu ĉi opcio ebligas aldonan sumon (procento de la baza kosto) al via transakcio por subteni la programadon de Toklio. Ekzemple, 50% aŭtomata donaco aldonas 0.0025 XMR al transakcikosto de 0.005 XMR.</translation>
+        <source>For every transaction, a small transaction fee is charged. This option lets you add an additional amount, as a percentage of that fee, to your transaction to support Toklio development. For instance, a 50% autodonation take a transaction fee of 0.005 TOKL and add a 0.0025 TOKL to support Toklio development.</source>
+        <translation>Por ĉiu transakcio, oni devas pagi malgrandan transakcikoston. Tiu ĉi opcio ebligas aldonan sumon (procento de la baza kosto) al via transakcio por subteni la programadon de Toklio. Ekzemple, 50% aŭtomata donaco aldonas 0.0025 TOKL al transakcikosto de 0.005 TOKL.</translation>
     </message>
     <message>
         <location filename="../wizard/WizardDonation.qml" line="174"/>

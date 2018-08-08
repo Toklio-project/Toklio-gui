@@ -2136,8 +2136,8 @@ For the case with Spend Proof, you don&apos;t need to specify the recipient addr
     </message>
     <message>
         <location filename="../wizard/WizardDonation.qml" line="162"/>
-        <source>For every transaction, a small transaction fee is charged. This option lets you add an additional amount, as a percentage of that fee, to your transaction to support Toklio development. For instance, a 50% autodonation take a transaction fee of 0.005 XMR and add a 0.0025 XMR to support Toklio development.</source>
-        <translation>Per cada transacció es carrega una petita comissió. Aquesta opció permet afegir una cantita adicional, com a porcentatge d&apos;aquesta comissió, per a donar suport a Toklio. Per exemple, una autodonació del 50%  d&apos;una comissió de 0.005 XMR afegeix0.0025 XMR per donar suport al desenvolupament de Toklio.</translation>
+        <source>For every transaction, a small transaction fee is charged. This option lets you add an additional amount, as a percentage of that fee, to your transaction to support Toklio development. For instance, a 50% autodonation take a transaction fee of 0.005 TOKL and add a 0.0025 TOKL to support Toklio development.</source>
+        <translation>Per cada transacció es carrega una petita comissió. Aquesta opció permet afegir una cantita adicional, com a porcentatge d&apos;aquesta comissió, per a donar suport a Toklio. Per exemple, una autodonació del 50%  d&apos;una comissió de 0.005 TOKL afegeix0.0025 TOKL per donar suport al desenvolupament de Toklio.</translation>
     </message>
     <message>
         <location filename="../wizard/WizardDonation.qml" line="174"/>

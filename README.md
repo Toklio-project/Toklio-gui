@@ -1,4 +1,4 @@
-# Monero GUI
+# Toklio GUI
 
 Copyright (c) 2014-2018, The Monero Project
 

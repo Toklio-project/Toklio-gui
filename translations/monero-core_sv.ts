@@ -2174,8 +2174,8 @@ I fallet med spenderbevis behöver du inte ange mottagaradressen.</translation>
     </message>
     <message>
         <location filename="../wizard/WizardDonation.qml" line="162"/>
-        <source>For every transaction, a small transaction fee is charged. This option lets you add an additional amount, as a percentage of that fee, to your transaction to support Toklio development. For instance, a 50% autodonation take a transaction fee of 0.005 XMR and add a 0.0025 XMR to support Toklio development.</source>
-        <translation>För varje transaktion tas en liten transaktionsavgift ut. Detta alternativ låter dig lägga till ett ytterligare belopp till din transaktion, angivet som en procent av transaktionsavgiften, för att stödja utvecklingen av Toklio. Till exempel, en 50 % automatisk donation tar en transaktionsavgift på 0,005 XMR och lägger på 0,0025 XMR för att stödja utvecklingen av Toklio.</translation>
+        <source>For every transaction, a small transaction fee is charged. This option lets you add an additional amount, as a percentage of that fee, to your transaction to support Toklio development. For instance, a 50% autodonation take a transaction fee of 0.005 TOKL and add a 0.0025 TOKL to support Toklio development.</source>
+        <translation>För varje transaktion tas en liten transaktionsavgift ut. Detta alternativ låter dig lägga till ett ytterligare belopp till din transaktion, angivet som en procent av transaktionsavgiften, för att stödja utvecklingen av Toklio. Till exempel, en 50 % automatisk donation tar en transaktionsavgift på 0,005 TOKL och lägger på 0,0025 TOKL för att stödja utvecklingen av Toklio.</translation>
     </message>
     <message>
         <location filename="../wizard/WizardDonation.qml" line="174"/>

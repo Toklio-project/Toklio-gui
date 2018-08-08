@@ -2175,8 +2175,8 @@ Für den Fall mit Sendenachweis muss die Empfängeradresse nicht angegeben werde
     </message>
     <message>
         <location filename="../wizard/WizardDonation.qml" line="162"/>
-        <source>For every transaction, a small transaction fee is charged. This option lets you add an additional amount, as a percentage of that fee, to your transaction to support Toklio development. For instance, a 50% autodonation take a transaction fee of 0.005 XMR and add a 0.0025 XMR to support Toklio development.</source>
-        <translation>Für jede Transaktion fällt eine kleine Transaktionsgebühr an. Mit dieser Option kannst Du diese Gebühr um einen zusätzlichen Prozentsatz erhöhen, um die Entwicklung von Toklio voranzutreiben. Beispielsweise würden bei einer 50-%igen automatischen Spende und einer Transaktionsgebühr von 0.005 XMR zusätzliche 0.0025 XMR der Entwicklung von Toklio zukommen.</translation>
+        <source>For every transaction, a small transaction fee is charged. This option lets you add an additional amount, as a percentage of that fee, to your transaction to support Toklio development. For instance, a 50% autodonation take a transaction fee of 0.005 TOKL and add a 0.0025 TOKL to support Toklio development.</source>
+        <translation>Für jede Transaktion fällt eine kleine Transaktionsgebühr an. Mit dieser Option kannst Du diese Gebühr um einen zusätzlichen Prozentsatz erhöhen, um die Entwicklung von Toklio voranzutreiben. Beispielsweise würden bei einer 50-%igen automatischen Spende und einer Transaktionsgebühr von 0.005 TOKL zusätzliche 0.0025 TOKL der Entwicklung von Toklio zukommen.</translation>
     </message>
     <message>
         <location filename="../wizard/WizardDonation.qml" line="174"/>

@@ -2170,8 +2170,8 @@ For the case with Spend Proof, you don&apos;t need to specify the recipient addr
     </message>
     <message>
         <location filename="../wizard/WizardDonation.qml" line="162"/>
-        <source>For every transaction, a small transaction fee is charged. This option lets you add an additional amount, as a percentage of that fee, to your transaction to support Toklio development. For instance, a 50% autodonation take a transaction fee of 0.005 XMR and add a 0.0025 XMR to support Toklio development.</source>
-        <translation>在每一筆交易中 Toklio 系統都會收取小額的手續費，而這個選項則是讓你可以增加額外的金額贊助 Toklio 的開發，比例以當次交易的手續費計算，譬如 50% 的自動贊助將會從0.005 XMR的手續費算出 0.0025 XMR 的金額贊助給 Toklio 開發團隊。</translation>
+        <source>For every transaction, a small transaction fee is charged. This option lets you add an additional amount, as a percentage of that fee, to your transaction to support Toklio development. For instance, a 50% autodonation take a transaction fee of 0.005 TOKL and add a 0.0025 TOKL to support Toklio development.</source>
+        <translation>在每一筆交易中 Toklio 系統都會收取小額的手續費，而這個選項則是讓你可以增加額外的金額贊助 Toklio 的開發，比例以當次交易的手續費計算，譬如 50% 的自動贊助將會從0.005 TOKL的手續費算出 0.0025 TOKL 的金額贊助給 Toklio 開發團隊。</translation>
     </message>
     <message>
         <location filename="../wizard/WizardDonation.qml" line="174"/>
