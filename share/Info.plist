@@ -24,7 +24,7 @@
   <string>Toklio GUI</string>
 
   <key>CFBundleIdentifier</key>
-  <string>org.monero-project.toklio-wallet-gui</string>
+  <string>org.toklio-project.toklio-wallet-gui</string>
 
   <key>NSSupportsAutomaticGraphicsSwitching</key>
   <true/>

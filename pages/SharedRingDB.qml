@@ -50,6 +50,15 @@ Rectangle {
         return true
     }
 
+    function validUnsigned(s) {
+        if (s.length == 0)
+            return false
+        for (var i = 0; i < s.length; ++i)
+            if ("0123456789".indexOf(s[i]) == -1)
+                return false
+        return true
+    }
+
     function validRing(str, relative) {
         var outs = str.split(" ");
         if (outs.length == 0)
@@ -117,7 +126,7 @@ Rectangle {
                     "actually spent becomes apparent, thereby nullifying the effect of ring signatures, one of the three main layers " +
                     "of privacy protection Monero uses.<br>" +
                     "To help transactions avoid those inputs, a list of known spent ones can be used to avoid using them in new " +
-                    "transactions. Such a list is maintained by the Monero project and is available on the getmonero.org website, " +
+                    "transactions. Such a list is maintained by the Monero project and is available on the tokl.io website, " +
                     "and you can import this list here.<br>" +
                     "Alternatively, you can scan the blockchain (and the blockchain of key-reusing Monero clones) yourself " +
                     "using the toklio-blockchain-blackball tool to create a list of known spent outputs.<br>"
@@ -199,15 +208,24 @@ Rectangle {
 
             RowLayout {
                 LineEdit {
-                    id: blackballOutputLine
+                    id: blackballOutputAmountLine
                     fontSize: mainLayout.lineEditFontSize
                     labelFontSize: 14 * scaleRatio
                     labelText: qsTr("Or manually blackball/unblackball a single output:") + translationManager.emptyString
-                    placeholderText: qsTr("Paste output public key") + "..." + translationManager.emptyString
+                    placeholderText: qsTr("Paste output amount") + "..." + translationManager.emptyString
                     readOnly: false
-                    copyButton: true
-                    width: mainLayout.editWidth
-                    Layout.fillWidth: true
+                    width: mainLayout.editWidth / 2
+                    validator: IntValidator { bottom: 0 }
+                }
+                LineEdit {
+                    id: blackballOutputOffsetLine
+                    fontSize: mainLayout.lineEditFontSize
+                    labelFontSize: 14 * scaleRatio
+                    labelText: " "
+                    placeholderText: qsTr("Paste output offset") + "..." + translationManager.emptyString
+                    readOnly: false
+                    width: mainLayout.editWidth / 2
+                    validator: IntValidator { bottom: 0 }
                 }
             }
 
@@ -219,8 +237,8 @@ Rectangle {
                     id: blackballButton
                     text: qsTr("Blackball") + translationManager.emptyString
                     small: true
-                    enabled: !!appWindow.currentWallet && validHex32(blackballOutputLine.text)
-                    onClicked: appWindow.currentWallet.blackballOutput(blackballOutputLine.text)
+                    enabled: !!appWindow.currentWallet && validUnsigned(blackballOutputAmountLine.text) && validUnsigned(blackballOutputOffsetLine.text)
+                    onClicked: appWindow.currentWallet.blackballOutput(blackballOutputAmountLine.text, blackballOutputOffsetLine.text)
                 }
 
                 StandardButton {
@@ -228,8 +246,8 @@ Rectangle {
                     anchors.right: parent.right
                     text: qsTr("Unblackball") + translationManager.emptyString
                     small: true
-                    enabled: !!appWindow.currentWallet && validHex32(blackballOutputLine.text)
-                    onClicked: appWindow.currentWallet.unblackballOutput(blackballOutputLine.text)
+                    enabled: !!appWindow.currentWallet && validUnsigned(blackballOutputAmountLine.text) && validUnsigned(blackballOutputOffsetLine.text)
+                    onClicked: appWindow.currentWallet.unblackballOutput(blackballOutputAmountLine.text, blackballOutputOffsetLine.text)
                 }
             }
         }
