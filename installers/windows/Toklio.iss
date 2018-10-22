@@ -1,4 +1,4 @@
-; Toklio GUI Wallet Installer for Windows
+; Monero Lithium Luna GUI Wallet Installer for Windows
 ; Copyright (c) 2014-2018, The Monero Project
 ; See LICENSE
 
@@ -76,7 +76,7 @@ Source: "toklio-daemon.bat"; DestDir: "{app}"; Flags: ignoreversion;
 ; Toklio blockchain utilities
 Source: "bin\toklio-blockchain-export.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "bin\toklio-blockchain-import.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "bin\toklio-blockchain-blackball.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "bin\toklio-blockchain-mark-spent-outputs.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "bin\toklio-blockchain-usage.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "bin\toklio-blockchain-import.exe"; DestDir: "{app}"; Flags: ignoreversion
 
@@ -330,7 +330,7 @@ end;
 function DaemonLog(Param: String) : String;
 // Full filename of the log of the daemon
 begin
-  Result := BlockChainDir('') + '\bitToklio.log';
+  Result := BlockChainDir('') + '\Toklio.log';
   // No quotes for filename with blanks as this is never used as part of a command line
 end;
 
