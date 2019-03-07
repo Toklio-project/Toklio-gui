@@ -31,6 +31,7 @@ import QtQuick.Controls.Styles 1.2
 import QtQuick 2.2
 import QtQuick.Layouts 1.1
 
+import "../js/Utils.js" as Utils
 import "../components" as MoneroComponents
 
 GridLayout {
@@ -58,12 +59,24 @@ GridLayout {
     property bool lineEditFontBold: true
 
     signal editingFinished()
+    signal textChanged()
 
-    function getAddress() {
-        return daemonAddr.text.trim() + ":" + daemonPort.text.trim()
+    function isValid() {
+        return daemonAddr.text.trim().length > 0 && daemonPort.acceptableInput
     }
 
-    LineEditMulti {
+    function getAddress() {
+        var addr = daemonAddr.text.trim();
+        var port = daemonPort.text.trim();
+
+        // validation
+        if(addr === "" || addr.length < 2) return "";
+        if(!Utils.isNumeric(port)) return "";
+
+        return addr + ":" + port;
+    }
+
+    LineEdit {
         id: daemonAddr
         Layout.fillWidth: true
         placeholderText: qsTr("Remote Node Hostname / IP") + translationManager.emptyString
@@ -79,9 +92,10 @@ GridLayout {
         fontBold: lineEditFontBold
         fontSize: lineEditFontSize
         onEditingFinished: root.editingFinished()
+        onTextChanged: root.textChanged()
     }
 
-    LineEditMulti {
+    LineEdit {
         id: daemonPort
         Layout.fillWidth: true
         placeholderText: qsTr("Port") + translationManager.emptyString
@@ -96,7 +110,9 @@ GridLayout {
         fontColor: lineEditFontColor
         fontBold: lineEditFontBold
         fontSize: lineEditFontSize
+        validator: IntValidator{bottom: 1; top: 65535;}
 
         onEditingFinished: root.editingFinished()
+        onTextChanged: root.textChanged()
     }
 }

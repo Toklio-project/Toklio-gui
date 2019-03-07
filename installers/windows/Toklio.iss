@@ -1,5 +1,5 @@
-; Monero Lithium Luna GUI Wallet Installer for Windows
-; Copyright (c) 2014-2018, The Monero Project
+; Toklio Boron Butterfly GUI Wallet Installer for Windows
+; Copyright (c) 2017-2019, The Toklio Project
 ; See LICENSE
 
 [Setup]
@@ -8,7 +8,7 @@ AppName=Toklio GUI Wallet
 ; Thus it's important to keep this stable over releases
 ; With a different "AppName" InnoSetup would treat a mere update as a completely new application and thus mess up
 
-AppVersion=0.12.3.0
+AppVersion=0.14.0.0
 DefaultDirName={pf}\Toklio GUI Wallet
 DefaultGroupName=Toklio GUI Wallet
 UninstallDisplayIcon={app}\toklio-wallet-gui.exe
@@ -20,7 +20,22 @@ WizardImageFile=WelcomeImage.bmp
 DisableWelcomePage=no
 LicenseFile=LICENSE
 AppPublisher=The Toklio Developer Community
-AppPublisherURL=https://tokl.io
+AppPublisherURL=https://getmonero.org
+
+UsedUserAreasWarning=no
+; The above directive silences the following compiler warning:
+;    Warning: The [Setup] section directive "PrivilegesRequired" is set to "admin" but per-user areas (HKCU,userdocs)
+;    are used by the script. Regardless of the version of Windows, if the installation is administrative then you should
+;    be careful about making any per-user area changes: such changes may not achieve what you are intending.
+; Background info:
+; This installer indeed asks for admin rights so the Toklio files can be copied to a place where they have at least
+; a minimum of protection against changes, e.g. by malware, plus it handles things for the currently logged-in user
+; in the registry (GUI wallet per-user options) and for some of the icons. For reasons too complicated to fully explain
+; here this does not work as intended if the installing user does not have admin rights and has to provide the password
+; of a user that does for installing: The settings of the admin user instead of those of the installing user are changed.
+; Short of ripping out that per-user functionality the issue has no suitable solution. Fortunately, this will probably
+; play a role in only in few cases as the first standard user in a Windows installation does have admin rights.
+; So, for the time being, this installer simply disregards this problem.
 
 
 [Languages]
@@ -41,7 +56,7 @@ Name: "en"; MessagesFile: "compiler:Default.isl"
 ; .exe/.dll file possibly with version info).
 ;
 ; This is far more robust than relying on version info or on file dates (flag "comparetimestamp").
-; As of version 0.12.3.0, the Toklio .exe files do not carry version info anyway in their .exe headers.
+; As of version 0.14.0.0, the Toklio .exe files do not carry version info anyway in their .exe headers.
 ; The only small drawback seems to be somewhat longer update times because each and every file is
 ; copied again, even if already present with correct file date and identical content.
 ;
@@ -51,8 +66,9 @@ Name: "en"; MessagesFile: "compiler:Default.isl"
 Source: "ReadMe.htm"; DestDir: "{app}"; Flags: ignoreversion
 Source: "FinishImage.bmp"; Flags: dontcopy
 
-; Toklio GUI wallet
+; Toklio GUI wallet exe and guide
 Source: "bin\toklio-wallet-gui.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "bin\toklio-GUI-guide.pdf"; DestDir: "{app}"; Flags: ignoreversion
 
 ; Toklio GUI wallet log file
 ; The GUI wallet does not have the "--log-file" command-line option of the CLI wallet and insists to put the .log beside the .exe
@@ -68,7 +84,7 @@ Source: "bin\toklio-gen-trusted-multisig.exe"; DestDir: "{app}"; Flags: ignoreve
 Source: "bin\toklio-wallet-rpc.exe"; DestDir: "{app}"; Flags: ignoreversion
 
 ; Toklio daemon
-Source: "bin\tokliod.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "bin\monerod.exe"; DestDir: "{app}"; Flags: ignoreversion
 
 ; Toklio daemon wrapped in a batch file that stops before the text window closes, to see any error messages
 Source: "toklio-daemon.bat"; DestDir: "{app}"; Flags: ignoreversion;
@@ -79,6 +95,8 @@ Source: "bin\toklio-blockchain-import.exe"; DestDir: "{app}"; Flags: ignoreversi
 Source: "bin\toklio-blockchain-mark-spent-outputs.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "bin\toklio-blockchain-usage.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "bin\toklio-blockchain-import.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "bin\toklio-blockchain-ancestry.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "bin\toklio-blockchain-depth.exe"; DestDir: "{app}"; Flags: ignoreversion
 
 ; was present in 0.10.3.1, not present anymore in 0.11.1.0 and after
 ; Source: "bin\toklio-utils-deserialize.exe"; DestDir: "{app}"; Flags: ignoreversion
@@ -230,6 +248,9 @@ Source: "bin\zlib1.dll"; DestDir: "{app}"; Flags: ignoreversion
 ; Stack protection
 Source: "bin\libssp-0.dll"; DestDir: "{app}"; Flags: ignoreversion
 
+; HIDAPI, library for communicating with USB and Bluetooth devices, for hardware wallets
+Source: "bin\libhidapi-0.dll"; DestDir: "{app}"; Flags: ignoreversion
+
 
 [Tasks]
 Name: desktopicon; Description: "Create a &desktop icon"; GroupDescription: "Additional icons:";
@@ -249,7 +270,6 @@ var
 
 procedure InitializeWizard;
 var s: String;
-    width: Integer;
     blockChainDir: String;
 begin
   // Large image for the "Welcome" page, with page reconfigured
@@ -263,9 +283,9 @@ begin
   WizardForm.WizardBitmapImage2.Bitmap.LoadFromFile(ExpandConstant('{tmp}\FinishImage.bmp'));
 
   // Additional wizard page for entering a special blockchain location
-  blockChainDefaultDir := ExpandConstant('{commonappdata}\Toklio');
+  blockChainDefaultDir := ExpandConstant('{commonappdata}\bitmonero');
   s := 'The default folder to store the Toklio blockchain is ' + blockChainDefaultDir;
-  s := s + '. As this will need more than 60 GB of free space, you may want to use a folder on a different drive.';
+  s := s + '. As this will need more than 70 GB of free space, you may want to use a folder on a different drive.';
   s := s + ' If yes, specify that folder here.';
 
   BlockChainDirPage := CreateInputDirPage(wpSelectDir,
@@ -330,7 +350,7 @@ end;
 function DaemonLog(Param: String) : String;
 // Full filename of the log of the daemon
 begin
-  Result := BlockChainDir('') + '\Toklio.log';
+  Result := BlockChainDir('') + '\bitmonero.log';
   // No quotes for filename with blanks as this is never used as part of a command line
 end;
 
@@ -353,6 +373,21 @@ begin
   Result := s;
 end;
 
+function WalletFlags(Param: String): String;
+// Flags to add to the shortcut to the GUI wallet
+// Use "--log-file" to force log file alongside the installed GUI exe which would not get
+// created there because of an unsolved issue in the 0.13.0.4 wallet code
+var s: String;
+begin
+  s := ExpandConstant('{app}\toklio-wallet-gui.log');
+  if Pos(' ', s) > 0 then begin
+    // Quotes needed for filename with blanks
+    s := '"' + s + '"';
+  end;
+  s := '--log-file ' + s;
+  Result := s;
+end;
+
 procedure CurStepChanged(CurStep: TSetupStep);
 var s: TArrayOfString;
 begin
@@ -360,7 +395,7 @@ begin
     // Re-build "toklio-daemon.bat" according to actual install and blockchain directory used
     SetArrayLength(s, 3);
     s[0] := 'REM Execute the Toklio daemon and then stay with window open after it exits';
-    s[1] := '"' + ExpandConstant('{app}\tokliod.exe') + '" ' + DaemonFlags('');
+    s[1] := '"' + ExpandConstant('{app}\monerod.exe') + '" ' + DaemonFlags('');
     s[2] := 'PAUSE';
     SaveStringsToFile(ExpandConstant('{app}\toklio-daemon.bat'), s, false); 
   end;
@@ -380,13 +415,14 @@ end;
 [Icons]
 ; Icons in the "Toklio GUI Wallet" program group
 ; Windows will almost always display icons in alphabetical order, per level, so specify the text accordingly
-Name: "{group}\GUI Wallet"; Filename: "{app}\toklio-wallet-gui.exe"
+Name: "{group}\GUI Wallet"; Filename: "{app}\toklio-wallet-gui.exe"; Parameters: {code:WalletFlags}
+Name: "{group}\GUI Wallet Guide"; Filename: "{app}\toklio-GUI-guide.pdf"; IconFilename: "{app}\toklio-wallet-gui.exe"
 Name: "{group}\Uninstall GUI Wallet"; Filename: "{uninstallexe}"
 
 ; Sub-folder "Utilities";
 ; Note that Windows 10, unlike Windows 7, ignores such sub-folders completely
 ; and insists on displaying ALL icons on one single level
-Name: "{group}\Utilities\Toklio Daemon"; Filename: "{app}\tokliod.exe"; Parameters: {code:DaemonFlags}
+Name: "{group}\Utilities\Toklio Daemon"; Filename: "{app}\monerod.exe"; Parameters: {code:DaemonFlags}
 Name: "{group}\Utilities\Read Me"; Filename: "{app}\ReadMe.htm"
 
 ; CLI wallet: Needs a working directory ("Start in:") set in the icon, because with no such directory set
@@ -402,10 +438,10 @@ Name: "{group}\Utilities\x (Check Default Wallet Folder)"; Filename: "{win}\Expl
 Name: "{group}\Utilities\x (Check GUI Wallet Log)"; Filename: "Notepad"; Parameters: "{app}\toklio-wallet-gui.log"
 Name: "{group}\Utilities\x (Try Daemon, Exit Confirm)"; Filename: "{app}\toklio-daemon.bat"
 Name: "{group}\Utilities\x (Try GUI Wallet Low Graphics Mode)"; Filename: "{app}\start-low-graphics-mode.bat"
-Name: "{group}\Utilities\x (Try Kill Daemon)"; Filename: "Taskkill.exe"; Parameters: "/IM tokliod.exe /T /F"
+Name: "{group}\Utilities\x (Try Kill Daemon)"; Filename: "Taskkill.exe"; Parameters: "/IM monerod.exe /T /F"
 
 ; Desktop icons, optional with the help of the "Task" section
-Name: "{userdesktop}\GUI Wallet"; Filename: "{app}\toklio-wallet-gui.exe"; Tasks: desktopicon
+Name: "{commondesktop}\GUI Wallet"; Filename: "{app}\toklio-wallet-gui.exe"; Parameters: {code:WalletFlags}; Tasks: desktopicon
 
 
 [Registry]

@@ -42,6 +42,7 @@ Item {
     property string placeholderColor: MoneroComponents.Style.defaultFontColor
     property real placeholderOpacity: 0.35
 
+    property alias acceptableInput: input.acceptableInput
     property alias validator: input.validator
     property alias readOnly : input.readOnly
     property alias cursorPosition: input.cursorPosition
@@ -53,7 +54,9 @@ Item {
 
     property bool borderDisabled: false
     property string borderColor: {
-        if(input.activeFocus){
+        if(error && input.text !== ""){
+            return MoneroComponents.Style.inputBorderColorInvalid;
+        } else if(input.activeFocus){
             return MoneroComponents.Style.inputBorderColorActive;
         } else {
             return MoneroComponents.Style.inputBorderColorInActive;
@@ -106,8 +109,7 @@ Item {
         id: inputLabel
         anchors.top: parent.top
         anchors.left: parent.left
-        anchors.topMargin: 2 * scaleRatio
-        font.family: MoneroComponents.Style.fontLight.name
+        font.family: MoneroComponents.Style.fontRegular.name
         font.pixelSize: labelFontSize
         font.bold: labelFontBold
         textFormat: Text.RichText
@@ -211,8 +213,6 @@ Item {
             visible: item.inlineButtonText ? true : false
             anchors.right: parent.right
             anchors.rightMargin: 8 * scaleRatio
-            anchors.top: parent.top
-            anchors.topMargin: 6 * scaleRatio
         }
     }
 }
