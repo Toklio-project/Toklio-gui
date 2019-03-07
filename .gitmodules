@@ -1,3 +1,4 @@
 [submodule "Toklio"]
 	path = Toklio
 	url = https://github.com/Toklio-project/Toklio.git
+	branch = release-v0.13
