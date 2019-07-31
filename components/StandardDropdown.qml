@@ -26,9 +26,11 @@
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import QtQuick 2.0
+import QtQuick 2.9
+import QtGraphicalEffects 1.0
 
 import "../components" as MoneroComponents
+import "../components/effects/" as MoneroEffects
 
 Item {
     id: dropdown
@@ -36,14 +38,14 @@ Item {
     property alias dataModel: repeater.model
     property string shadowPressedColor
     property string shadowReleasedColor
-    property string pressedColor
-    property string releasedColor
-    property string textColor: "#FFFFFF"
+    property string pressedColor: MoneroComponents.Style.appWindowBorderColor
+    property string releasedColor: MoneroComponents.Style.titleBarButtonHoverColor
+    property string textColor: MoneroComponents.Style.defaultFontColor
     property alias currentIndex: columnid.currentIndex
     property bool expanded: false
     property int dropdownHeight: 42
-    property int fontHeaderSize: 16 * scaleRatio
-    property int fontItemSize: 14 * scaleRatio
+    property int fontHeaderSize: 16
+    property int fontItemSize: 14
     property string colorBorder: MoneroComponents.Style.inputBorderColorInActive
     property string colorHeaderBackground: "transparent"
     property bool headerBorder: true
@@ -81,23 +83,23 @@ Item {
         height: dropdown.dropdownHeight
 
         Rectangle {
-            color: dropdown.colorHeaderBackground
+            color: "transparent"
             border.width: dropdown.headerBorder ? 1 : 0
             border.color: dropdown.colorBorder
             radius: 4
             anchors.fill: parent
         }
 
-        Text {
+        MoneroComponents.TextPlain {
             id: firstColText
             anchors.verticalCenter: parent.verticalCenter
             anchors.left: parent.left
-            anchors.leftMargin: 12 * scaleRatio
+            anchors.leftMargin: 12
             elide: Text.ElideRight
             font.family: MoneroComponents.Style.fontRegular.name
             font.bold: dropdown.headerFontBold
             font.pixelSize: dropdown.fontHeaderSize
-            color: "#FFFFFF"
+            color: dropdown.textColor
         }
 
         Item {
@@ -105,12 +107,21 @@ Item {
             anchors.top: parent.top
             anchors.bottom: parent.bottom
             anchors.right: parent.right
-            width: 32 * scaleRatio
+            width: 32
 
             Image {
+                id: dropdownIcon
                 anchors.centerIn: parent
-                source: "../images/whiteDropIndicator.png"
-                rotation: dropdown.expanded ? 180  * scaleRatio : 0
+                source: "qrc:///images/whiteDropIndicator.png"
+                visible: false
+            }
+
+            ColorOverlay {
+                source: dropdownIcon
+                anchors.fill: dropdownIcon
+                color: MoneroComponents.Style.defaultFontColor
+                rotation: dropdown.expanded ? 180  : 0
+                opacity: 1
             }
         }
 
@@ -131,19 +142,18 @@ Item {
         clip: true
         height: dropdown.expanded ? columnid.height : 0
         color: dropdown.pressedColor
-        //radius: 4
 
         Rectangle {
             anchors.left: parent.left
             anchors.top: parent.top
-            width: 3 * scaleRatio; height: 3 * scaleRatio
+            width: 3; height: 3
             color: dropdown.pressedColor
         }
 
         Rectangle {
             anchors.right: parent.right
             anchors.top: parent.top
-            width: 3 * scaleRatio; height: 3 * scaleRatio
+            width: 3; height: 3
             color: dropdown.pressedColor
         }
 
@@ -176,16 +186,16 @@ Item {
                 delegate: Rectangle {
                     anchors.left: parent.left
                     anchors.right: parent.right
-                    height: (dropdown.dropdownHeight * 0.75) * scaleRatio
+                    height: (dropdown.dropdownHeight * 0.75)
                     //radius: index === repeater.count - 1 ? 4 : 0
                     color: itemArea.containsMouse || index === columnid.currentIndex || itemArea.containsMouse ? dropdown.releasedColor : dropdown.pressedColor
 
-                    Text {
+                    MoneroComponents.TextPlain {
                         id: col1Text
                         anchors.verticalCenter: parent.verticalCenter
                         anchors.left: parent.left
                         anchors.right: col2Text.left
-                        anchors.leftMargin: 12 * scaleRatio
+                        anchors.leftMargin: 12
                         anchors.rightMargin: 0
                         font.family: MoneroComponents.Style.fontRegular.name
                         font.bold: true
@@ -194,13 +204,13 @@ Item {
                         text: qsTr(column1) + translationManager.emptyString
                     }
 
-                    Text {
+                    MoneroComponents.TextPlain {
                         id: col2Text
                         anchors.verticalCenter: parent.verticalCenter
                         anchors.right: parent.right
-                        anchors.rightMargin: 45 * scaleRatio
+                        anchors.rightMargin: 45
                         font.family: MoneroComponents.Style.fontRegular.name
-                        font.pixelSize: 14 * scaleRatio
+                        font.pixelSize: 14
                         color: "#FFFFFF"
                         text: ""
                     }
@@ -208,14 +218,14 @@ Item {
                     Rectangle {
                         anchors.left: parent.left
                         anchors.top: parent.top
-                        width: 3 * scaleRatio; height: 3 * scaleRatio
+                        width: 3; height: 3
                         color: parent.color
                     }
 
                     Rectangle {
                         anchors.right: parent.right
                         anchors.top: parent.top
-                        width: 3 * scaleRatio; height: 3 * scaleRatio
+                        width: 3; height: 3
                         color: parent.color
                     }
 

@@ -26,7 +26,7 @@
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import QtQuick 2.7
+import QtQuick 2.9
 import QtQuick.Dialogs 1.2
 import QtQuick.Layouts 1.2
 import QtQuick.Controls 2.0
@@ -40,7 +40,7 @@ GridLayout {
     property alias walletName: walletName
     property alias walletLocation: walletLocation
 
-    columnSpacing: 20 * scaleRatio
+    columnSpacing: 20
     columns: 3
 
     function verify() {
@@ -55,6 +55,8 @@ GridLayout {
     function reset() {
         walletName.error = !walletName.verify();
         walletLocation.error = walletLocation.text === "";
+        walletLocation.text = moneroAccountsDir + "/";
+        walletName.text = defaultAccountName;
     }
 
     MoneroComponents.LineEdit {
@@ -69,8 +71,8 @@ GridLayout {
         }
 
         labelText: qsTr("Wallet name") + translationManager.emptyString
-        labelFontSize: 14 * scaleRatio
-        placeholderFontSize: 16 * scaleRatio
+        labelFontSize: 14
+        placeholderFontSize: 16
         placeholderText: "-"
         text: defaultAccountName
 
@@ -83,9 +85,9 @@ GridLayout {
         Layout.fillWidth: true
 
         labelText: qsTr("Wallet location") + translationManager.emptyString
-        labelFontSize: 14 * scaleRatio
+        labelFontSize: 14
         placeholderText: "..."
-        placeholderFontSize: 16 * scaleRatio
+        placeholderFontSize: 16
         text: moneroAccountsDir + "/"
         inlineButton.small: true
         inlineButtonText: qsTr("Browse") + translationManager.emptyString

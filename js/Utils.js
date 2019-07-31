@@ -107,3 +107,52 @@ function filterNodes(nodes, port) {
 function epoch(){
     return Math.floor((new Date).getTime()/1000);
 }
+
+function roundDownToNearestThousand(_num){
+    return Math.floor(_num/1000.0)*1000
+}
+
+function qmlEach(item, properties, ignoredObjectNames, arr){
+    // Traverse QML object tree and return components that match
+    // via property names. Similar to jQuery("myclass").each(...
+    // item: root QML object
+    // properties: list of strings
+    // ignoredObjectNames: list of strings
+    if(typeof(arr) == 'undefined') arr = [];
+    if(item.hasOwnProperty('data') && item['data'].length > 0){
+        for(var i = 0; i < item['data'].length; i += 1){
+            arr = qmlEach(item['data'][i], properties, ignoredObjectNames, arr);
+        }
+    }
+
+    // ignore QML objects on .objectName
+    for(var a = 0; a < ignoredObjectNames.length; a += 1){
+        if(item.objectName === ignoredObjectNames[a]){
+            return arr;
+        }
+    }
+
+    for(var u = 0; u < properties.length; u += 1){
+        if(item.hasOwnProperty(properties[u])) arr.push(item);
+        else break;
+    }
+
+    return arr;
+}
+
+function capitalize(s){
+    if (typeof s !== 'string') return ''
+    return s.charAt(0).toUpperCase() + s.slice(1)
+}
+
+function formatMoney(n, c, d, t) {
+    // https://stackoverflow.com/a/149099
+    var c = isNaN(c = Math.abs(c)) ? 2 : c,
+        d = d == undefined ? "." : d,
+        t = t == undefined ? "," : t,
+        s = n < 0 ? "-" : "",
+        i = String(parseInt(n = Math.abs(Number(n) || 0).toFixed(c))),
+        j = (j = i.length) > 3 ? j % 3 : 0;
+
+    return s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
+};

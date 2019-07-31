@@ -26,24 +26,28 @@
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import QtQuick 2.0
+import QtQuick 2.9
 import QtQuick.Layouts 1.1
+import FontAwesome 1.0
 
-import "../components" as MoneroComponents
+import "." as MoneroComponents
+import "effects/" as MoneroEffects
 
 Item {
     id: checkBox
     property alias text: label.text
-    property string checkedIcon: "../images/checkedIcon-black.png"
+    property string checkedIcon: "qrc:///images/check-white.svg"
     property string uncheckedIcon
+    property int imgWidth: 13
+    property int imgHeight: 13
     property bool checked: false
     property alias background: backgroundRect.color
     property bool border: true
-    property int fontSize: 14 * scaleRatio
+    property int fontSize: 14
     property alias fontColor: label.color
     property bool iconOnTheLeft: true
     signal clicked()
-    height: 25 * scaleRatio
+    height: 25
     width: checkBoxLayout.width
 
     function toggle(){
@@ -54,7 +58,7 @@ Item {
     RowLayout {
         id: checkBoxLayout
         layoutDirection: iconOnTheLeft ? Qt.LeftToRight : Qt.RightToLeft
-        spacing: (!isMobile ? 10 : 8) * scaleRatio
+        spacing: (!isMobile ? 10 : 8)
 
         Item {
             id: checkMark
@@ -63,6 +67,7 @@ Item {
 
             Rectangle {
                 id: backgroundRect
+                visible: checkBox.border
                 anchors.fill: parent
                 radius: 3
                 color: "transparent"
@@ -72,22 +77,26 @@ Item {
                     } else {
                         return MoneroComponents.Style.inputBorderColorInActive;
                     }
-                visible: checkBox.border
             }
 
-            Image {
+            MoneroEffects.ImageMask {
+                id: img
+                visible: checkBox.checked || checkBox.uncheckedIcon != ""
                 anchors.centerIn: parent
-                source: {
-                    if (checkBox.checked || checkBox.uncheckedIcon == "") {
+                width: checkBox.imgWidth
+                height: checkBox.imgHeight
+                color: MoneroComponents.Style.defaultFontColor
+                fontAwesomeFallbackIcon: FontAwesome.plus
+                fontAwesomeFallbackSize: 14
+                image: {
+                    if (checkBox.checked || checkBox.uncheckedIcon == "")
                         return checkBox.checkedIcon;
-                    }
                     return checkBox.uncheckedIcon;
                 }
-                visible: checkBox.checked || checkBox.uncheckedIcon != ""
             }
         }
 
-        Text {
+        MoneroComponents.TextPlain {
             id: label
             font.family: MoneroComponents.Style.fontRegular.name
             font.pixelSize: checkBox.fontSize

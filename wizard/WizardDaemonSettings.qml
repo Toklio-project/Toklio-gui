@@ -26,7 +26,7 @@
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import QtQuick 2.7
+import QtQuick 2.9
 import QtQuick.Dialogs 1.2
 import QtQuick.Layouts 1.2
 import QtQuick.Controls 2.0
@@ -38,7 +38,7 @@ ColumnLayout {
     Layout.fillWidth: true
     Layout.maximumWidth: wizardController.wizardSubViewWidth
     Layout.alignment: Qt.AlignHCenter
-    spacing: 10 * scaleRatio
+    spacing: 10
 
     function save(){
         persistentSettings.useRemoteNode = remoteNode.checked
@@ -48,8 +48,9 @@ ColumnLayout {
 
     MoneroComponents.RadioButton {
         id: localNode
+        Layout.fillWidth: true
         text: qsTr("Start a node automatically in background (recommended)") + translationManager.emptyString
-        fontSize: 16 * scaleRatio
+        fontSize: 16
         checked: !appWindow.persistentSettings.useRemoteNode && !isAndroid && !isIOS
         visible: !isAndroid && !isIOS
         onClicked: {
@@ -59,11 +60,11 @@ ColumnLayout {
     }
 
     ColumnLayout {
-        visible: localNode.checked
         id: blockchainFolderRow
-        spacing: 20 * scaleRatio
+        visible: localNode.checked
+        spacing: 20
 
-        Layout.topMargin: 8 * scaleRatio
+        Layout.topMargin: 8
         Layout.fillWidth: true
 
         MoneroComponents.LineEdit {
@@ -72,9 +73,9 @@ ColumnLayout {
 
             readOnly: true
             labelText: qsTr("Blockchain location (optional)") + translationManager.emptyString
-            labelFontSize: 14 * scaleRatio
+            labelFontSize: 14
             placeholderText: qsTr("Default") + translationManager.emptyString
-            placeholderFontSize: 15 * scaleRatio
+            placeholderFontSize: 15
             text: persistentSettings.blockchainDataDir
             inlineButton.small: true
             inlineButtonText: qsTr("Browse") + translationManager.emptyString
@@ -87,25 +88,25 @@ ColumnLayout {
         }
 
         ColumnLayout{
-            Layout.topMargin: 6 * scaleRatio
+            Layout.topMargin: 6
             spacing: 0
 
             TextArea {
                 text: qsTr("Bootstrap node") + translationManager.emptyString
-                Layout.topMargin: 10 * scaleRatio
+                Layout.topMargin: 10
                 Layout.fillWidth: true
                 font.family: MoneroComponents.Style.fontRegular.name
                 color: MoneroComponents.Style.defaultFontColor
                 font.pixelSize: {
                     if(wizardController.layoutScale === 2 ){
-                        return 22 * scaleRatio;
+                        return 22;
                     } else {
-                        return 16 * scaleRatio;
+                        return 16;
                     }
                 }
 
-                selectionColor: MoneroComponents.Style.dimmedFontColor
-                selectedTextColor: MoneroComponents.Style.defaultFontColor
+                selectionColor: MoneroComponents.Style.textSelectionColor
+                selectedTextColor: MoneroComponents.Style.textSelectedColor
 
                 selectByMouse: true
                 wrapMode: Text.WordWrap
@@ -118,7 +119,7 @@ ColumnLayout {
 
             TextArea {
                 text: qsTr("Additionally, you may specify a bootstrap node to use Monero immediately.") + translationManager.emptyString
-                Layout.topMargin: 4 * scaleRatio
+                Layout.topMargin: 4
                 Layout.fillWidth: true
 
                 font.family: MoneroComponents.Style.fontRegular.name
@@ -126,14 +127,14 @@ ColumnLayout {
 
                 font.pixelSize: {
                     if(wizardController.layoutScale === 2 ){
-                        return 16 * scaleRatio;
+                        return 16;
                     } else {
-                        return 14 * scaleRatio;
+                        return 14;
                     }
                 }
 
-                selectionColor: MoneroComponents.Style.dimmedFontColor
-                selectedTextColor: MoneroComponents.Style.defaultFontColor
+                selectionColor: MoneroComponents.Style.textSelectionColor
+                selectedTextColor: MoneroComponents.Style.textSelectedColor
 
                 selectByMouse: true
                 wrapMode: Text.WordWrap
@@ -148,20 +149,11 @@ ColumnLayout {
         ColumnLayout {
             spacing: 8
             Layout.fillWidth: true
-            Layout.bottomMargin: 12 * scaleRatio
 
             MoneroComponents.RemoteNodeEdit {
                 id: bootstrapNodeEdit
-                Layout.minimumWidth: 300 * scaleRatio
-
+                Layout.minimumWidth: 300
                 //labelText: qsTr("Bootstrap node (leave blank if not wanted)") + translationManager.emptyString
-
-                lineEditBackgroundColor: "transparent"
-                lineEditFontColor: MoneroComponents.Style.defaultFontColor
-                lineEditFontBold: false
-                lineEditBorderColor: Qt.rgba(255, 255, 255, 0.35)
-                labelFontSize: 14 * scaleRatio
-                placeholderFontSize: 15 * scaleRatio
 
                 daemonAddrText: persistentSettings.bootstrapNodeAddress.split(":")[0].trim()
                 daemonPortText: {
@@ -176,35 +168,33 @@ ColumnLayout {
         }
     }
 
-
-    RowLayout {
-        MoneroComponents.RadioButton {
-            id: remoteNode
-            text: qsTr("Connect to a remote node") + translationManager.emptyString
-            fontSize: 16 * scaleRatio
-            checked: appWindow.persistentSettings.useRemoteNode
-            onClicked: {
-                checked = true
-                localNode.checked = false
-            }
+    MoneroComponents.RadioButton {
+        id: remoteNode
+        Layout.fillWidth: true
+        Layout.topMargin: 8
+        text: qsTr("Connect to a remote node") + translationManager.emptyString
+        fontSize: 16
+        checked: appWindow.persistentSettings.useRemoteNode
+        onClicked: {
+            checked = true
+            localNode.checked = false
         }
     }
 
-    RowLayout {
+    ColumnLayout {
+        visible: remoteNode.checked
+        spacing: 0
+
+        Layout.topMargin: 8
+        Layout.fillWidth: true
+
         MoneroComponents.RemoteNodeEdit {
-            Layout.minimumWidth: 300 * scaleRatio
-            opacity: remoteNode.checked
             id: remoteNodeEdit
+            Layout.fillWidth: true
+
             property var rna: persistentSettings.remoteNodeAddress
             daemonAddrText: rna.search(":") != -1 ? rna.split(":")[0].trim() : ""
             daemonPortText: rna.search(":") != -1 ? (rna.split(":")[1].trim() == "") ? appWindow.getDefaultDaemonRpcPort(persistentSettings.nettype) : persistentSettings.remoteNodeAddress.split(":")[1] : ""
-
-            lineEditBackgroundColor: "transparent"
-            lineEditFontColor: MoneroComponents.Style.defaultFontColor
-            lineEditFontBold: false
-            lineEditBorderColor: Qt.rgba(255, 255, 255, 0.35)
-            labelFontSize: 14 * scaleRatio
-            placeholderFontSize: 15 * scaleRatio
         }
     }
 }

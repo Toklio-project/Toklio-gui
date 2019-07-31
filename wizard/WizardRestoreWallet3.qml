@@ -29,7 +29,7 @@
 import "../js/Wizard.js" as Wizard
 import "../components" as MoneroComponents
 
-import QtQuick 2.7
+import QtQuick 2.9
 import QtQuick.Layouts 1.2
 import QtQuick.Controls 2.0
 
@@ -59,7 +59,7 @@ Rectangle {
             Layout.topMargin: wizardController.wizardSubViewTopMargin
             Layout.maximumWidth: wizardController.wizardSubViewWidth
             Layout.alignment: Qt.AlignHCenter
-            spacing: 20 * scaleRatio
+            spacing: 20
 
             WizardHeader {
                 title: qsTr("Daemon settings") + translationManager.emptyString

@@ -26,12 +26,13 @@
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import QtQuick 2.7
+import QtQuick 2.9
 import QtQuick.Dialogs 1.2
 import QtQuick.Layouts 1.2
 import QtQuick.Controls 2.0
 
 import "../js/Wizard.js" as Wizard
+import "../js/Utils.js" as Utils
 import "../components" as MoneroComponents
 
 Rectangle {
@@ -54,7 +55,7 @@ Rectangle {
             Layout.topMargin: wizardController.wizardSubViewTopMargin
             Layout.maximumWidth: wizardController.wizardSubViewWidth
             Layout.alignment: Qt.AlignHCenter
-            spacing: 20 * scaleRatio
+            spacing: 20
 
             WizardHeader {
                 title: qsTr("Create a new wallet") + translationManager.emptyString
@@ -68,30 +69,30 @@ Rectangle {
             ColumnLayout {
                 spacing: 0
 
-                Layout.topMargin: 10 * scaleRatio
+                Layout.topMargin: 10
                 Layout.fillWidth: true
 
                 MoneroComponents.LineEditMulti {
                     id: seed
 
                     spacing: 0
-                    inputPaddingLeft: 16 * scaleRatio
-                    inputPaddingRight: 16 * scaleRatio
-                    inputPaddingTop: 20 * scaleRatio
-                    inputPaddingBottom: 20 * scaleRatio
+                    inputPaddingLeft: 16
+                    inputPaddingRight: 16
+                    inputPaddingTop: 20
+                    inputPaddingBottom: 20
                     inputRadius: 0
 
-                    fontSize: 18 * scaleRatio
+                    fontSize: 18
                     fontBold: true
                     wrapMode: Text.WordWrap
                     backgroundColor: "red"
                     addressValidation: false
                     labelText: qsTr("Mnemonic seed") + translationManager.emptyString
-                    labelFontSize: 14 * scaleRatio
+                    labelFontSize: 14
                     copyButton: false
                     readOnly: true
 
-                    placeholderText: qsTr("-") + translationManager.emptyString
+                    placeholderText: "-"
                     text: wizardController.walletOptionsSeed
                 }
 
@@ -125,6 +126,63 @@ Rectangle {
                     border.width: 0
 
                     text: qsTr("This seed is <b>very</b> important to write down and keep secret. It is all you need to backup and restore your wallet.") + translationManager.emptyString
+                }
+            }
+
+            ColumnLayout {
+                spacing: 0
+
+                Layout.topMargin: 10
+                Layout.fillWidth: true
+
+                MoneroComponents.LineEditMulti {
+                    id: restoreHeight
+
+                    spacing: 0
+                    inputPaddingLeft: 16
+                    inputPaddingRight: 16
+                    inputPaddingTop: 20
+                    inputPaddingBottom: 20
+                    inputRadius: 0
+                    fontSize: 18
+                    fontBold: true
+                    wrapMode: Text.WordWrap
+                    labelText: qsTr("Wallet restore height") + translationManager.emptyString
+                    labelFontSize: 14
+                    copyButton: false
+                    readOnly: true
+                    text: Utils.roundDownToNearestThousand(wizardController.m_wallet ? wizardController.m_wallet.walletCreationHeight : 0)
+                }
+
+                MoneroComponents.WarningBox {
+                    Rectangle {
+                        anchors.left: parent.left
+                        anchors.top: parent.top
+                        anchors.bottom: parent.bottom
+                        width: 1
+                        color: MoneroComponents.Style.inputBorderColorInActive
+                    }
+
+                    Rectangle {
+                        anchors.right: parent.right
+                        anchors.left: parent.left
+                        anchors.bottom: parent.bottom
+                        height: 1
+                        color: MoneroComponents.Style.inputBorderColorInActive
+                    }
+
+                    Rectangle {
+                        anchors.right: parent.right
+                        anchors.top: parent.top
+                        anchors.bottom: parent.bottom
+                        width: 1
+                        color: MoneroComponents.Style.inputBorderColorInActive
+                    }
+
+                    radius: 0
+                    border.color: MoneroComponents.Style.inputBorderColorInActive
+                    border.width: 0
+                    text: qsTr("Should you restore your wallet in the future, specifying this block number will recover your wallet quicker.") + translationManager.emptyString
                 }
             }
 

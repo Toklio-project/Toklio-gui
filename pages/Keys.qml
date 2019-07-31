@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2018, The Monero Project
+// Copyright (c) 2014-2019, The Monero Project
 // 
 // All rights reserved.
 // 
@@ -26,7 +26,7 @@
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import QtQuick 2.0
+import QtQuick 2.9
 import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
 import QtQuick.Layouts 1.1
@@ -40,7 +40,7 @@ import "." 1.0
 Rectangle {
     id: page
     property bool viewOnly: false
-    property int keysHeight: mainLayout.height + 100 * scaleRatio // Ensure sufficient height for QR code, even in minimum width window case.
+    property int keysHeight: mainLayout.height + 100 // Ensure sufficient height for QR code, even in minimum width window case.
 
     color: "transparent"
 
@@ -52,10 +52,10 @@ Rectangle {
         anchors.top: parent.top
         anchors.right: parent.right
 
-        anchors.margins: (isMobile)? 17 * scaleRatio : 20 * scaleRatio
-        anchors.topMargin: 40 * scaleRatio
+        anchors.margins: (isMobile)? 17 : 20
+        anchors.topMargin: 40
 
-        spacing: 30 * scaleRatio
+        spacing: 30
         Layout.fillWidth: true
 
         MoneroComponents.WarningBox {
@@ -68,17 +68,17 @@ Rectangle {
 
             MoneroComponents.Label {
                 Layout.fillWidth: true
-                fontSize: 22 * scaleRatio
-                Layout.topMargin: 10 * scaleRatio
+                fontSize: 22
+                Layout.topMargin: 10
                 text: qsTr("Mnemonic seed") + translationManager.emptyString
             }
 
             Rectangle {
                 Layout.fillWidth: true
-                height: 2 * scaleRatio
+                height: 2
                 color: MoneroComponents.Style.dividerColor
                 opacity: MoneroComponents.Style.dividerOpacity
-                Layout.bottomMargin: 10 * scaleRatio
+                Layout.bottomMargin: 10
             }
 
             MoneroComponents.WarningBox {
@@ -92,7 +92,7 @@ Rectangle {
                 addressValidation: false
                 readOnly: true
                 wrapMode: Text.WordWrap
-                fontColor: "white"
+                fontColor: MoneroComponents.Style.defaultFontColor
             }
         }
 
@@ -101,8 +101,36 @@ Rectangle {
 
             MoneroComponents.Label {
                 Layout.fillWidth: true
-                fontSize: 22 * scaleRatio
-                Layout.topMargin: 10 * scaleRatio
+                fontSize: 22
+                Layout.topMargin: 10
+                text: qsTr("Wallet restore height") + translationManager.emptyString
+            }
+
+            Rectangle {
+                Layout.fillWidth: true
+                height: 2
+                color: MoneroComponents.Style.dividerColor
+                opacity: MoneroComponents.Style.dividerOpacity
+                Layout.bottomMargin: 10
+            }
+
+            MoneroComponents.LineEdit {
+                Layout.fillWidth: true
+                id: walletCreationHeight
+                readOnly: true
+                copyButton: true
+                labelText: qsTr("Block #") + translationManager.emptyString
+                fontSize: 16
+            }
+        }
+
+        ColumnLayout {
+            Layout.fillWidth: true
+
+            MoneroComponents.Label {
+                Layout.fillWidth: true
+                fontSize: 22
+                Layout.topMargin: 10
                 text: qsTr("Keys") + translationManager.emptyString
             }
             Rectangle {
@@ -110,7 +138,7 @@ Rectangle {
                 height: 2
                 color: MoneroComponents.Style.dividerColor
                 opacity: MoneroComponents.Style.dividerOpacity
-                Layout.bottomMargin: 10 * scaleRatio
+                Layout.bottomMargin: 10
             }
             MoneroComponents.LineEdit {
                 Layout.fillWidth: true
@@ -118,34 +146,34 @@ Rectangle {
                 readOnly: true
                 copyButton: true
                 labelText: qsTr("Secret view key") + translationManager.emptyString
-                fontSize: 16 * scaleRatio
+                fontSize: 16
             }
             MoneroComponents.LineEdit {
                 Layout.fillWidth: true
-                Layout.topMargin: 25 * scaleRatio
+                Layout.topMargin: 25
                 id: publicViewKey
                 readOnly: true
                 copyButton: true
                 labelText: qsTr("Public view key") + translationManager.emptyString
-                fontSize: 16 * scaleRatio
+                fontSize: 16
             }
             MoneroComponents.LineEdit {
                 Layout.fillWidth: true
-                Layout.topMargin: 25 * scaleRatio
+                Layout.topMargin: 25
                 id: secretSpendKey
                 readOnly: true
                 copyButton: true
                 labelText: qsTr("Secret spend key") + translationManager.emptyString
-                fontSize: 16 * scaleRatio
+                fontSize: 16
             }
             MoneroComponents.LineEdit {
                 Layout.fillWidth: true
-                Layout.topMargin: 25 * scaleRatio
+                Layout.topMargin: 25
                 id: publicSpendKey
                 readOnly: true
                 copyButton: true
                 labelText: qsTr("Public spend key") + translationManager.emptyString
-                fontSize: 16 * scaleRatio
+                fontSize: 16
             }
         }
 
@@ -154,8 +182,8 @@ Rectangle {
 
             MoneroComponents.Label {
                 Layout.fillWidth: true
-                fontSize: 22 * scaleRatio
-                Layout.topMargin: 10 * scaleRatio
+                fontSize: 22
+                Layout.topMargin: 10
                 text: qsTr("Export wallet") + translationManager.emptyString
             }
             Rectangle {
@@ -163,7 +191,7 @@ Rectangle {
                 height: 2
                 color: MoneroComponents.Style.dividerColor
                 opacity: MoneroComponents.Style.dividerOpacity
-                Layout.bottomMargin: 10 * scaleRatio
+                Layout.bottomMargin: 10
             }
 
             ColumnLayout {
@@ -187,14 +215,14 @@ Rectangle {
                         showFullQr.checked = false
                     }
                 }
-                Layout.bottomMargin: 30 * scaleRatio
+                Layout.bottomMargin: 30
             }
 
             Image {
                 visible: !viewOnlyQRCode.visible
                 id: fullWalletQRCode
                 Layout.fillWidth: true
-                Layout.minimumHeight: 180 * scaleRatio
+                Layout.minimumHeight: 180
                 smooth: false
                 fillMode: Image.PreserveAspectFit
             }
@@ -203,18 +231,28 @@ Rectangle {
                 visible: false
                 id: viewOnlyQRCode
                 Layout.fillWidth: true
-                Layout.minimumHeight: 180 * scaleRatio
+                Layout.minimumHeight: 180
                 smooth: false
                 fillMode: Image.PreserveAspectFit
             }
 
-            Text {
+            MoneroComponents.TextPlain {
                 Layout.fillWidth: true
                 font.bold: true
-                font.pixelSize: 16 * scaleRatio
+                font.pixelSize: 16
                 color: MoneroComponents.Style.defaultFontColor
                 text: (viewOnlyQRCode.visible) ? qsTr("View Only Wallet") + translationManager.emptyString : qsTr("Spendable Wallet") + translationManager.emptyString
                 horizontalAlignment: Text.AlignHCenter
+            }
+            
+            MoneroComponents.StandardButton {
+                small: true
+                text: qsTr("Done") + translationManager.emptyString
+                onClicked: {
+                    loadPage("Settings")
+                }
+                anchors.horizontalCenter: parent.horizontalCenter
+                width: 135
             }
         }
     }
@@ -223,12 +261,13 @@ Rectangle {
     function onPageCompleted() {
         console.log("keys page loaded");
 
+        walletCreationHeight.text = currentWallet.walletCreationHeight
         secretViewKey.text = currentWallet.secretViewKey
         publicViewKey.text = currentWallet.publicViewKey
         secretSpendKey.text = (!currentWallet.viewOnly) ? currentWallet.secretSpendKey : ""
         publicSpendKey.text = currentWallet.publicSpendKey
 
-        seedText.text = currentWallet.seed
+        seedText.text = currentWallet.seed === "" ? qsTr("Mnemonic seed protected by hardware device.") + translationManager.emptyString : currentWallet.seed
 
         if(typeof currentWallet != "undefined") {
             viewOnlyQRCode.source = "image://qrcode/toklio_wallet:" + currentWallet.address(0, 0) + "?view_key="+currentWallet.secretViewKey+"&height="+currentWallet.walletCreationHeight
@@ -240,6 +279,13 @@ Rectangle {
                 showViewOnlyQr.visible = false
                 seedText.text = qsTr("(View Only Wallet - No mnemonic seed available)") + translationManager.emptyString
                 secretSpendKey.text = qsTr("(View Only Wallet - No secret spend key available)") + translationManager.emptyString
+            }
+            // hardware device wallet
+            if(currentWallet.seed === "") {
+                showFullQr.visible = false
+                viewOnlyQRCode.visible = true
+                showViewOnlyQr.visible = false
+                secretSpendKey.text = qsTr("(Hardware Device Wallet - No secret spend key available)") + translationManager.emptyString
             }
         }
     }

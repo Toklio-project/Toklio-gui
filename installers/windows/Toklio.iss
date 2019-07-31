@@ -1,4 +1,4 @@
-; Toklio Boron Butterfly GUI Wallet Installer for Windows
+; Toklio Sillicium Butterfly GUI Wallet Installer for Windows
 ; Copyright (c) 2017-2019, The Toklio Project
 ; See LICENSE
 
@@ -8,7 +8,7 @@ AppName=Toklio GUI Wallet
 ; Thus it's important to keep this stable over releases
 ; With a different "AppName" InnoSetup would treat a mere update as a completely new application and thus mess up
 
-AppVersion=0.14.0.0
+AppVersion=0.14.1.0
 DefaultDirName={pf}\Toklio GUI Wallet
 DefaultGroupName=Toklio GUI Wallet
 UninstallDisplayIcon={app}\toklio-wallet-gui.exe
@@ -20,7 +20,9 @@ WizardImageFile=WelcomeImage.bmp
 DisableWelcomePage=no
 LicenseFile=LICENSE
 AppPublisher=The Toklio Developer Community
-AppPublisherURL=https://getmonero.org
+AppPublisherURL=https://tokl.io
+TimeStampsInUTC=yes
+CompressionThreads=1
 
 UsedUserAreasWarning=no
 ; The above directive silences the following compiler warning:
@@ -56,7 +58,7 @@ Name: "en"; MessagesFile: "compiler:Default.isl"
 ; .exe/.dll file possibly with version info).
 ;
 ; This is far more robust than relying on version info or on file dates (flag "comparetimestamp").
-; As of version 0.14.0.0, the Toklio .exe files do not carry version info anyway in their .exe headers.
+; As of version 0.14.1.0, the Toklio .exe files do not carry version info anyway in their .exe headers.
 ; The only small drawback seems to be somewhat longer update times because each and every file is
 ; copied again, even if already present with correct file date and identical content.
 ;
@@ -68,13 +70,7 @@ Source: "FinishImage.bmp"; Flags: dontcopy
 
 ; Toklio GUI wallet exe and guide
 Source: "bin\toklio-wallet-gui.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "bin\toklio-GUI-guide.pdf"; DestDir: "{app}"; Flags: ignoreversion
-
-; Toklio GUI wallet log file
-; The GUI wallet does not have the "--log-file" command-line option of the CLI wallet and insists to put the .log beside the .exe
-; so pre-create the file and give the necessary permissions to the wallet to write into it
-; Flag is "onlyifdoesntexist": We do not want to overwrite an already existing log
-Source: "toklio-wallet-gui.log"; DestDir: "{app}"; Flags: onlyifdoesntexist; Permissions: users-modify
+Source: "bin\toklio-gui-wallet-guide.pdf"; DestDir: "{app}"; Flags: ignoreversion
 
 ; Toklio CLI wallet
 Source: "bin\toklio-wallet-cli.exe"; DestDir: "{app}"; Flags: ignoreversion
@@ -84,7 +80,7 @@ Source: "bin\toklio-gen-trusted-multisig.exe"; DestDir: "{app}"; Flags: ignoreve
 Source: "bin\toklio-wallet-rpc.exe"; DestDir: "{app}"; Flags: ignoreversion
 
 ; Toklio daemon
-Source: "bin\monerod.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "bin\tokliod.exe"; DestDir: "{app}"; Flags: ignoreversion
 
 ; Toklio daemon wrapped in a batch file that stops before the text window closes, to see any error messages
 Source: "toklio-daemon.bat"; DestDir: "{app}"; Flags: ignoreversion;
@@ -97,159 +93,75 @@ Source: "bin\toklio-blockchain-usage.exe"; DestDir: "{app}"; Flags: ignoreversio
 Source: "bin\toklio-blockchain-import.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "bin\toklio-blockchain-ancestry.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "bin\toklio-blockchain-depth.exe"; DestDir: "{app}"; Flags: ignoreversion
-
-; was present in 0.10.3.1, not present anymore in 0.11.1.0 and after
-; Source: "bin\toklio-utils-deserialize.exe"; DestDir: "{app}"; Flags: ignoreversion
-
-; Various .qm files for translating the wallet UI "on the fly" into all supported languages
-Source: "bin\translations\*"; DestDir: "{app}\translations"; Flags: recursesubdirs ignoreversion
-
-; Core Qt runtime
-; Use wildcards to deal with differences in those files between Qt version, like
-;  "Qt5MultimediaQuick_p.dll" versus "Qt5MultimediaQuick.dll" and "Qt5RemoteObjects.dll" as new file
-Source: "bin\Qt5*.dll"; DestDir: "{app}"; Flags: ignoreversion
-
-; Qt QML elements like the local files selector "FolderListModel" and "Settings"
-Source: "bin\Qt\*"; DestDir: "{app}\Qt"; Flags: recursesubdirs ignoreversion
-
-; Qt audio support
-Source: "bin\audio\*"; DestDir: "{app}\audio"; Flags: recursesubdirs ignoreversion
-
-; Qt bearer / network connection management
-Source: "bin\bearer\*"; DestDir: "{app}\bearer"; Flags: recursesubdirs ignoreversion
-
-; Qt Windows platform plugins	
-Source: "bin\platforms\*"; DestDir: "{app}\platforms"; Flags: recursesubdirs ignoreversion
-Source: "bin\platforminputcontexts\*"; DestDir: "{app}\platforminputcontexts"; Flags: recursesubdirs ignoreversion
-; No more "styles" subdirectory in 0.12.3.0
-
-; Qt support for SVG icons	
-Source: "bin\iconengines\*"; DestDir: "{app}\iconengines"; Flags: recursesubdirs ignoreversion
-
-; Qt support for various image formats (JPEG, BMP, SVG etc)	
-Source: "bin\imageformats\*"; DestDir: "{app}\imageformats"; Flags: recursesubdirs ignoreversion
-
-; Qt multimedia support	
-Source: "bin\QtMultimedia\*"; DestDir: "{app}\QtMultimedia"; Flags: recursesubdirs ignoreversion
-Source: "bin\mediaservice\*"; DestDir: "{app}\mediaservice"; Flags: recursesubdirs ignoreversion
-
-; Qt support for "m3u" playlists
-; candidate for elimination? Don't think the GUI wallet needs such playlists	
-Source: "bin\playlistformats\*"; DestDir: "{app}\playlistformats"; Flags: recursesubdirs ignoreversion
-
-; Qt graphical effects as part of the core runtime, effects like blurring and blending
-Source: "bin\QtGraphicalEffects\*"; DestDir: "{app}\QtGraphicalEffects"; Flags: recursesubdirs ignoreversion
-
-; Qt "private" directory with "effects"
-Source: "bin\private\*"; DestDir: "{app}\private"; Flags: recursesubdirs ignoreversion
-
-; Qt QML files
-Source: "bin\QtQml\*"; DestDir: "{app}\QtQml"; Flags: recursesubdirs ignoreversion
-
-; Qt Quick files
-Source: "bin\QtQuick\*"; DestDir: "{app}\QtQuick"; Flags: recursesubdirs ignoreversion
-Source: "bin\QtQuick.2\*"; DestDir: "{app}\QtQuick.2"; Flags: recursesubdirs ignoreversion
-
-; Qt Quick Controls 2 modules of the Qt Toolkit
-Source: "bin\Material\*"; DestDir: "{app}\Material"; Flags: recursesubdirs ignoreversion
-Source: "bin\Universal\*"; DestDir: "{app}\Universal"; Flags: recursesubdirs ignoreversion
+Source: "bin\toklio-blockchain-prune-known-spent-data.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "bin\toklio-blockchain-prune.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "bin\toklio-blockchain-stats.exe"; DestDir: "{app}"; Flags: ignoreversion
 
 ; Qt Quick 2D Renderer fallback for systems / environments with "low-level graphics" i.e. without 3D support
-Source: "bin\scenegraph\*"; DestDir: "{app}\scenegraph"; Flags: recursesubdirs ignoreversion
 Source: "bin\start-low-graphics-mode.bat"; DestDir: "{app}"; Flags: ignoreversion
 
 ; Mesa, open-source OpenGL implementation; part of "low-level graphics" support
 Source: "bin\opengl32sw.dll"; DestDir: "{app}"; Flags: ignoreversion
 
-; Left out subdirectory "qmltooling" with the Qt QML debugger: Probably not relevant in an end-user package
 
-; Microsoft Direct3D runtime
-Source: "bin\D3Dcompiler_47.dll"; DestDir: "{app}"; Flags: ignoreversion
-
-; bzip2 support
-Source: "bin\libbz2-1.dll"; DestDir: "{app}"; Flags: ignoreversion
-
-; ANGLE ("Almost Native Graphics Layer Engine") support, as used by Qt
-Source: "bin\libEGL.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "bin\libGLESV2.dll"; DestDir: "{app}"; Flags: ignoreversion
-
-; FreeType font engine, as used by Qt
-Source: "bin\libfreetype-6.dll"; DestDir: "{app}"; Flags: ignoreversion
-
-; GCC runtime, x64 version
-Source: "bin\libgcc_s_seh-1.dll"; DestDir: "{app}"; Flags: ignoreversion
-
-; GLib, low level core library e.g. for GNOME and GTK+
-; Really needed under Windows?
-Source: "bin\libglib-2.0-0.dll"; DestDir: "{app}"; Flags: ignoreversion
-
-; Graphite font support
-; Really needed?
-Source: "bin\libgraphite2.dll"; DestDir: "{app}"; Flags: ignoreversion
-
-; HarfBuzz OpenType text shaping engine
-; Really needed?
-Source: "bin\libharfbuzz-0.dll"; DestDir: "{app}"; Flags: ignoreversion
-
-; LibIconv, conversions between character encodings
-Source: "bin\libiconv-2.dll"; DestDir: "{app}"; Flags: ignoreversion
-
-; ICU, International Components for Unicode
-; After changes for supporting UTF-8 path and file names by using Boost Locale, all those 5
-; ICU libraries are needed starting from 0.12.0.0
-; Use wildcards instead of specific version number like 61 because that seems to change frequently
-Source: "bin\libicudt??.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "bin\libicuin??.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "bin\libicuio??.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "bin\libicutu??.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "bin\libicuuc??.dll"; DestDir: "{app}"; Flags: ignoreversion
-
-; Library for native language support, part of GNU gettext
-Source: "bin\libintl-8.dll"; DestDir: "{app}"; Flags: ignoreversion
-
-; JasPer, support for JPEG-2000
-; was present in 0.10.3.1, not present anymore in 0.11.1.0 and after
-; Source: "bin\libjasper-1.dll"; DestDir: "{app}"; Flags: ignoreversion
-
-; libjpeg, C library for reading and writing JPEG image files
-Source: "bin\libjpeg-8.dll"; DestDir: "{app}"; Flags: ignoreversion
-
-; Little CMS, color management system
-Source: "bin\liblcms2-2.dll"; DestDir: "{app}"; Flags: ignoreversion
-
-; XZ Utils, LZMA compression library
-Source: "bin\liblzma-5.dll"; DestDir: "{app}"; Flags: ignoreversion
-
-; MNG / Portable Network Graphics ("animated PNG") 
-Source: "bin\libmng-2.dll"; DestDir: "{app}"; Flags: ignoreversion
-
-; PCRE, Perl Compatible Regular Expressions
-; "libpcre2-16-0.dll" is new for 0.12.0.0
-; Uclear whether "libpcre16-0.dll" is still needed; some versions of "Qt5Core.dll" seem to reference it, some not
-Source: "bin\libpcre-1.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "bin\libpcre16-0.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "bin\libpcre2-16-0.dll"; DestDir: "{app}"; Flags: ignoreversion
-
-; libpng, the official PNG reference library
-Source: "bin\libpng16-16.dll"; DestDir: "{app}"; Flags: ignoreversion
-
-; libstdc++, GNU Standard C++ Library
-Source: "bin\libstdc++-6.dll"; DestDir: "{app}"; Flags: ignoreversion
-
-; LibTIFF, TIFF Library and Utilities
-Source: "bin\libtiff-5.dll"; DestDir: "{app}"; Flags: ignoreversion
-
-; C++ threading support
-Source: "bin\libwinpthread-1.dll"; DestDir: "{app}"; Flags: ignoreversion
-
-; zlib compression library
-Source: "bin\zlib1.dll"; DestDir: "{app}"; Flags: ignoreversion
-
-; Stack protection
-Source: "bin\libssp-0.dll"; DestDir: "{app}"; Flags: ignoreversion
-
-; HIDAPI, library for communicating with USB and Bluetooth devices, for hardware wallets
-Source: "bin\libhidapi-0.dll"; DestDir: "{app}"; Flags: ignoreversion
+; Delete any files and directories that were installed by previous installer versions but are not
+; needed anymore, thanks to the static linking of the GUI wallet exe - all those things are now
+; neatly contained in that single exe file;
+; InnoSetup does NOT automatically delete objects not present anymore in a new version.
+; Deleting them is simpler and faster than forcing a full re-install.
+[InstallDelete]
+Type: filesandordirs; Name: "{app}\translations"
+Type: files; Name: "{app}\Qt5*.dll"
+Type: filesandordirs; Name: "{app}\Qt"
+Type: filesandordirs; Name: "{app}\audio"
+Type: filesandordirs; Name: "{app}\bearer"
+Type: filesandordirs; Name: "{app}\platforms"
+Type: filesandordirs; Name: "{app}\platforminputcontexts"
+Type: filesandordirs; Name: "{app}\iconengines"
+Type: filesandordirs; Name: "{app}\imageformats"
+Type: filesandordirs; Name: "{app}\QtMultimedia"
+Type: filesandordirs; Name: "{app}\mediaservice"
+Type: filesandordirs; Name: "{app}\playlistformats"
+Type: filesandordirs; Name: "{app}\QtGraphicalEffects"
+Type: filesandordirs; Name: "{app}\private"
+Type: filesandordirs; Name: "{app}\QtQml"
+Type: filesandordirs; Name: "{app}\QtQuick"
+Type: filesandordirs; Name: "{app}\QtQuick.2"
+Type: filesandordirs; Name: "{app}\Material"
+Type: filesandordirs; Name: "{app}\Universal"
+Type: filesandordirs; Name: "{app}\scenegraph"
+Type: files; Name: "{app}\D3Dcompiler_47.dll"
+Type: files; Name: "{app}\libbz2-1.dll"
+Type: files; Name: "{app}\libEGL.dll"
+Type: files; Name: "{app}\libGLESV2.dll"
+Type: files; Name: "{app}\libfreetype-6.dll"
+Type: files; Name: "{app}\libgcc_s_seh-1.dll"
+Type: files; Name: "{app}\libglib-2.0-0.dll"
+Type: files; Name: "{app}\libgraphite2.dll"
+Type: files; Name: "{app}\libharfbuzz-0.dll"
+Type: files; Name: "{app}\libiconv-2.dll"
+Type: files; Name: "{app}\libicudt??.dll"
+Type: files; Name: "{app}\libicuin??.dll"
+Type: files; Name: "{app}\libicuio??.dll"
+Type: files; Name: "{app}\libicutu??.dll"
+Type: files; Name: "{app}\libicuuc??.dll"
+Type: files; Name: "{app}\libintl-8.dll"
+Type: files; Name: "{app}\libjpeg-8.dll"
+Type: files; Name: "{app}\liblcms2-2.dll"
+Type: files; Name: "{app}\liblzma-5.dll"
+Type: files; Name: "{app}\libmng-2.dll"
+Type: files; Name: "{app}\libpcre-1.dll"
+Type: files; Name: "{app}\libpcre16-0.dll"
+Type: files; Name: "{app}\libpcre2-16-0.dll"
+Type: files; Name: "{app}\libpng16-16.dll"
+Type: files; Name: "{app}\libstdc++-6.dll"
+Type: files; Name: "{app}\libtiff-5.dll"
+Type: files; Name: "{app}\libwinpthread-1.dll"
+Type: files; Name: "{app}\zlib1.dll"
+Type: files; Name: "{app}\libssp-0.dll"
+Type: files; Name: "{app}\libhidapi-0.dll"
+Type: files; Name: "{app}\libeay32.dll"
+Type: files; Name: "{app}\ssleay32.dll"
 
 
 [Tasks]
@@ -283,7 +195,7 @@ begin
   WizardForm.WizardBitmapImage2.Bitmap.LoadFromFile(ExpandConstant('{tmp}\FinishImage.bmp'));
 
   // Additional wizard page for entering a special blockchain location
-  blockChainDefaultDir := ExpandConstant('{commonappdata}\bitmonero');
+  blockChainDefaultDir := ExpandConstant('{commonappdata}\bittoklio');
   s := 'The default folder to store the Toklio blockchain is ' + blockChainDefaultDir;
   s := s + '. As this will need more than 70 GB of free space, you may want to use a folder on a different drive.';
   s := s + ' If yes, specify that folder here.';
@@ -350,7 +262,7 @@ end;
 function DaemonLog(Param: String) : String;
 // Full filename of the log of the daemon
 begin
-  Result := BlockChainDir('') + '\bitmonero.log';
+  Result := BlockChainDir('') + '\bittoklio.log';
   // No quotes for filename with blanks as this is never used as part of a command line
 end;
 
@@ -373,21 +285,6 @@ begin
   Result := s;
 end;
 
-function WalletFlags(Param: String): String;
-// Flags to add to the shortcut to the GUI wallet
-// Use "--log-file" to force log file alongside the installed GUI exe which would not get
-// created there because of an unsolved issue in the 0.13.0.4 wallet code
-var s: String;
-begin
-  s := ExpandConstant('{app}\toklio-wallet-gui.log');
-  if Pos(' ', s) > 0 then begin
-    // Quotes needed for filename with blanks
-    s := '"' + s + '"';
-  end;
-  s := '--log-file ' + s;
-  Result := s;
-end;
-
 procedure CurStepChanged(CurStep: TSetupStep);
 var s: TArrayOfString;
 begin
@@ -395,7 +292,7 @@ begin
     // Re-build "toklio-daemon.bat" according to actual install and blockchain directory used
     SetArrayLength(s, 3);
     s[0] := 'REM Execute the Toklio daemon and then stay with window open after it exits';
-    s[1] := '"' + ExpandConstant('{app}\monerod.exe') + '" ' + DaemonFlags('');
+    s[1] := '"' + ExpandConstant('{app}\tokliod.exe') + '" ' + DaemonFlags('');
     s[2] := 'PAUSE';
     SaveStringsToFile(ExpandConstant('{app}\toklio-daemon.bat'), s, false); 
   end;
@@ -415,14 +312,14 @@ end;
 [Icons]
 ; Icons in the "Toklio GUI Wallet" program group
 ; Windows will almost always display icons in alphabetical order, per level, so specify the text accordingly
-Name: "{group}\GUI Wallet"; Filename: "{app}\toklio-wallet-gui.exe"; Parameters: {code:WalletFlags}
+Name: "{group}\GUI Wallet"; Filename: "{app}\toklio-wallet-gui.exe";
 Name: "{group}\GUI Wallet Guide"; Filename: "{app}\toklio-GUI-guide.pdf"; IconFilename: "{app}\toklio-wallet-gui.exe"
 Name: "{group}\Uninstall GUI Wallet"; Filename: "{uninstallexe}"
 
 ; Sub-folder "Utilities";
 ; Note that Windows 10, unlike Windows 7, ignores such sub-folders completely
 ; and insists on displaying ALL icons on one single level
-Name: "{group}\Utilities\Toklio Daemon"; Filename: "{app}\monerod.exe"; Parameters: {code:DaemonFlags}
+Name: "{group}\Utilities\Toklio Daemon"; Filename: "{app}\tokliod.exe"; Parameters: {code:DaemonFlags}
 Name: "{group}\Utilities\Read Me"; Filename: "{app}\ReadMe.htm"
 
 ; CLI wallet: Needs a working directory ("Start in:") set in the icon, because with no such directory set
@@ -434,14 +331,14 @@ Name: "{group}\Utilities\Textual (CLI) Wallet"; Filename: "{app}\toklio-wallet-c
 ; from the others by text, and make them sort at the end by the help of "x" in front 
 Name: "{group}\Utilities\x (Check Blockchain Folder)"; Filename: "{win}\Explorer.exe"; Parameters: {code:BlockChainDir}
 Name: "{group}\Utilities\x (Check Daemon Log)"; Filename: "Notepad"; Parameters: {code:DaemonLog}
-Name: "{group}\Utilities\x (Check Default Wallet Folder)"; Filename: "{win}\Explorer.exe"; Parameters: "{userdocs}\Toklio\wallets"
-Name: "{group}\Utilities\x (Check GUI Wallet Log)"; Filename: "Notepad"; Parameters: "{app}\toklio-wallet-gui.log"
+Name: "{group}\Utilities\x (Check Default Wallet Folder)"; Filename: "{win}\Explorer.exe"; Parameters: """{userdocs}\Toklio\wallets"""
+Name: "{group}\Utilities\x (Check GUI Wallet Log)"; Filename: "Notepad"; Parameters: """{userappdata}\toklio-wallet-gui\toklio-wallet-gui.log"""
 Name: "{group}\Utilities\x (Try Daemon, Exit Confirm)"; Filename: "{app}\toklio-daemon.bat"
 Name: "{group}\Utilities\x (Try GUI Wallet Low Graphics Mode)"; Filename: "{app}\start-low-graphics-mode.bat"
-Name: "{group}\Utilities\x (Try Kill Daemon)"; Filename: "Taskkill.exe"; Parameters: "/IM monerod.exe /T /F"
+Name: "{group}\Utilities\x (Try Kill Daemon)"; Filename: "Taskkill.exe"; Parameters: "/IM tokliod.exe /T /F"
 
 ; Desktop icons, optional with the help of the "Task" section
-Name: "{commondesktop}\GUI Wallet"; Filename: "{app}\toklio-wallet-gui.exe"; Parameters: {code:WalletFlags}; Tasks: desktopicon
+Name: "{commondesktop}\GUI Wallet"; Filename: "{app}\toklio-wallet-gui.exe"; Tasks: desktopicon
 
 
 [Registry]
@@ -452,3 +349,16 @@ Root: HKCU; Subkey: "Software\toklio-project"; Flags: uninsdeletekeyifempty
 Root: HKCU; Subkey: "Software\toklio-project\toklio-core"; Flags: uninsdeletekey
 Root: HKCU; Subkey: "Software\toklio-project\toklio-core"; ValueType: string; ValueName: "blockchainDataDir"; ValueData: {code:BlockChainDirOrEmpty};
 
+; Configure a custom URI scheme: Links starting with "toklio:" will start the GUI wallet exe with the URI as command-line parameter
+; Used to easily start payments; example URI: "toklio://<address>?tx_amount=5.0"
+Root: HKCR; Subkey: "toklio"; ValueType: "string"; ValueData: "URL:Toklio Payment Protocol"; Flags: uninsdeletekey
+Root: HKCR; Subkey: "toklio"; ValueType: "string"; ValueName: "URL Protocol"; ValueData: ""
+Root: HKCR; Subkey: "toklio\DefaultIcon"; ValueType: "string"; ValueData: "{app}\toklio-wallet-gui.exe,0"
+Root: HKCR; Subkey: "toklio\shell\open\command"; ValueType: "string"; ValueData: """{app}\toklio-wallet-gui.exe"" ""%1"""
+
+; Configure a custom URI scheme: Links starting with "toklioseed:" will start the GUI wallet exe with the URI as command-line parameter
+; Used to easily hand over custom seed node info to the wallet, with an URI of the form "toklioseed://a.b.c.d:port"
+Root: HKCR; Subkey: "toklioseed"; ValueType: "string"; ValueData: "URL:Toklio Seed Node Protocol"; Flags: uninsdeletekey
+Root: HKCR; Subkey: "toklioseed"; ValueType: "string"; ValueName: "URL Protocol"; ValueData: ""
+Root: HKCR; Subkey: "toklioseed\DefaultIcon"; ValueType: "string"; ValueData: "{app}\toklio-wallet-gui.exe,0"
+Root: HKCR; Subkey: "toklioseed\shell\open\command"; ValueType: "string"; ValueData: """{app}\toklio-wallet-gui.exe"" ""%1"""

@@ -26,7 +26,7 @@
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import QtQuick 2.7
+import QtQuick 2.9
 import QtQuick.Layouts 1.2
 import QtQuick.Controls 2.0
 
@@ -42,13 +42,25 @@ GridLayout {
     property alias btnNext: btnNext
     property string btnPrevText: qsTr("Previous") + translationManager.emptyString
     property string btnNextText: qsTr("Next") + translationManager.emptyString
-    Layout.topMargin: 20 * scaleRatio
-    Layout.preferredHeight: 70 * scaleRatio
+    Layout.topMargin: 20
+    Layout.preferredHeight: 70
     Layout.preferredWidth: parent.width
     columns: 3
 
     signal nextClicked;
     signal prevClicked;
+
+    // internal signals
+    signal m_nextClicked;
+    signal m_prevClicked;
+
+    onM_prevClicked: {
+        wizardController.wizardStackView.backTransition = true;
+    }
+
+    onM_nextClicked: {
+        wizardController.wizardStackView.backTransition = false;
+    }
 
     Rectangle {
         Layout.preferredHeight: parent.height
@@ -64,6 +76,7 @@ GridLayout {
             anchors.verticalCenter: parent.verticalCenter
 
             onClicked: {
+                menuNav.m_prevClicked();
                 menuNav.prevClicked();
             }
         }
@@ -99,6 +112,7 @@ GridLayout {
             anchors.right: parent.right
 
             onClicked: {
+                menuNav.m_nextClicked();
                 menuNav.nextClicked();
             }
         }

@@ -26,9 +26,10 @@
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import QtQuick 2.7
+import QtQuick 2.9
 import QtQuick.Layouts 1.2
 import QtQuick.Controls 2.0
+import FontAwesome 1.0
 
 import "../js/Wizard.js" as Wizard
 import "../components" as MoneroComponents
@@ -78,7 +79,7 @@ ColumnLayout {
         progressText.text = passwordStrengthText + strengthString + translationManager.emptyString;
     }
 
-    spacing: 20 * scaleRatio
+    spacing: 20
 
     WizardHeader{
         title: qsTr("Give your wallet a password") + translationManager.emptyString
@@ -99,21 +100,21 @@ ColumnLayout {
             anchors.top: parent.top
             anchors.topMargin: 6
             font.family: MoneroComponents.Style.fontMedium.name
-            font.pixelSize: 14 * scaleRatio
+            font.pixelSize: 14
             font.bold: false
             color: MoneroComponents.Style.defaultFontColor
             text: root.passwordStrengthText + '-'
-            height: 18 * scaleRatio
+            height: 18
             passwordCharacter: "*"
         }
 
         TextInput {
             id: progressTextValue
             font.family: MoneroComponents.Style.fontMedium.name
-            font.pixelSize: 13 * scaleRatio
+            font.pixelSize: 13
             font.bold: true
             color: MoneroComponents.Style.defaultFontColor
-            height:18 * scaleRatio
+            height: 18
             passwordCharacter: "*"
         }
 
@@ -122,8 +123,8 @@ ColumnLayout {
             Layout.fillWidth: true
             Layout.preferredHeight: 8
 
-            radius: 8 * scaleRatio
-            color: "#333333" // progressbar bg
+            radius: 8
+            color: MoneroComponents.Style.progressBarBackgroundColor
 
             Rectangle {
                 id: fillRect
@@ -131,31 +132,30 @@ ColumnLayout {
                 anchors.bottom: parent.bottom
                 anchors.left: parent.left
                 height: bar.height
-                property int maxWidth: bar.width * scaleRatio
+                property int maxWidth: bar.width
                 width: (maxWidth * root.passwordFill) / 100
                 radius: 8
-                color: "#FA6800"
+                color: MoneroComponents.Style.orange
             }
 
             Rectangle {
-                color:"#333"
+                color: MoneroComponents.Style.defaultFontColor
                 anchors.bottom: parent.bottom
                 anchors.left: parent.left
-                anchors.leftMargin: 8 * scaleRatio
+                anchors.leftMargin: 8
             }
         }
-
     }
 
     ColumnLayout {
-        spacing: 4 * scaleRatio
+        spacing: 4
         Layout.fillWidth: true
 
         Label {
-            text: qsTr("Password")
+            text: qsTr("Password") + translationManager.emptyString
             Layout.fillWidth: true
 
-            font.pixelSize: 14 * scaleRatio
+            font.pixelSize: 14
             font.family: MoneroComponents.Style.fontLight.name
 
             color: MoneroComponents.Style.defaultFontColor
@@ -164,12 +164,12 @@ ColumnLayout {
         TextField {
             id: passwordInput
 
-            Layout.topMargin: 6 * scaleRatio
+            Layout.topMargin: 6
             Layout.fillWidth: true
 
-            bottomPadding: 10 * scaleRatio
-            leftPadding: 10 * scaleRatio
-            topPadding: 10 * scaleRatio
+            bottomPadding: 10
+            leftPadding: 10
+            topPadding: 10
 
             horizontalAlignment: TextInput.AlignLeft
             verticalAlignment: TextInput.AlignVCenter
@@ -177,26 +177,28 @@ ColumnLayout {
             KeyNavigation.tab: passwordInputConfirm
 
             font.family: MoneroComponents.Style.fontLight.name
-            font.pixelSize: 15 * scaleRatio
+            font.pixelSize: 15
             color: MoneroComponents.Style.defaultFontColor
-            selectionColor: MoneroComponents.Style.dimmedFontColor
-            selectedTextColor: MoneroComponents.Style.defaultFontColor
+            selectionColor: MoneroComponents.Style.textSelectionColor
+            selectedTextColor: MoneroComponents.Style.textSelectedColor
 
             text: walletOptionsPassword
 
             background: Rectangle {
                 radius: 4
-                border.color: Qt.rgba(255, 255, 255, 0.35)
+                border.color: MoneroComponents.Style.inputBorderColorActive
                 border.width: 1
                 color: "transparent"
 
-                Image {
-                    width: 12 * scaleRatio
-                    height: 16 * scaleRatio
-                    source: "../images/lockIcon.png"
-                    anchors.verticalCenter: parent.verticalCenter
+                MoneroComponents.Label {
+                    fontSize: 20
+                    text: FontAwesome.lock
+                    opacity: 0.5
+                    fontFamily: FontAwesome.fontFamily
                     anchors.right: parent.right
-                    anchors.rightMargin: 20
+                    anchors.rightMargin: 15
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.verticalCenterOffset: 3
                 }
             }
         }
@@ -210,7 +212,7 @@ ColumnLayout {
             text: qsTr("Password (confirm)") + translationManager.emptyString
             Layout.fillWidth: true
 
-            font.pixelSize: 14 * scaleRatio
+            font.pixelSize: 14
             font.family: MoneroComponents.Style.fontLight.name
 
             color: MoneroComponents.Style.defaultFontColor
@@ -219,12 +221,12 @@ ColumnLayout {
         TextField {
             id : passwordInputConfirm
             
-            Layout.topMargin: 6 * scaleRatio
+            Layout.topMargin: 6
             Layout.fillWidth: true
 
-            bottomPadding: 10 * scaleRatio
-            leftPadding: 10 * scaleRatio
-            topPadding: 10 * scaleRatio
+            bottomPadding: 10
+            leftPadding: 10
+            topPadding: 10
 
             horizontalAlignment: TextInput.AlignLeft
             verticalAlignment: TextInput.AlignVCenter
@@ -232,26 +234,28 @@ ColumnLayout {
             KeyNavigation.tab: passwordInputConfirm
 
             font.family: MoneroComponents.Style.fontLight.name
-            font.pixelSize: 15 * scaleRatio
+            font.pixelSize: 15
             color: MoneroComponents.Style.defaultFontColor
-            selectionColor: MoneroComponents.Style.dimmedFontColor
-            selectedTextColor: MoneroComponents.Style.defaultFontColor
+            selectionColor: MoneroComponents.Style.textSelectionColor
+            selectedTextColor: MoneroComponents.Style.textSelectedColor
 
             text: walletOptionsPassword
 
             background: Rectangle {
                 radius: 4
-                border.color: Qt.rgba(255, 255, 255, 0.35)
+                border.color: MoneroComponents.Style.inputBorderColorActive
                 border.width: 1
                 color: "transparent"
 
-                Image {
-                    width: 12
-                    height: 16
-                    source: "../images/lockIcon.png"
-                    anchors.verticalCenter: parent.verticalCenter
+                MoneroComponents.Label {
+                    fontSize: 20
+                    text: FontAwesome.lock
+                    opacity: 0.5
+                    fontFamily: FontAwesome.fontFamily
                     anchors.right: parent.right
-                    anchors.rightMargin: 20
+                    anchors.rightMargin: 15
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.verticalCenterOffset: 3
                 }
             }
         }

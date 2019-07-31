@@ -26,7 +26,7 @@
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import QtQuick 2.0
+import QtQuick 2.9
 import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
 import QtQuick.Layouts 1.1
@@ -80,14 +80,14 @@ Rectangle {
     ColumnLayout {
         id: mainLayout
         Layout.fillWidth: true
-        anchors.margins: (isMobile)? 17 * scaleRatio : 20 * scaleRatio
-        anchors.topMargin: 40 * scaleRatio
+        anchors.margins: (isMobile)? 17 : 20
+        anchors.topMargin: 40
   
         anchors.left: parent.left
         anchors.top: parent.top
         anchors.right: parent.right
 
-        spacing: 20 * scaleRatio
+        spacing: 20
 
         MessageDialog {
             id: sharedRingDBDialog
@@ -96,17 +96,17 @@ Rectangle {
 
         MoneroComponents.Label {
             id: signTitleLabel
-            fontSize: 24 * scaleRatio
+            fontSize: 24
             text: qsTr("Shared RingDB") + translationManager.emptyString
         }
 
-        Text {
+        MoneroComponents.TextPlain {
             text: qsTr("This page allows you to interact with the shared ring database. " +
-                       "This database is meant for use by Monero wallets as well as wallets from Monero clones which reuse the Monero keys.") + translationManager.emptyString
+                       "This database is meant for use by Toklio wallets as well as wallets from Toklio clones which reuse the Toklio keys.") + translationManager.emptyString
             wrapMode: Text.Wrap
             Layout.fillWidth: true
             font.family: MoneroComponents.Style.fontRegular.name
-            font.pixelSize: 14 * scaleRatio
+            font.pixelSize: 14
             color: MoneroComponents.Style.defaultFontColor
         }
 
@@ -118,26 +118,26 @@ Rectangle {
             onLinkActivated: {
                 sharedRingDBDialog.title  = qsTr("Outputs marked as spent") + translationManager.emptyString;
                 sharedRingDBDialog.text = qsTr(
-                    "In order to obscure which inputs in a Monero transaction are being spent, a third party should not be able " +
+                    "In order to obscure which inputs in a Toklio transaction are being spent, a third party should not be able " +
                     "to tell which inputs in a ring are already known to be spent. Being able to do so would weaken the protection " +
                     "afforded by ring signatures. If all but one of the inputs are known to be already spent, then the input being " +
                     "actually spent becomes apparent, thereby nullifying the effect of ring signatures, one of the three main layers " +
-                    "of privacy protection Monero uses.<br>" +
+                    "of privacy protection Toklio uses.<br>" +
                     "To help transactions avoid those inputs, a list of known spent ones can be used to avoid using them in new " +
-                    "transactions. Such a list is maintained by the Monero project and is available on the tokl.io website, " +
+                    "transactions. Such a list is maintained by the Toklio project and is available on the tokl.io website, " +
                     "and you can import this list here.<br>" +
-                    "Alternatively, you can scan the blockchain (and the blockchain of key-reusing Monero clones) yourself " +
+                    "Alternatively, you can scan the blockchain (and the blockchain of key-reusing Toklio clones) yourself " +
                     "using the toklio-blockchain-mark-spent-outputs tool to create a list of known spent outputs.<br>"
-                )
+                ) + translationManager.emptyString
                 sharedRingDBDialog.icon = StandardIcon.Information
                 sharedRingDBDialog.open()
             }
         }
 
-        Text {
+        MoneroComponents.TextPlain {
             textFormat: Text.RichText
             font.family: MoneroComponents.Style.fontRegular.name
-            font.pixelSize: 14 * scaleRatio
+            font.pixelSize: 14
             text: qsTr("This sets which outputs are known to be spent, and thus not to be used as privacy placeholders in ring signatures. ") +
                   qsTr("You should only have to load a file when you want to refresh the list. Manual adding/removing is possible if needed.") + translationManager.emptyString
             wrapMode: Text.Wrap
@@ -163,10 +163,10 @@ Rectangle {
             MoneroComponents.LineEdit {
                 id: loadBlackballFileLine
                 Layout.fillWidth: true
-                fontSize: 16 * scaleRatio
-                placeholderFontSize: 16 * scaleRatio
+                fontSize: 16
+                placeholderFontSize: 16
                 placeholderText: qsTr("Path to file") + "..." + translationManager.emptyString
-                labelFontSize: 14 * scaleRatio
+                labelFontSize: 14
                 labelText: qsTr("Filename with outputs to mark as spent") + ":" + translationManager.emptyString
                 copyButton: true
                 readOnly: false
@@ -198,15 +198,15 @@ Rectangle {
 
         GridLayout {
             Layout.fillWidth: true
-            columnSpacing: 20 * scaleRatio
+            columnSpacing: 20
 
             MoneroComponents.LineEdit {
                 id: blackballOutputAmountLine
                 Layout.fillWidth: true
-                fontSize: 16 * scaleRatio
-                labelFontSize: 14 * scaleRatio
+                fontSize: 16
+                labelFontSize: 14
                 labelText: qsTr("Or manually mark a single output as spent/unspent:") + translationManager.emptyString
-                placeholderFontSize: 16 * scaleRatio
+                placeholderFontSize: 16
                 placeholderText: qsTr("Paste output amount") + "..." + translationManager.emptyString
                 readOnly: false
                 validator: IntValidator { bottom: 0 }
@@ -215,10 +215,10 @@ Rectangle {
             MoneroComponents.LineEdit {
                 id: blackballOutputOffsetLine
                 Layout.fillWidth: true
-                fontSize: 16 * scaleRatio
-                labelFontSize: 14 * scaleRatio
+                fontSize: 16
+                labelFontSize: 14
                 labelText: " "
-                placeholderFontSize: 16 * scaleRatio
+                placeholderFontSize: 16
                 placeholderText: qsTr("Paste output offset") + "..." + translationManager.emptyString
                 readOnly: false
                 validator: IntValidator { bottom: 0 }
@@ -248,35 +248,35 @@ Rectangle {
 
         MoneroComponents.LabelSubheader {
             Layout.fillWidth: true
-            Layout.topMargin: 24 * scaleRatio
+            Layout.topMargin: 24
             textFormat: Text.RichText
             text: "<style type='text/css'>a {text-decoration: none; color: #FF6C3C; font-size: 14px;}</style>" +
                   qsTr("Rings") + " <a href='#'>" + qsTr("Help") + "</a>" + translationManager.emptyString
             onLinkActivated: {
                 sharedRingDBDialog.title  = qsTr("Rings") + translationManager.emptyString;
                 sharedRingDBDialog.text = qsTr(
-                    "In order to avoid nullifying the protection afforded by Monero's ring signatures, an output should not " +
+                    "In order to avoid nullifying the protection afforded by Toklio's ring signatures, an output should not " +
                     "be spent with different rings on different blockchains. While this is normally not a concern, it can become one " +
-                    "when a key-reusing Monero clone allows you to spend existing outputs. In this case, you need to ensure this " +
+                    "when a key-reusing Toklio clone allows you to spend existing outputs. In this case, you need to ensure this " +
                     "existing outputs uses the same ring on both chains.<br>" +
-                    "This will be done automatically by Monero and any key-reusing software which is not trying to actively strip " +
+                    "This will be done automatically by Toklio and any key-reusing software which is not trying to actively strip " +
                     "you of your privacy.<br>" +
-                    "If you are using a key-reusing Monero clone too, and this clone does not include this protection, you can still " +
+                    "If you are using a key-reusing Toklio clone too, and this clone does not include this protection, you can still " +
                     "ensure your transactions are protected by spending on the clone first, then manually adding the ring on this page, " +
-                    "which allows you to then spend your Monero safely.<br>" +
-                    "If you do not use a key-reusing Monero clone without these safety features, then you do not need to do anything " +
+                    "which allows you to then spend your Toklio safely.<br>" +
+                    "If you do not use a key-reusing Toklio clone without these safety features, then you do not need to do anything " +
                     "as it is all automated.<br>"
-                )
+                ) + translationManager.emptyString
                 sharedRingDBDialog.icon = StandardIcon.Information
                 sharedRingDBDialog.open()
             }
         }
 
-        Text {
+        MoneroComponents.TextPlain {
             textFormat: Text.RichText
             font.family: MoneroComponents.Style.fontRegular.name
-            font.pixelSize: 14 * scaleRatio
-            text: qsTr("This records rings used by outputs spent on Monero on a key reusing chain, so that the same ring may be reused to avoid privacy issues.") + translationManager.emptyString
+            font.pixelSize: 14
+            text: qsTr("This records rings used by outputs spent on Toklio on a key reusing chain, so that the same ring may be reused to avoid privacy issues.") + translationManager.emptyString
             wrapMode: Text.Wrap
             Layout.fillWidth: true;
             color: MoneroComponents.Style.defaultFontColor
@@ -285,27 +285,27 @@ Rectangle {
         MoneroComponents.LineEdit {
             id: keyImageLine
             Layout.fillWidth: true
-            fontSize: 16 * scaleRatio
-            labelFontSize: 14 * scaleRatio
+            fontSize: 16
+            labelFontSize: 14
             labelText: qsTr("Key image") + ":" + translationManager.emptyString
-            placeholderFontSize: 16 * scaleRatio
+            placeholderFontSize: 16
             placeholderText: qsTr("Paste key image") + "..." + translationManager.emptyString
             readOnly: false
             copyButton: true
         }
 
         GridLayout{
-            Layout.topMargin: 12 * scaleRatio
+            Layout.topMargin: 12
             columns: (isMobile) ?  1 : 2
-            columnSpacing: 32 * scaleRatio
+            columnSpacing: 32
 
             ColumnLayout {
                 RowLayout {
                     MoneroComponents.LineEdit {
                         id: getRingLine
                         Layout.fillWidth: true
-                        fontSize: 16 * scaleRatio
-                        labelFontSize: 14 * scaleRatio
+                        fontSize: 16
+                        labelFontSize: 14
                         labelText: qsTr("Get ring") + ":" + translationManager.emptyString
                         readOnly: true
                         copyButton: true
@@ -324,7 +324,7 @@ Rectangle {
                         onClicked: {
                             var ring = appWindow.currentWallet.getRing(keyImageLine.text)
                             if (ring === "") {
-                                getRingLine.text = qsTr("No ring found");
+                                getRingLine.text = qsTr("No ring found") + translationManager.emptyString;
                             }
                             else {
                                 getRingLine.text = ring;
@@ -339,9 +339,9 @@ Rectangle {
                     MoneroComponents.LineEdit {
                         id: setRingLine
                         Layout.fillWidth: true
-                        fontSize: 16 * scaleRatio
-                        labelFontSize: 14 * scaleRatio
-                        placeholderFontSize: 16 * scaleRatio
+                        fontSize: 16
+                        labelFontSize: 14
+                        placeholderFontSize: 16
                         labelText: qsTr("Set ring") + ":" + translationManager.emptyString
                         readOnly: false
                         copyButton: true
@@ -367,15 +367,13 @@ Rectangle {
         }
 
         GridLayout {
-            columnSpacing: 20 * scaleRatio
+            columnSpacing: 20
             columns: (isMobile) ?  1 : 2
 
             MoneroComponents.CheckBox {
                 id: segregatePreForkOutputs
                 checked: persistentSettings.segregatePreForkOutputs
                 text: qsTr("I intend to spend on key-reusing fork(s)") + translationManager.emptyString
-                checkedIcon: "../images/checkedIcon-black.png"
-                uncheckedIcon: "../images/uncheckedIcon.png"
                 onClicked: {
                     persistentSettings.segregatePreForkOutputs = segregatePreForkOutputs.checked
                     if (appWindow.currentWallet) {
@@ -388,8 +386,6 @@ Rectangle {
                 id: keyReuseMitigation2
                 checked: persistentSettings.keyReuseMitigation2
                 text: qsTr("I might want to spend on key-reusing fork(s)") + translationManager.emptyString
-                checkedIcon: "../images/checkedIcon-black.png"
-                uncheckedIcon: "../images/uncheckedIcon.png"
                 onClicked: {
                     persistentSettings.keyReuseMitigation2 = keyReuseMitigation2.checked
                     if (appWindow.currentWallet) {
@@ -402,23 +398,24 @@ Rectangle {
                 id: setRingRelative
                 checked: true
                 text: qsTr("Relative") + translationManager.emptyString
-                checkedIcon: "../images/checkedIcon-black.png"
-                uncheckedIcon: "../images/uncheckedIcon.png"
             }
         }
 
-        RowLayout {
+        GridLayout {
             id: segregationHeightRow
-            Layout.topMargin: 17 * scaleRatio
             Layout.fillWidth: true
+            Layout.topMargin: 17
+            columns: (isMobile) ?  1 : 2
+            columnSpacing: 32
 
             MoneroComponents.LineEdit {
                 id: segregationHeightLine
+                property bool edited: false
                 Layout.fillWidth: true
 
-                placeholderFontSize: 16 * scaleRatio
-                labelFontSize: 14 * scaleRatio
-                labelText: qsTr("Segregation height:") + translationManager.emptyString
+                placeholderFontSize: 16
+                labelFontSize: 14
+                labelText: qsTr("Set segregation height:") + translationManager.emptyString
                 validator: IntValidator { bottom: 0 }
                 readOnly: false
                 onEditingFinished: {
@@ -426,7 +423,14 @@ Rectangle {
                     if (appWindow.currentWallet) {
                         appWindow.currentWallet.segregationHeight(segregationHeightLine.text)
                     }
+
+                    // @TODO: LineEdit should visually be able show that an action
+                    // has been completed due to modification of the text
                 }
+            }
+
+            Item {
+                Layout.fillWidth: true
             }
         }
     }

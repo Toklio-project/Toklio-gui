@@ -26,7 +26,7 @@
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import QtQuick 2.7
+import QtQuick 2.9
 import QtQuick.Layouts 1.2
 import QtQuick.Controls 2.0
 
@@ -51,7 +51,7 @@ Rectangle {
             Layout.topMargin: wizardController.wizardSubViewTopMargin
             Layout.maximumWidth: wizardController.wizardSubViewWidth
             Layout.alignment: Qt.AlignHCenter
-            spacing: 0 * scaleRatio
+            spacing: 0
 
             WizardAskPassword {
                 id: passwordFields

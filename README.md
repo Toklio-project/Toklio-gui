@@ -1,6 +1,6 @@
 # Toklio GUI 
 
-Copyright (c) 2014-2018, The Monero Project
+Copyright (c) 2014-2019, The Monero Project
 
 ## Development resources
 
@@ -55,13 +55,21 @@ Packaging for your favorite distribution would be a welcome contribution!
 
 	`sudo emerge app-arch/xz-utils app-doc/doxygen dev-cpp/gtest dev-libs/boost dev-libs/expat dev-libs/openssl dev-util/cmake media-gfx/graphviz net-dns/unbound net-libs/ldns net-libs/miniupnpc net-libs/zeromq sys-libs/libunwind dev-libs/libsodium dev-libs/hidapi`
 
+  - For Fedora
+
+	`sudo dnf install make automake cmake gcc-c++ boost-devel miniupnpc-devel graphviz doxygen unbound-devel libunwind-devel pkgconfig openssl-devel libcurl-devel hidapi-devel libusb-devel`
+
 2. Install Qt:
 
-  *Note*: Qt 5.7 is the minimum version required to build the GUI. This makes **some** distributions (mostly based on debian, like Ubuntu 16.x or Linux Mint 18.x) obsolete. You can still build the GUI if you install an [official Qt release](https://wiki.qt.io/Install_Qt_5_on_Ubuntu), but this is not officially supported.
+  *Note*: Qt 5.9.7 is the minimum version required to build the GUI. This makes **some** distributions (mostly based on debian, like Ubuntu 16.x or Linux Mint 18.x) obsolete due to their repositories containing an older Qt version.
+
+ The recommended way is to install 5.9.7 from the [official Qt installer](https://www.qt.io/download-qt-installer) or [compiling it yourself](https://wiki.qt.io/Install_Qt_5_on_Ubuntu). This ensures you have the correct version. Higher versions *can* work but as it differs from our production build target, slight differences may occur.
+
+The following instructions will fetch Qt from your distribution's repositories instead. Take note of what version it installs. Your mileage may vary.
 
   - For Ubuntu 17.10+
 
-    `sudo apt install qtbase5-dev qt5-default qtdeclarative5-dev qml-module-qtquick-controls qml-module-qtquick-controls2 qml-module-qtquick-dialogs qml-module-qtquick-xmllistmodel qml-module-qt-labs-settings qml-module-qt-labs-folderlistmodel qttools5-dev-tools qml-module-qtquick-templates2`
+    `sudo apt install qtbase5-dev qt5-default qtdeclarative5-dev qml-module-qtquick-controls qml-module-qtquick-controls2 qml-module-qtquick-dialogs qml-module-qtquick-xmllistmodel qml-module-qt-labs-settings qml-module-qt-labs-folderlistmodel qttools5-dev-tools qml-module-qtquick-templates2 libqt5svg5-dev`
 
   - For Gentoo
 
@@ -101,7 +109,7 @@ The executable can be found in the build/release/bin folder.
 
 3. Install [Toklio](https://github.com/Toklio-project/Toklio) dependencies:
 
-  `brew install boost --c++11`
+  `brew install boost`
 
   `brew install openssl` - to install openssl headers
 
@@ -115,7 +123,7 @@ The executable can be found in the build/release/bin folder.
 
 4. Install Qt:
 
-  `brew install qt5`  (or download QT 5.8+ from [qt.io](https://www.qt.io/download-open-source/))
+  `brew install qt5`  (or download QT 5.9.7+ from [qt.io](https://www.qt.io/download-open-source/))
 
   If you have an older version of Qt installed via homebrew, you can force it to use 5.x like so:
   
@@ -123,7 +131,7 @@ The executable can be found in the build/release/bin folder.
 
 5. Add the Qt bin directory to your path
 
-    Example: `export PATH=$PATH:$HOME/Qt/5.8/clang_64/bin`
+    Example: `export PATH=$PATH:$HOME/Qt/5.9.7/clang_64/bin`
 
     This is the directory where Qt 5.x is installed on **your** system
 
@@ -143,7 +151,7 @@ The executable can be found in the `build/release/bin` folder.
 
 **Note:** Workaround for "ERROR: Xcode not set up properly"
 
-Edit `$HOME/Qt/5.8/clang_64/mkspecs/features/mac/default_pre.prf`
+Edit `$HOME/Qt/5.9.7/clang_64/mkspecs/features/mac/default_pre.prf`
 
 replace
 `isEmpty($$list($$system("/usr/bin/xcrun -find xcrun 2>/dev/null")))`
@@ -165,7 +173,7 @@ The Toklio GUI on Windows is 64 bits only; 32-bit Windows GUI builds are not off
 3. Install MSYS2 packages for Toklio dependencies; the needed 64-bit packages have `x86_64` in their names
 
     ```
-    pacman -S mingw-w64-x86_64-toolchain make mingw-w64-x86_64-cmake mingw-w64-x86_64-boost mingw-w64-x86_64-openssl mingw-w64-x86_64-zeromq mingw-w64-x86_64-libsodium mingw-w64-x86_64-hidapi
+    pacman -S mingw-w64-x86_64-toolchain make mingw-w64-x86_64-cmake mingw-w64-x86_64-boost mingw-w64-x86_64-openssl mingw-w64-x86_64-zeromq mingw-w64-x86_64-libsodium mingw-w64-x86_64-hidapi mingw-w64-x86_64-protobuf-c mingw-w64-x86_64-libusb
     ```
 
 

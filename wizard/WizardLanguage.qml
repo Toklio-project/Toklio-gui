@@ -26,31 +26,27 @@
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import QtQuick 2.7
+import QtQuick 2.9
 import QtQuick.Layouts 1.2
 import QtQuick.Controls 2.0
 
 import "../components"
 import "../components" as MoneroComponents
+import "../components/effects/" as MoneroEffects
 import "../version.js" as Version
 
 Rectangle {
     Layout.fillWidth: true
-    color: "black"
+    color: "transparent"
 
     property string viewName: "wizardLanguage"
-
-    Image {
-        anchors.fill: parent
-        source: "../images/middlePanelBg.jpg"
-    }
 
     ColumnLayout {
         id: root
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.right: parent.right
-        spacing: 30 * scaleRatio
+        spacing: 30
 
         Rectangle {
             // some margins for the titlebar
@@ -70,7 +66,7 @@ Rectangle {
 
             font.family: MoneroComponents.Style.fontRegular.name
             font.bold: true
-            font.pixelSize: 18 * scaleRatio
+            font.pixelSize: 18
             horizontalAlignment: TextInput.AlignHCenter
             selectByMouse: false
             wrapMode: Text.WordWrap
@@ -89,7 +85,7 @@ Rectangle {
 
         Image {
             id: globe
-            source: "../images/world-flags-globe.png"
+            source: "qrc:///images/world-flags-globe.png"
             opacity: 0
             property bool small: appWindow.width < 700 ? true : false
             property int size: {
@@ -114,10 +110,10 @@ Rectangle {
                 visible: !globe.small
                 anchors.left: parent.left
                 anchors.top: parent.top
-                anchors.leftMargin: 117 * scaleRatio
-                anchors.topMargin: 71 * scaleRatio
-                width: 36 * scaleRatio
-                height: 40 * scaleRatio
+                anchors.leftMargin: 117
+                anchors.topMargin: 71
+                width: 36
+                height: 40
                 color: "transparent"
 
                 MouseArea {
@@ -154,13 +150,13 @@ Rectangle {
             opacity: 0
             columns: isMobile ? 1 : 2
             anchors.horizontalCenter: parent.horizontalCenter
-            Layout.topMargin: 20 * scaleRatio
+            Layout.topMargin: 20
             Layout.fillWidth: true
-            columnSpacing: 20 * scaleRatio
+            columnSpacing: 20
 
             MoneroComponents.StandardButton {
                 id: idChangeLang
-                Layout.minimumWidth: 150 * scaleRatio
+                Layout.minimumWidth: 150
                 text: "Language"
 
                 onClicked: {
@@ -170,10 +166,11 @@ Rectangle {
 
             MoneroComponents.StandardButton {
                 id: btnContinue
-                Layout.minimumWidth: 150 * scaleRatio
+                Layout.minimumWidth: 150
                 text: "Continue"
 
                 onClicked: {
+                    wizardController.wizardStackView.backTransition = false;
                     if(wizardController.skipModeSelection){
                         wizardStateView.state = "wizardHome"
                     } else {
@@ -190,12 +187,12 @@ Rectangle {
             }
         }
 
-        Text {
+        MoneroComponents.TextPlain {
             id: versionText
             opacity: 0
             anchors.horizontalCenter: parent.horizontalCenter
             font.bold: true
-            font.pixelSize: 12 * scaleRatio
+            font.pixelSize: 12
             font.family: MoneroComponents.Style.fontRegular.name
             color: MoneroComponents.Style.defaultFontColor
             text: Version.GUI_VERSION + " (Qt " + qtRuntimeVersion + ")"

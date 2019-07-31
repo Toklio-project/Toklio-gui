@@ -26,13 +26,15 @@
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import QtQuick 2.0
+import QtQuick 2.9
 import QtQuick.Controls 2.0
 import QtQuick.Controls.Styles 1.4
 import QtQuick.Layouts 1.1
 import QtQuick.Dialogs 1.2
 
 import "../components" as MoneroComponents
+import "../components/effects/" as MoneroEffects
+
 import moneroComponents.Clipboard 1.0
 import moneroComponents.Wallet 1.0
 import moneroComponents.WalletManager 1.0
@@ -63,18 +65,18 @@ Rectangle {
     /* main layout */
     ColumnLayout {
         id: mainLayout
-        anchors.margins: (isMobile)? 17 * scaleRatio : 20 * scaleRatio
-        anchors.topMargin: 40 * scaleRatio
+        anchors.margins: (isMobile)? 17 : 20
+        anchors.topMargin: 40
 
         anchors.left: parent.left
         anchors.top: parent.top
         anchors.right: parent.right
 
-        spacing: 20 * scaleRatio
-        property int labelWidth: 120 * scaleRatio
-        property int editWidth: 400 * scaleRatio
-        property int lineEditFontSize: 12 * scaleRatio
-        property int qrCodeSize: 220 * scaleRatio
+        spacing: 20
+        property int labelWidth: 120
+        property int editWidth: 400
+        property int lineEditFontSize: 12
+        property int qrCodeSize: 220
 
         ColumnLayout {
             id: addressRow
@@ -82,14 +84,15 @@ Rectangle {
 
             MoneroComponents.LabelSubheader {
                 Layout.fillWidth: true
+                fontSize: 24
                 textFormat: Text.RichText
-                text: qsTr("Addresses")
+                text: qsTr("Addresses") + translationManager.emptyString
             }
 
             ColumnLayout {
                 id: subaddressListRow
-                property int subaddressListItemHeight: 50 * scaleRatio
-                Layout.topMargin: 6 * scaleRatio
+                property int subaddressListItemHeight: 50
+                Layout.topMargin: 6
                 Layout.fillWidth: true
                 Layout.minimumWidth: 240
                 Layout.preferredHeight: subaddressListItemHeight * subaddressListView.count
@@ -101,6 +104,8 @@ Rectangle {
                     anchors.fill: parent
                     clip: true
                     boundsBehavior: ListView.StopAtBounds
+                    interactive: false
+
                     delegate: Rectangle {
                         id: tableItem2
                         height: subaddressListRow.subaddressListItemHeight
@@ -113,8 +118,14 @@ Rectangle {
                             anchors.left: parent.left
                             anchors.top: parent.top
                             height: 1
-                            color: "#404040"
+                            color: MoneroComponents.Style.appWindowBorderColor
                             visible: index !== 0
+
+                            MoneroEffects.ColorTransition {
+                                targetObj: parent
+                                blackColor: MoneroComponents.Style._b_appWindowBorderColor
+                                whiteColor: MoneroComponents.Style._w_appWindowBorderColor
+                            }
                         }
 
                         Rectangle {
@@ -125,80 +136,84 @@ Rectangle {
 
                             MoneroComponents.Label {
                                 id: idLabel
-                                color: index === appWindow.current_subaddress_table_index ? "white" : "#757575"
+                                color: index === appWindow.current_subaddress_table_index ? MoneroComponents.Style.defaultFontColor : "#757575"
                                 anchors.verticalCenter: parent.verticalCenter
                                 anchors.left: parent.left
-                                anchors.leftMargin: 6 * scaleRatio
-                                fontSize: 14 * scaleRatio
-                                fontBold: true
+                                anchors.leftMargin: 6
+                                fontSize: 16
                                 text: "#" + index
+                                themeTransition: false
                             }
 
                             MoneroComponents.Label {
                                 id: nameLabel
-                                color: "#a5a5a5"
+                                color: MoneroComponents.Style.dimmedFontColor
                                 anchors.verticalCenter: parent.verticalCenter
                                 anchors.left: idLabel.right
-                                anchors.leftMargin: 6 * scaleRatio
-                                fontSize: 14 * scaleRatio
-                                fontBold: true
+                                anchors.leftMargin: 6
+                                fontSize: 16
                                 text: label
                                 elide: Text.ElideRight
                                 textWidth: addressLabel.x - nameLabel.x - 1
+                                themeTransition: false
                             }
 
                             MoneroComponents.Label {
                                 id: addressLabel
-                                color: "white"
+                                color: MoneroComponents.Style.defaultFontColor
                                 anchors.verticalCenter: parent.verticalCenter
                                 anchors.left: parent.right
-                                anchors.leftMargin: (mainLayout.width < 510 ? -130 : -190) * scaleRatio
-                                fontSize: 14 * scaleRatio
-                                fontBold: true
-                                text: TxUtils.addressTruncate(address, mainLayout.width < 510 ? 6 : 10)
+                                anchors.leftMargin: -addressLabel.width - 5
+                                fontSize: 16
+                                fontFamily: MoneroComponents.Style.fontMonoRegular.name;
+                                text: TxUtils.addressTruncatePretty(address, mainLayout.width < 520 ? 1 : (mainLayout.width < 650 ? 2 : 3))
+                                themeTransition: false
                             }
 
                             MouseArea {
                                 cursorShape: Qt.PointingHandCursor
                                 anchors.fill: parent
                                 hoverEnabled: true
-                                onEntered: {
-                                    tableItem2.color = "#26FFFFFF"
-                                }
-                                onExited: {
-                                    tableItem2.color = "transparent"
-                                }
+                                onEntered: tableItem2.color = MoneroComponents.Style.titleBarButtonHoverColor
+                                onExited: tableItem2.color = "transparent"
+                                onClicked: subaddressListView.currentIndex = index;
+                            }
+                        }
+
+                        RowLayout {
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.right: parent.right
+                            anchors.rightMargin: 6
+                            height: 21
+                            spacing: 10
+
+                            MoneroComponents.IconButton {
+                                id: renameButton
+                                image: "qrc:///images/edit.svg"
+                                color: MoneroComponents.Style.defaultFontColor
+                                opacity: 0.5
+                                Layout.preferredWidth: 23
+                                Layout.preferredHeight: 21
+                                visible: index !== 0
+
                                 onClicked: {
-                                    subaddressListView.currentIndex = index;
+                                    renameSubaddressLabel(index);
                                 }
                             }
-                        }
 
-                        MoneroComponents.IconButton {
-                            id: renameButton
-                            imageSource: "../images/editIcon.png"
-                            anchors.verticalCenter: parent.verticalCenter
-                            anchors.right: parent.right
-                            anchors.rightMargin: 30 * scaleRatio
-                            anchors.topMargin: 1 * scaleRatio
-                            visible: index !== 0
+                            MoneroComponents.IconButton {
+                                id: copyButton
+                                image: "qrc:///images/copy.svg"
+                                color: MoneroComponents.Style.defaultFontColor
+                                opacity: 0.5
+                                Layout.preferredWidth: 16
+                                Layout.preferredHeight: 21
 
-                            onClicked: {
-                                renameSubaddressLabel(index);
-                            }
-                        }
-
-                        MoneroComponents.IconButton {
-                            id: copyButton
-                            imageSource: "../images/dropdownCopy.png"
-                            anchors.verticalCenter: parent.verticalCenter
-                            anchors.top: undefined
-                            anchors.right: parent.right
-
-                            onClicked: {
-                                console.log("Address copied to clipboard");
-                                clipboard.setText(address);
-                                appWindow.showStatusMessage(qsTr("Address copied to clipboard"),3);
+                                onClicked: {
+                                    console.log("Address copied to clipboard");
+                                    clipboard.setText(address);
+                                    appWindow.showStatusMessage(qsTr("Address copied to clipboard"),3);
+                                }
                             }
                         }
                     }
@@ -214,9 +229,15 @@ Rectangle {
             }
 
             Rectangle {
-                color: "#404040"
+                color: MoneroComponents.Style.appWindowBorderColor
                 Layout.fillWidth: true
                 height: 1
+
+                MoneroEffects.ColorTransition {
+                    targetObj: parent
+                    blackColor: MoneroComponents.Style._b_appWindowBorderColor
+                    whiteColor: MoneroComponents.Style._w_appWindowBorderColor
+                }
             }
 
             MoneroComponents.CheckBox {
@@ -224,14 +245,14 @@ Rectangle {
                 border: false
                 checkedIcon: "qrc:///images/plus-in-circle-medium-white.png"
                 uncheckedIcon: "qrc:///images/plus-in-circle-medium-white.png"
-                fontSize: 14 * scaleRatio
+                fontSize: 16
                 iconOnTheLeft: true
                 Layout.fillWidth: true
-                Layout.topMargin: 10 * scaleRatio
+                Layout.topMargin: 10
                 text: qsTr("Create new address") + translationManager.emptyString;
                 onClicked: {
                     inputDialog.labelText = qsTr("Set the label of the new address:") + translationManager.emptyString
-                    inputDialog.inputText = qsTr("(Untitled)")
+                    inputDialog.inputText = qsTr("(Untitled)") + translationManager.emptyString
                     inputDialog.onAcceptedCallback = function() {
                         appWindow.currentWallet.subaddress.addRow(appWindow.currentWallet.currentSubaddressAccount, inputDialog.inputText)
                         current_subaddress_table_index = appWindow.currentWallet.numSubaddresses(appWindow.currentWallet.currentSubaddressAccount) - 1
@@ -244,21 +265,21 @@ Rectangle {
 
         ColumnLayout {
             Layout.alignment: Qt.AlignHCenter
-            spacing: 11 * scaleRatio
-            property int qrSize: 220 * scaleRatio
+            spacing: 11
+            property int qrSize: 220
 
             Rectangle {
                 id: qrContainer
-                color: "white"
+                color: MoneroComponents.Style.blackTheme ? "white" : "transparent"
                 Layout.fillWidth: true
                 Layout.maximumWidth: parent.qrSize
                 Layout.preferredHeight: width
-                radius: 4 * scaleRatio
+                radius: 4
 
                 Image {
                     id: qrCode
                     anchors.fill: parent
-                    anchors.margins: 1 * scaleRatio
+                    anchors.margins: 1
 
                     smooth: false
                     fillMode: Image.PreserveAspectFit
@@ -276,15 +297,15 @@ Rectangle {
                 spacing: parent.spacing
 
                 MoneroComponents.StandardButton {
-                    rightIcon: "../images/download-white.png"
+                    rightIcon: "qrc:///images/download-white.png"
                     onClicked: qrFileDialog.open()
                 }
 
                 MoneroComponents.StandardButton {
-                    rightIcon: "../images/external-link-white.png"
+                    rightIcon: "qrc:///images/external-link-white.png"
                     onClicked: {
                         clipboard.setText(TxUtils.makeQRCodeString(appWindow.current_address));
-                        appWindow.showStatusMessage(qsTr("Copied to clipboard"), 3);
+                        appWindow.showStatusMessage(qsTr("Copied to clipboard") + translationManager.emptyString, 3);
                     }
                 }
             }
@@ -297,7 +318,7 @@ Rectangle {
 
         FileDialog {
             id: qrFileDialog
-            title: qsTr("Please choose a name")
+            title: qsTr("Please choose a name") + translationManager.emptyString
             folder: shortcuts.pictures
             selectExisting: false
             nameFilters: ["Image (*.png)"]

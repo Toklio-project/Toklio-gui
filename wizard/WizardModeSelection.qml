@@ -26,7 +26,7 @@
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import QtQuick 2.7
+import QtQuick 2.9
 import QtQuick.Dialogs 1.2
 import QtQuick.Layouts 1.2
 import QtQuick.Controls 2.0
@@ -46,14 +46,14 @@ Rectangle {
         Layout.fillWidth: true
         anchors.horizontalCenter: parent.horizontalCenter;
 
-        spacing: 10 * scaleRatio
+        spacing: 10
 
         ColumnLayout {
             Layout.fillWidth: true
             Layout.maximumWidth: wizardController.wizardSubViewWidth
             Layout.topMargin: wizardController.wizardSubViewTopMargin
             Layout.alignment: Qt.AlignHCenter
-            spacing: 0 * scaleRatio
+            spacing: 0
 
             WizardHeader {
                 title: qsTr("Mode selection.") + translationManager.emptyString
@@ -62,7 +62,7 @@ Rectangle {
 
             WizardMenuItem {
                 opacity: appWindow.persistentSettings.nettype == 0 ? 1.0 : 0.5
-                Layout.topMargin: 20 * scaleRatio
+                Layout.topMargin: 20
                 headerText: qsTr("Simple mode") + translationManager.emptyString
                 bodyText: {
                     if(appWindow.persistentSettings.nettype == 0){
@@ -72,7 +72,7 @@ Rectangle {
                     }
                 }
 
-                imageIcon: "../images/remote-node.png"
+                imageIcon: "qrc:///images/remote-node.png"
 
                 onMenuClicked: {
                     if(appWindow.persistentSettings.nettype == 0){
@@ -84,8 +84,8 @@ Rectangle {
 
             Rectangle {
                 Layout.preferredHeight: 1
-                Layout.topMargin: 5 * scaleRatio
-                Layout.bottomMargin: 10 * scaleRatio
+                Layout.topMargin: 5
+                Layout.bottomMargin: 10
                 Layout.fillWidth: true
                 color: MoneroComponents.Style.dividerColor
                 opacity: MoneroComponents.Style.dividerOpacity
@@ -101,7 +101,7 @@ Rectangle {
                         return "Available on mainnet.";
                     }
                 }
-                imageIcon: "../images/local-node.png"
+                imageIcon: "qrc:///images/local-node.png"
 
                 onMenuClicked: {
                     if(appWindow.persistentSettings.nettype == 0){
@@ -113,8 +113,8 @@ Rectangle {
 
             Rectangle {
                 Layout.preferredHeight: 1
-                Layout.topMargin: 5 * scaleRatio
-                Layout.bottomMargin: 10 * scaleRatio
+                Layout.topMargin: 5
+                Layout.bottomMargin: 10
                 Layout.fillWidth: true
                 color: MoneroComponents.Style.dividerColor
                 opacity: MoneroComponents.Style.dividerOpacity
@@ -123,21 +123,23 @@ Rectangle {
             WizardMenuItem {
                 headerText: qsTr("Advanced mode") + translationManager.emptyString
                 bodyText: qsTr("Includes extra features like mining and message verification. The blockchain is downloaded to your computer.") + translationManager.emptyString
-                imageIcon: "../images/local-node-full.png"
+                imageIcon: "qrc:///images/local-node-full.png"
 
                 onMenuClicked: {
+                    wizardController.wizardStackView.backTransition = false;
                     appWindow.changeWalletMode(2);
                     wizardController.wizardState = 'wizardHome';
                 }
             }
 
             WizardNav {
-                Layout.topMargin: 5 * scaleRatio
+                Layout.topMargin: 5
                 btnPrevText: qsTr("Change language") + translationManager.emptyString
                 btnNext.visible: false
                 progressSteps: 0
 
                 onPrevClicked: {
+                    wizardController.wizardStackView.backTransition = true;
                     wizardController.wizardState = 'wizardLanguage';
                 }
             }

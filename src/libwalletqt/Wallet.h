@@ -1,3 +1,31 @@
+// Copyright (c) 2014-2019, The Monero Project
+//
+// All rights reserved.
+//
+// Redistribution and use in source and binary forms, with or without modification, are
+// permitted provided that the following conditions are met:
+//
+// 1. Redistributions of source code must retain the above copyright notice, this list of
+//    conditions and the following disclaimer.
+//
+// 2. Redistributions in binary form must reproduce the above copyright notice, this list
+//    of conditions and the following disclaimer in the documentation and/or other
+//    materials provided with the distribution.
+//
+// 3. Neither the name of the copyright holder nor the names of its contributors may be
+//    used to endorse or promote products derived from this software without specific
+//    prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY
+// EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+// MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
+// THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+// PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+// INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+// STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
+// THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
 #ifndef WALLET_H
 #define WALLET_H
 
@@ -5,9 +33,11 @@
 #include <QTime>
 #include <QMutex>
 #include <QList>
+#include <QJSValue>
 #include <QtConcurrent/QtConcurrent>
 
 #include "wallet/api/wallet2_api.h" // we need to have an access to the Monero::Wallet::Status enum here;
+#include "qt/FutureScheduler.h"
 #include "PendingTransaction.h" // we need to have an access to the PendingTransaction::Priority enum here;
 #include "UnsignedTransaction.h"
 #include "NetworkType.h"
@@ -153,15 +183,7 @@ public:
     //! returns if view only wallet
     Q_INVOKABLE bool viewOnly() const;
 
-    //! returns current wallet's block height
-    //! (can be less than daemon's blockchain height when wallet sync in progress)
-    Q_INVOKABLE quint64 blockChainHeight() const;
-
-    //! returns daemon's blockchain height
-    Q_INVOKABLE quint64 daemonBlockChainHeight() const;
-
-    //! returns daemon's blockchain target height
-    Q_INVOKABLE quint64 daemonBlockChainTargetHeight() const;
+    Q_INVOKABLE void refreshHeightAsync();
 
     //! export/import key images
     Q_INVOKABLE bool exportKeyImages(const QString& path);
@@ -213,6 +235,8 @@ public:
     //! Submit a transfer from file
     Q_INVOKABLE bool submitTxFile(const QString &fileName) const;
 
+    //! asynchronous transaction commit
+    Q_INVOKABLE void commitTransactionAsync(PendingTransaction * t);
 
     //! deletes transaction and frees memory
     Q_INVOKABLE void disposeTransaction(PendingTransaction * t);
@@ -267,10 +291,13 @@ public:
     Q_INVOKABLE bool setUserNote(const QString &txid, const QString &note);
     Q_INVOKABLE QString getUserNote(const QString &txid) const;
     Q_INVOKABLE QString getTxKey(const QString &txid) const;
+    Q_INVOKABLE void getTxKeyAsync(const QString &txid, const QJSValue &callback);
     Q_INVOKABLE QString checkTxKey(const QString &txid, const QString &tx_key, const QString &address);
     Q_INVOKABLE QString getTxProof(const QString &txid, const QString &address, const QString &message) const;
+    Q_INVOKABLE void getTxProofAsync(const QString &txid, const QString &address, const QString &message, const QJSValue &callback);
     Q_INVOKABLE QString checkTxProof(const QString &txid, const QString &address, const QString &message, const QString &signature);
     Q_INVOKABLE QString getSpendProof(const QString &txid, const QString &message) const;
+    Q_INVOKABLE void getSpendProofAsync(const QString &txid, const QString &message, const QJSValue &callback);
     Q_INVOKABLE QString checkSpendProof(const QString &txid, const QString &message, const QString &signature) const;
     // Rescan spent outputs
     Q_INVOKABLE bool rescanSpent();
@@ -322,16 +349,31 @@ signals:
     void newBlock(quint64 height, quint64 targetHeight);
     void historyModelChanged() const;
     void walletCreationHeightChanged();
+    void deviceButtonRequest(quint64 buttonCode);
+    void deviceButtonPressed();
+    void transactionCommitted(bool status, PendingTransaction *t, const QStringList& txid);
+    void heightRefreshed(quint64 walletHeight, quint64 daemonHeight, quint64 targetHeight) const;
 
     // emitted when transaction is created async
     void transactionCreated(PendingTransaction * transaction, QString address, QString paymentId, quint32 mixinCount);
 
-    void connectionStatusChanged(ConnectionStatus status) const;
+    void connectionStatusChanged(int status) const;
 
 private:
     Wallet(QObject * parent = nullptr);
     Wallet(Monero::Wallet *w, QObject * parent = 0);
     ~Wallet();
+
+    //! returns current wallet's block height
+    //! (can be less than daemon's blockchain height when wallet sync in progress)
+    quint64 blockChainHeight() const;
+
+    //! returns daemon's blockchain height
+    quint64 daemonBlockChainHeight() const;
+
+    //! returns daemon's blockchain target height
+    quint64 daemonBlockChainTargetHeight() const;
+
 private:
     friend class WalletManager;
     friend class WalletListenerImpl;
@@ -365,6 +407,7 @@ private:
     QString m_daemonUsername;
     QString m_daemonPassword;
     Monero::WalletListener *m_walletListener;
+    FutureScheduler m_scheduler;
 };
 
 

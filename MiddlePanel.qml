@@ -28,18 +28,18 @@
 
 
 import QtQml 2.0
-import QtQuick 2.2
+import QtQuick 2.9
 import QtQuick.Controls 2.0
 import QtQuick.Controls 1.4
 import QtQuick.Layouts 1.1
 import QtGraphicalEffects 1.0
 import moneroComponents.Wallet 1.0
 
-import "components" as MoneroComponents
 import "./pages"
 import "./pages/settings"
 import "./pages/merchant"
-import "components" as MoneroComponents
+import "./components" as MoneroComponents
+import "./components/effects/" as MoneroEffects
 
 Rectangle {
     id: root
@@ -51,10 +51,9 @@ Rectangle {
     property string balanceText
     property string unlockedBalanceLabelText: qsTr("Unlocked Balance") + translationManager.emptyString
     property string unlockedBalanceText
-    property int minHeight: (appWindow.height > 800) ? appWindow.height : 800 * scaleRatio
+    property int minHeight: (appWindow.height > 800) ? appWindow.height : 800
     property alias contentHeight: mainFlickable.contentHeight
     property alias flickable: mainFlickable
-//    property int headerHeight: header.height
 
     property Transfer transferView: Transfer { }
     property Receive receiveView: Receive { }
@@ -82,10 +81,18 @@ Rectangle {
         anchors.fill: parent
     }
 
-    Image {
-        anchors.fill: parent
+    MoneroEffects.GradientBackground {
         visible: currentView !== merchantView
-        source: "../images/middlePanelBg.jpg"
+        anchors.fill: parent
+        fallBackColor: MoneroComponents.Style.middlePanelBackgroundColor
+        initialStartColor: MoneroComponents.Style.middlePanelBackgroundGradientStart
+        initialStopColor: MoneroComponents.Style.middlePanelBackgroundGradientStop
+        blackColorStart: MoneroComponents.Style._b_middlePanelBackgroundGradientStart
+        blackColorStop: MoneroComponents.Style._b_middlePanelBackgroundGradientStop
+        whiteColorStart: MoneroComponents.Style._w_middlePanelBackgroundGradientStart
+        whiteColorStop: MoneroComponents.Style._w_middlePanelBackgroundGradientStop
+        start: Qt.point(0, 0)
+        end: Qt.point(height, width)
     }
 
     onCurrentViewChanged: {
@@ -118,52 +125,51 @@ Rectangle {
             State {
                 name: "History"
                 PropertyChanges { target: root; currentView: historyView }
-                PropertyChanges { target: historyView; model: appWindow.currentWallet ? appWindow.currentWallet.historyModel : null }
-                PropertyChanges { target: mainFlickable; contentHeight: historyView.tableHeight + 220 * scaleRatio }
+                PropertyChanges { target: mainFlickable; contentHeight: historyView.contentHeight + 80}
             }, State {
                 name: "Transfer"
                 PropertyChanges { target: root; currentView: transferView }
-                PropertyChanges { target: mainFlickable; contentHeight: 700 * scaleRatio }
+                PropertyChanges { target: mainFlickable; contentHeight: transferView.transferHeight1 + transferView.transferHeight2 + 80 }
             }, State {
-               name: "Receive"
-               PropertyChanges { target: root; currentView: receiveView }
-               PropertyChanges { target: mainFlickable; contentHeight: receiveView.receiveHeight + 100 }
+                name: "Receive"
+                PropertyChanges { target: root; currentView: receiveView }
+                PropertyChanges { target: mainFlickable; contentHeight: receiveView.receiveHeight + 80 }
             }, State {
                 name: "Merchant"
                 PropertyChanges { target: root; currentView: merchantView }
-                PropertyChanges { target: mainFlickable; contentHeight: merchantView.merchantHeight + 100 }
+                PropertyChanges { target: mainFlickable; contentHeight: merchantView.merchantHeight + 80 }
             }, State {
-               name: "TxKey"
-               PropertyChanges { target: root; currentView: txkeyView }
-               PropertyChanges { target: mainFlickable; contentHeight: 1200 * scaleRatio  }
+                name: "TxKey"
+                PropertyChanges { target: root; currentView: txkeyView }
+                PropertyChanges { target: mainFlickable; contentHeight: txkeyView.txkeyHeight + 80 }
             }, State {
-               name: "SharedRingDB"
-               PropertyChanges { target: root; currentView: sharedringdbView }
-               PropertyChanges { target: mainFlickable; contentHeight: sharedringdbView.panelHeight + 100  }
+                name: "SharedRingDB"
+                PropertyChanges { target: root; currentView: sharedringdbView }
+                PropertyChanges { target: mainFlickable; contentHeight: sharedringdbView.panelHeight + 80  }
             }, State {
                 name: "AddressBook"
-                PropertyChanges {  target: root; currentView: addressBookView  }
-                PropertyChanges { target: mainFlickable; contentHeight: minHeight }
+                PropertyChanges { target: root; currentView: addressBookView }
+                PropertyChanges { target: mainFlickable; contentHeight: addressBookView.addressbookHeight + 80 }
             }, State {
                 name: "Sign"
-               PropertyChanges { target: root; currentView: signView }
-               PropertyChanges { target: mainFlickable; contentHeight: 1000 * scaleRatio  }
+                PropertyChanges { target: root; currentView: signView }
+                PropertyChanges { target: mainFlickable; contentHeight: signView.signHeight + 80 }
             }, State {
                 name: "Settings"
-               PropertyChanges { target: root; currentView: settingsView }
-               PropertyChanges { target: mainFlickable; contentHeight: settingsView.settingsHeight }
+                PropertyChanges { target: root; currentView: settingsView }
+                PropertyChanges { target: mainFlickable; contentHeight: settingsView.settingsHeight }
             }, State {
                 name: "Mining"
                 PropertyChanges { target: root; currentView: miningView }
-                PropertyChanges { target: mainFlickable; contentHeight: 700 * scaleRatio}
+                PropertyChanges { target: mainFlickable; contentHeight: miningView.miningHeight + 80 }
             }, State {
                 name: "Keys"
                 PropertyChanges { target: root; currentView: keysView }
-                PropertyChanges { target: mainFlickable; contentHeight: keysView.keysHeight }
+                PropertyChanges { target: mainFlickable; contentHeight: keysView.keysHeight + 80}
             }, State {
-	           name: "Account"
-	           PropertyChanges { target: root; currentView: accountView }
-	           PropertyChanges { target: mainFlickable; contentHeight: minHeight }
+                name: "Account"
+                PropertyChanges { target: root; currentView: accountView }
+                PropertyChanges { target: mainFlickable; contentHeight: accountView.accountHeight + 80 }
             }	
         ]
 
@@ -186,8 +192,14 @@ Rectangle {
 
     ColumnLayout {
         anchors.fill: parent
-        anchors.margins: currentView !== merchantView ? 20 * scaleRatio : 0
-        anchors.topMargin: appWindow.persistentSettings.customDecorations ? 50 * scaleRatio : 0
+        anchors.margins: {
+            if(currentView === merchantView || currentView === historyView)
+                return 0;
+
+            return 20;
+        }
+
+        anchors.topMargin: appWindow.persistentSettings.customDecorations ? 50 : 0
         spacing: 0
 
         Flickable {
@@ -244,11 +256,28 @@ Rectangle {
 
     // border
     Rectangle {
+        id: borderLeft
+        visible: middlePanel.state !== "Merchant"
         anchors.top: styledRow.bottom
         anchors.bottom: parent.bottom
         anchors.left: parent.left
         width: 1
-        color: "#313131"
+        color: MoneroComponents.Style.appWindowBorderColor
+
+        MoneroEffects.ColorTransition {
+            targetObj: parent
+            blackColor: MoneroComponents.Style._b_appWindowBorderColor
+            whiteColor: MoneroComponents.Style._w_appWindowBorderColor
+        }
+    }
+
+    // border shadow
+    Image {
+        source: "qrc:///images/middlePanelShadow.png"
+        width: 12
+        anchors.top: parent.top
+        anchors.bottom: parent.bottom
+        anchors.left: borderLeft.right
     }
 
     /* connect "payment" click */

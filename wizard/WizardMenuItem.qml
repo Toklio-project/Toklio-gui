@@ -26,9 +26,10 @@
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import QtQuick 2.7
+import QtQuick 2.9
 import QtQuick.Dialogs 1.2
 import QtQuick.Layouts 1.2
+import QtGraphicalEffects 1.0
 import QtQuick.Controls 2.0
 
 import "../components" as MoneroComponents
@@ -36,22 +37,35 @@ import "../components" as MoneroComponents
 RowLayout {
     id: rowlayout
     Layout.fillWidth: true
-    Layout.bottomMargin: 10 * scaleRatio
+    Layout.bottomMargin: 10
     property alias imageIcon: icon.source
     property alias headerText: header.text
     property alias bodyText: body.text
     signal menuClicked();
-    spacing: 10 * scaleRatio
+    spacing: 10
 
     Item {
-        Layout.preferredWidth: 70 * scaleRatio
-        Layout.preferredHeight: 70 * scaleRatio
+        Layout.preferredWidth: 70
+        Layout.preferredHeight: 70
 
         Image {
             id: icon
+            visible: !isOpenGL || MoneroComponents.Style.blackTheme
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.verticalCenter: parent.verticalCenter
             source: ""
+        }
+
+        DropShadow {
+            visible: isOpenGL && !MoneroComponents.Style.blackTheme
+            anchors.fill: icon
+            horizontalOffset: 3
+            verticalOffset: 3
+            radius: 10.0
+            samples: 15
+            color: "#1E000000"
+            source: icon
+            cached: true
         }
 
         MouseArea {
@@ -68,19 +82,20 @@ RowLayout {
         Layout.fillWidth: true
         spacing: 0
 
-        Text {
+        MoneroComponents.TextPlain {
             id: header
             Layout.fillWidth: true
             leftPadding: parent.leftPadding
             topPadding: 0
             color: MoneroComponents.Style.defaultFontColor
+            opacity: MoneroComponents.Style.blackTheme ? 1.0 : 0.8
             font.bold: true
             font.family: MoneroComponents.Style.fontRegular.name
             font.pixelSize: {
                 if(wizardController.layoutScale === 2 ){
-                    return 22 * scaleRatio;
+                    return 22;
                 } else {
-                    return 16 * scaleRatio;
+                    return 16;
                 }
             }
 
@@ -93,20 +108,21 @@ RowLayout {
             }
         }
 
-        Text {
+        MoneroComponents.TextPlain {
             id: body
             Layout.fillWidth: true
             color: MoneroComponents.Style.dimmedFontColor
             font.family: MoneroComponents.Style.fontRegular.name
             font.pixelSize: {
                 if(wizardController.layoutScale === 2 ){
-                    return 16 * scaleRatio;
+                    return 16;
                 } else {
-                    return 14 * scaleRatio;
+                    return 14;
                 }
             }
-            topPadding: 4 * scaleRatio
-            wrapMode: Text.WordWrap;
+            topPadding: 4
+            wrapMode: Text.WordWrap
+            themeTransition: false
 
             MouseArea {
                 cursorShape: Qt.PointingHandCursor

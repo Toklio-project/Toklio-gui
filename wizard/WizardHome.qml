@@ -26,7 +26,7 @@
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import QtQuick 2.7
+import QtQuick 2.9
 import QtQuick.Dialogs 1.2
 import QtQuick.Layouts 1.2
 import QtQuick.Controls 2.0
@@ -46,17 +46,17 @@ Rectangle {
         Layout.fillWidth: true
         anchors.horizontalCenter: parent.horizontalCenter;
 
-        spacing: 10 * scaleRatio
+        spacing: 10
 
         ColumnLayout {
             Layout.fillWidth: true
             Layout.topMargin: wizardController.wizardSubViewTopMargin
             Layout.maximumWidth: wizardController.wizardSubViewWidth
             Layout.alignment: Qt.AlignHCenter
-            spacing: 0 * scaleRatio
+            spacing: 0
 
             WizardHeader {
-                Layout.bottomMargin: 20 * scaleRatio
+                Layout.bottomMargin: 20
                 title: qsTr("Welcome to Monero.") + translationManager.emptyString
                 subtitle: ""
             }
@@ -64,7 +64,7 @@ Rectangle {
             WizardMenuItem {
                 headerText: qsTr("Create a new wallet") + translationManager.emptyString
                 bodyText: qsTr("Choose this option if this is your first time using Monero.") + translationManager.emptyString
-                imageIcon: "../images/create-wallet.png"
+                imageIcon: "qrc:///images/create-wallet.png"
 
                 onMenuClicked: {
                     wizardController.restart();
@@ -75,8 +75,8 @@ Rectangle {
 
             Rectangle {
                 Layout.preferredHeight: 1
-                Layout.topMargin: 3 * scaleRatio
-                Layout.bottomMargin: 3 * scaleRatio
+                Layout.topMargin: 3
+                Layout.bottomMargin: 3
                 Layout.fillWidth: true
                 color: MoneroComponents.Style.dividerColor
                 opacity: MoneroComponents.Style.dividerOpacity
@@ -85,7 +85,7 @@ Rectangle {
             WizardMenuItem {
                 headerText: qsTr("Create a new wallet from hardware") + translationManager.emptyString
                 bodyText: qsTr("Connect your hardware wallet to create a new Monero wallet.") + translationManager.emptyString
-                imageIcon: "../images/restore-wallet-from-hardware.png"
+                imageIcon: "qrc:///images/restore-wallet-from-hardware.png"
 
                 onMenuClicked: {
                     wizardController.restart();
@@ -95,8 +95,8 @@ Rectangle {
 
             Rectangle {
                 Layout.preferredHeight: 1
-                Layout.topMargin: 3 * scaleRatio
-                Layout.bottomMargin: 3 * scaleRatio
+                Layout.topMargin: 3
+                Layout.bottomMargin: 3
                 Layout.fillWidth: true
                 color: MoneroComponents.Style.dividerColor
                 opacity: MoneroComponents.Style.dividerOpacity
@@ -105,7 +105,7 @@ Rectangle {
             WizardMenuItem {
                 headerText: qsTr("Open a wallet from file") + translationManager.emptyString
                 bodyText: qsTr("Import an existing .keys wallet file from your computer.") + translationManager.emptyString
-                imageIcon: "../images/open-wallet-from-file.png"
+                imageIcon: "qrc:///images/open-wallet-from-file.png"
 
                 onMenuClicked: {
                     wizardStateView.state = "wizardOpenWallet1"
@@ -114,8 +114,8 @@ Rectangle {
 
             Rectangle {
                 Layout.preferredHeight: 1
-                Layout.topMargin: 3 * scaleRatio
-                Layout.bottomMargin: 3 * scaleRatio
+                Layout.topMargin: 3
+                Layout.bottomMargin: 3
                 Layout.fillWidth: true
                 color: MoneroComponents.Style.dividerColor
                 opacity: MoneroComponents.Style.dividerOpacity
@@ -124,7 +124,7 @@ Rectangle {
             WizardMenuItem {
                 headerText: qsTr("Restore wallet from keys or mnemonic seed") + translationManager.emptyString
                 bodyText: qsTr("Enter your private keys or 25-word mnemonic seed to restore your wallet.") + translationManager.emptyString
-                imageIcon: "../images/restore-wallet.png"
+                imageIcon: "qrc:///images/restore-wallet.png"
 
                 onMenuClicked: {
                     wizardController.restart();
@@ -134,14 +134,15 @@ Rectangle {
 
             RowLayout {
                 Layout.fillWidth: true
-                Layout.topMargin: 16 * scaleRatio
-                spacing: 20 * scaleRatio
+                Layout.topMargin: 16
+                spacing: 20
 
                 MoneroComponents.StandardButton {
                     small: true
                     text: qsTr("Change wallet mode") + translationManager.emptyString
 
                     onClicked: {
+                        wizardController.wizardStackView.backTransition = true;
                         wizardController.wizardState = 'wizardModeSelection';
                     }                    
                 }
@@ -152,6 +153,7 @@ Rectangle {
                     text: qsTr("Change language") + translationManager.emptyString
 
                     onClicked: {
+                        wizardController.wizardStackView.backTransition = false;
                         appWindow.toggleLanguageView();
                     }
                 }
@@ -159,9 +161,9 @@ Rectangle {
 
             MoneroComponents.CheckBox2 {
                 id: showAdvancedCheckbox
-                Layout.topMargin: 30 * scaleRatio
+                Layout.topMargin: 30
                 Layout.fillWidth: true
-                fontSize: 15 * scaleRatio
+                fontSize: 15
                 checked: false
                 text: qsTr("Advanced options") + translationManager.emptyString
                 visible: appWindow.walletMode >= 2
@@ -169,7 +171,6 @@ Rectangle {
 
             ListModel {
                 id: networkTypeModel
-                // @TODO: try real enums
                 ListElement {column1: "Mainnet"; column2: ""; nettype: "mainnet"}
                 ListElement {column1: "Testnet"; column2: ""; nettype: "testnet"}
                 ListElement {column1: "Stagenet"; column2: ""; nettype: "stagenet"}
@@ -179,25 +180,33 @@ Rectangle {
                 visible: showAdvancedCheckbox.checked && appWindow.walletMode >= 2
                 columns: 4
                 columnSpacing: 20
+                Layout.fillWidth: true
 
-                MoneroComponents.StandardDropdown {
-                    id: networkTypeDropdown
-                    dataModel: networkTypeModel
-                    Layout.fillWidth: true
-                    Layout.topMargin: 41
-                    shadowReleasedColor: "#FF4304"
-                    shadowPressedColor: "#B32D00"
-                    releasedColor: "#363636"
-                    pressedColor: "#202020"
+                ColumnLayout {
+                    Layout.topMargin: 4
 
-                    onChanged: {
-                        var item = dataModel.get(currentIndex).nettype.toLowerCase();
-                        if(item === "mainnet") {
-                            persistentSettings.nettype = NetworkType.MAINNET
-                        } else if(item === "stagenet"){
-                            persistentSettings.nettype = NetworkType.STAGENET
-                        } else if(item === "testnet"){
-                            persistentSettings.nettype = NetworkType.TESTNET
+                    MoneroComponents.Label {
+                        text: qsTr("Change Network:") + translationManager.emptyString
+                        fontSize: 14
+                    }
+
+                    MoneroComponents.StandardDropdown {
+                        id: networkTypeDropdown
+                        dataModel: networkTypeModel
+                        Layout.fillWidth: true
+                        Layout.maximumWidth: 180
+                        Layout.topMargin: 5
+
+                        onChanged: {
+                            var item = dataModel.get(currentIndex).nettype.toLowerCase();
+                            if(item === "mainnet") {
+                                persistentSettings.nettype = NetworkType.MAINNET
+                            } else if(item === "stagenet"){
+                                persistentSettings.nettype = NetworkType.STAGENET
+                            } else if(item === "testnet"){
+                                persistentSettings.nettype = NetworkType.TESTNET
+                            }
+                            appWindow.disconnectRemoteNode()
                         }
                     }
                 }
@@ -207,8 +216,8 @@ Rectangle {
                     Layout.fillWidth: true
 
                     labelText: qsTr("Number of KDF rounds:") + translationManager.emptyString
-                    labelFontSize: 14 * scaleRatio
-                    placeholderFontSize: 16 * scaleRatio
+                    labelFontSize: 14
+                    placeholderFontSize: 16
                     placeholderText: "0"
                     validator: IntValidator { bottom: 1 }
                     text: persistentSettings.kdfRounds ? persistentSettings.kdfRounds : "1"

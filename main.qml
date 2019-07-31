@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2018, The Monero Project
+// Copyright (c) 2014-2019, The Monero Project
 //
 // All rights reserved.
 //
@@ -26,19 +26,21 @@
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import QtQuick 2.2
+import QtQuick 2.9
 import QtQuick.Window 2.0
 import QtQuick.Controls 1.1
 import QtQuick.Controls.Styles 1.1
 import QtQuick.Dialogs 1.2
-import Qt.labs.settings 1.0
 
 import moneroComponents.Wallet 1.0
 import moneroComponents.PendingTransaction 1.0
 import moneroComponents.NetworkType 1.0
+import moneroComponents.Settings 1.0
 
 import "components"
 import "components" as MoneroComponents
+import "components/effects" as MoneroEffects
+import "pages/merchant" as MoneroMerchant
 import "wizard"
 import "js/Utils.js" as Utils
 import "js/Windows.js" as Windows
@@ -49,10 +51,7 @@ ApplicationWindow {
 
     property var currentItem
     property bool hideBalanceForced: false
-    property bool whatIsEnable: false
     property bool ctrlPressed: false
-    property bool rightPanelExpanded: false
-    property bool osx: false
     property alias persistentSettings : persistentSettings
     property var currentWallet;
     property var transaction;
@@ -68,23 +67,44 @@ ApplicationWindow {
     property string walletName
     property bool viewOnly: false
     property bool foundNewBlock: false
-    property int timeToUnlock: 0
     property bool qrScannerEnabled: (typeof builtWithScanner != "undefined") && builtWithScanner
     property int blocksToSync: 1
     property var isMobile: (appWindow.width > 700 && !isAndroid) ? false : true
     property bool isMining: false
     property int walletMode: persistentSettings.walletMode
     property var cameraUi
-    property bool remoteNodeConnected: false
     property bool androidCloseTapped: false;
     property int userLastActive;  // epoch
     // Default daemon addresses
     readonly property string localDaemonAddress : "localhost:" + getDefaultDaemonRpcPort(persistentSettings.nettype)
     property string currentDaemonAddress;
-    property bool startLocalNodeCancelled: false
     property int disconnectedEpoch: 0
     property int estimatedBlockchainSize: 75 // GB
     property alias viewState: rootItem.state
+    property string prevSplashText;
+    property bool splashDisplayedBeforeButtonRequest;
+    property int appEpoch: Math.floor((new Date).getTime() / 1000)
+    property bool themeTransition: false
+
+    // fiat price conversion
+    property int fiatPriceXMRUSD: 0
+    property int fiatPriceXMREUR: 0
+    property var fiatPriceAPIs: {
+        return {
+            "kraken": {
+                "xmrusd": "https://api.kraken.com/0/public/Ticker?pair=XMRUSD",
+                "xmreur": "https://api.kraken.com/0/public/Ticker?pair=XMREUR"
+            },
+            "coingecko": {
+                "xmrusd": "https://api.coingecko.com/api/v3/simple/price?ids=monero&vs_currencies=usd",
+                "xmreur": "https://api.coingecko.com/api/v3/simple/price?ids=monero&vs_currencies=eur"
+            },
+            "cryptocompare": {
+                "xmrusd": "https://min-api.cryptocompare.com/data/price?fsym=XMR&tsyms=USD",
+                "xmreur": "https://min-api.cryptocompare.com/data/price?fsym=XMR&tsyms=EUR",
+            }
+        }
+    }
 
     property string remoteNodeService: {
         // support user-defined remote node aggregators
@@ -96,10 +116,7 @@ ApplicationWindow {
         }
 
         // monero-gui workgroup maintained
-        if(isWindows)
-            return "http://autonode.xmr.pm/";
-        else
-            return "https://autonode.xmr.pm/"
+        return "https://autonode.xmr.pm/"
     }
 
     // true if wallet ever synchronized
@@ -135,7 +152,6 @@ ApplicationWindow {
         else if(seq === "Ctrl+I") middlePanel.state = "Sign"
         else if(seq === "Ctrl+G") middlePanel.state = "SharedRingDB"
         else if(seq === "Ctrl+E") middlePanel.state = "Settings"
-        else if(seq === "Ctrl+Y") leftPanel.keysClicked()
         else if(seq === "Ctrl+D") middlePanel.state = "Advanced"
         else if(seq === "Ctrl+T") middlePanel.state = "Account"
         else if(seq === "Ctrl+Tab" || seq === "Alt+Tab") {
@@ -200,15 +216,6 @@ ApplicationWindow {
         leftPanel.selectItem(page);
     }
 
-    function openWalletFromFile(){
-        persistentSettings.restore_height = 0
-        restoreHeight = 0;
-        persistentSettings.is_recovering = false
-        walletPassword = ""
-        fileDialog.folder = "file://" + moneroAccountsDir
-        fileDialog.open();
-    }
-
     function initialize() {
         appWindow.viewState = "normal";
         console.log("initializing..")
@@ -240,7 +247,7 @@ ApplicationWindow {
         }
 
         // Local daemon settings
-        walletManager.setDaemonAddress(localDaemonAddress)
+        walletManager.setDaemonAddressAsync(localDaemonAddress);
 
         // enable timers
         userInActivityTimer.running = true;
@@ -266,6 +273,8 @@ ApplicationWindow {
                 wallet_path = moneroAccountsDir + wallet_path;
             // console.log("opening wallet at: ", wallet_path, "with password: ", appWindow.walletPassword);
             console.log("opening wallet at: ", wallet_path, ", network type: ", persistentSettings.nettype == NetworkType.MAINNET ? "mainnet" : persistentSettings.nettype == NetworkType.TESTNET ? "testnet" : "stagenet");
+
+            this.onWalletOpening();
             walletManager.openWalletAsync(wallet_path, walletPassword,
                                               persistentSettings.nettype, persistentSettings.kdfRounds);
         }
@@ -274,10 +283,11 @@ ApplicationWindow {
         titleBar.visible = persistentSettings.customDecorations;
     }
 
-    function closeWallet() {
+    function closeWallet(callback) {
 
         // Disconnect all listeners
         if (typeof currentWallet !== "undefined" && currentWallet !== null) {
+            currentWallet.heightRefreshed.disconnect(onHeightRefreshed);
             currentWallet.refreshed.disconnect(onWalletRefresh)
             currentWallet.updated.disconnect(onWalletUpdate)
             currentWallet.newBlock.disconnect(onWalletNewBlock)
@@ -286,6 +296,9 @@ ApplicationWindow {
             currentWallet.unconfirmedMoneyReceived.disconnect(onWalletUnconfirmedMoneyReceived)
             currentWallet.transactionCreated.disconnect(onTransactionCreated)
             currentWallet.connectionStatusChanged.disconnect(onWalletConnectionStatusChanged)
+            currentWallet.deviceButtonRequest.disconnect(onDeviceButtonRequest);
+            currentWallet.deviceButtonPressed.disconnect(onDeviceButtonPressed);
+            currentWallet.transactionCommitted.disconnect(onTransactionCommitted);
             middlePanel.paymentClicked.disconnect(handlePayment);
             middlePanel.sweepUnmixableClicked.disconnect(handleSweepUnmixable);
             middlePanel.getProofClicked.disconnect(handleGetProof);
@@ -293,8 +306,17 @@ ApplicationWindow {
         }
 
         currentWallet = undefined;
-        walletManager.closeWallet();
 
+        appWindow.showProcessingSplash(qsTr("Closing wallet..."));
+        if (callback) {
+            walletManager.closeWalletAsync(function() {
+                hideProcessingSplash();
+                callback();
+            });
+        } else {
+            walletManager.closeWallet();
+            hideProcessingSplash();
+        }
     }
 
     function connectWallet(wallet) {
@@ -333,6 +355,7 @@ ApplicationWindow {
         }
 
         // connect handlers
+        currentWallet.heightRefreshed.connect(onHeightRefreshed);
         currentWallet.refreshed.connect(onWalletRefresh)
         currentWallet.updated.connect(onWalletUpdate)
         currentWallet.newBlock.connect(onWalletNewBlock)
@@ -341,6 +364,9 @@ ApplicationWindow {
         currentWallet.unconfirmedMoneyReceived.connect(onWalletUnconfirmedMoneyReceived)
         currentWallet.transactionCreated.connect(onTransactionCreated)
         currentWallet.connectionStatusChanged.connect(onWalletConnectionStatusChanged)
+        currentWallet.deviceButtonRequest.connect(onDeviceButtonRequest);
+        currentWallet.deviceButtonPressed.connect(onDeviceButtonPressed);
+        currentWallet.transactionCommitted.connect(onTransactionCommitted);
         middlePanel.paymentClicked.connect(handlePayment);
         middlePanel.sweepUnmixableClicked.connect(handleSweepUnmixable);
         middlePanel.getProofClicked.connect(handleGetProof);
@@ -392,8 +418,55 @@ ApplicationWindow {
         middlePanel.balanceText = balance;
         leftPanel.balanceText = balance;
 
+        if (persistentSettings.fiatPriceEnabled) {
+            appWindow.fiatApiUpdateBalance(balance, balance_unlocked);
+        }
+
         var accountLabel = currentWallet.getSubaddressLabel(currentWallet.currentSubaddressAccount, 0);
         leftPanel.balanceLabelText = qsTr("Balance (#%1%2)").arg(currentWallet.currentSubaddressAccount).arg(accountLabel === "" ? "" : (" – " + accountLabel));
+    }
+
+    function onUriHandler(uri){
+        if(uri.startsWith("monero://")){
+            var address = uri.substring("monero://".length);
+
+            var params = {}
+            if(address.length === 0) return;
+            var spl = address.split("?");
+
+            if(spl.length > 2) return;
+            if(spl.length >= 1) {
+                // parse additional params
+                address = spl[0];
+
+                if(spl.length === 2){
+                    spl.shift();
+                    var item = spl[0];
+
+                    var _spl = item.split("&");
+                    for (var param in _spl){
+                        var _item = _spl[param];
+                        if(!_item.indexOf("=") > 0) continue;
+
+                        var __spl = _item.split("=");
+                        if(__spl.length !== 2) continue;
+
+                        params[__spl[0]] = __spl[1];
+                    }
+                }
+            }
+
+            // Fill fields
+            middlePanel.transferView.sendTo(address, params["tx_payment_id"], params["tx_description"], params["tx_amount"]);
+
+            // Raise window
+            appWindow.raise();
+            appWindow.show();
+
+            // @TODO: remove after paymentID deprecation
+            if(params.hasOwnProperty("tx_payment_id"))
+                persistentSettings.showPid = true;
+        }
     }
 
     function onWalletConnectionStatusChanged(status){
@@ -402,14 +475,14 @@ ApplicationWindow {
         leftPanel.networkStatus.connected = status
 
         // update local daemon status.
-        if(!isMobile && walletManager.isDaemonLocal(appWindow.persistentSettings.daemon_address))
+        if(!isMobile && walletManager.isDaemonLocal(currentDaemonAddress))
             daemonRunning = status;
 
         // Update fee multiplier dropdown on transfer page
         middlePanel.transferView.updatePriorityDropdown();
 
         // If wallet isnt connected, advanced wallet mode and no daemon is running - Ask
-        if(!isMobile && appWindow.walletMode >= 2 && walletManager.isDaemonLocal(appWindow.persistentSettings.daemon_address) && !walletInitialized && status === Wallet.ConnectionStatus_Disconnected && !daemonManager.running(persistentSettings.nettype)){
+        if(!isMobile && appWindow.walletMode >= 2 && walletManager.isDaemonLocal(currentDaemonAddress) && !walletInitialized && status === Wallet.ConnectionStatus_Disconnected && !daemonManager.running(persistentSettings.nettype)){
             daemonManagerDialog.open();
         }
         // initialize transaction history once wallet is initialized first time;
@@ -422,7 +495,26 @@ ApplicationWindow {
         }
     }
 
+    function onDeviceButtonRequest(code){
+        prevSplashText = splash.messageText;
+        splashDisplayedBeforeButtonRequest = splash.visible;
+        appWindow.showProcessingSplash(qsTr("Please proceed to the device..."));
+    }
+
+    function onDeviceButtonPressed(){
+        if (splashDisplayedBeforeButtonRequest){
+           appWindow.showProcessingSplash(prevSplashText);
+        } else {
+           hideProcessingSplash();
+        }
+    }
+
+    function onWalletOpening(){
+        appWindow.showProcessingSplash(qsTr("Opening wallet ..."));
+    }
+
     function onWalletOpened(wallet) {
+        hideProcessingSplash();
         walletName = usefulName(wallet.path)
         console.log(">>> wallet opened: " + wallet)
         if (wallet.status !== Wallet.Status_Ok) {
@@ -436,12 +528,30 @@ ApplicationWindow {
                 wizard.wizardState = "wizardHome";
                 rootItem.state = "wizard";
             }
-            // opening with password but password doesn't match
-            console.error("Error opening wallet with password: ", wallet.errorString);
-            passwordDialog.showError(qsTr("Couldn't open wallet: ") + wallet.errorString);
-            console.log("closing wallet async : " + wallet.address)
-            closeWallet();
-            return;
+            // try to resolve common wallet cache errors automatically
+            switch (wallet.errorString) {
+                case "basic_string::_M_replace_aux":
+                    walletManager.clearWalletCache(wallet.path);
+                    walletPassword = passwordDialog.password;
+                    appWindow.initialize();
+                    console.error("Repairing wallet cache with error: ", wallet.errorString);
+                    appWindow.showStatusMessage(qsTr("Repairing incompatible wallet cache. Resyncing wallet."),6);
+                    return;
+                case "std::bad_alloc":
+                    walletManager.clearWalletCache(wallet.path);
+                    walletPassword = passwordDialog.password;
+                    appWindow.initialize();
+                    console.error("Repairing wallet cache with error: ", wallet.errorString);
+                    appWindow.showStatusMessage(qsTr("Repairing incompatible wallet cache. Resyncing wallet."),6);
+                    return;
+                default:
+                    // opening with password but password doesn't match
+                    console.error("Error opening wallet with password: ", wallet.errorString);
+                    passwordDialog.showError(qsTr("Couldn't open wallet: ") + wallet.errorString);
+                    console.log("closing wallet async : " + wallet.address)
+                    closeWallet();
+                    return;
+            }
         }
 
         // wallet opened successfully, subscribing for wallet updates
@@ -449,11 +559,29 @@ ApplicationWindow {
 
         // Force switch normal view
         rootItem.state = "normal";
+
+        // Process queued IPC command
+        if(typeof IPC !== "undefined" && IPC.queuedCmd().length > 0){
+            var queuedCmd = IPC.queuedCmd();
+            if(/^\w+:\/\/(.*)$/.test(queuedCmd)) appWindow.onUriHandler(queuedCmd); // uri
+        }
     }
 
+    function onWalletPassphraseNeeded(){
+        if(rootItem.state !== "normal") return;
 
-    function onWalletClosed(walletAddress) {
-        console.log(">>> wallet closed: " + walletAddress)
+        hideProcessingSplash();
+
+        console.log(">>> wallet passphrase needed: ")
+        passwordDialog.onAcceptedPassphraseCallback = function() {
+            walletManager.onPassphraseEntered(passwordDialog.password);
+            this.onWalletOpening();
+        }
+        passwordDialog.onRejectedPassphraseCallback = function() {
+            walletManager.onPassphraseEntered("", true);
+            this.onWalletOpening();
+        }
+        passwordDialog.openPassphraseDialog()
     }
 
     function onWalletUpdate() {
@@ -464,8 +592,11 @@ ApplicationWindow {
             foundNewBlock = false;
             console.log("New block found - updating history")
             currentWallet.history.refresh(currentWallet.currentSubaddressAccount)
-            timeToUnlock = currentWallet.history.minutesToUnlock
+            var timeToUnlock = currentWallet.history.minutesToUnlock
             leftPanel.minutesToUnlockTxt = (timeToUnlock > 0)? (timeToUnlock == 20)? qsTr("Unlocked balance (waiting for block)") : qsTr("Unlocked balance (~%1 min)").arg(timeToUnlock) : qsTr("Unlocked balance");
+
+            if(middlePanel.state == "History")
+                middlePanel.historyView.update();
         }
     }
 
@@ -474,31 +605,21 @@ ApplicationWindow {
         persistentSettings.useRemoteNode = true;
         currentDaemonAddress = persistentSettings.remoteNodeAddress;
         currentWallet.initAsync(currentDaemonAddress);
-        walletManager.setDaemonAddress(currentDaemonAddress);
-        remoteNodeConnected = true;
+        walletManager.setDaemonAddressAsync(currentDaemonAddress);
     }
 
     function disconnectRemoteNode() {
+        if (typeof currentWallet === "undefined" || currentWallet === null)
+            return;
+
         console.log("disconnecting remote node");
         persistentSettings.useRemoteNode = false;
         currentDaemonAddress = localDaemonAddress
         currentWallet.initAsync(currentDaemonAddress);
-        walletManager.setDaemonAddress(currentDaemonAddress);
-        remoteNodeConnected = false;
+        walletManager.setDaemonAddressAsync(currentDaemonAddress);
     }
 
-    function onWalletRefresh() {
-        console.log(">>> wallet refreshed")
-
-        // Daemon connected
-        leftPanel.networkStatus.connected = currentWallet.connected()
-
-        // Wallet height
-        var bcHeight = currentWallet.blockChainHeight();
-
-        // Check daemon status
-        var dCurrentBlock = currentWallet.daemonBlockChainHeight();
-        var dTargetBlock = currentWallet.daemonBlockChainTargetHeight();
+    function onHeightRefreshed(bcHeight, dCurrentBlock, dTargetBlock) {
         // Daemon fully synced
         // TODO: implement onDaemonSynced or similar in wallet API and don't start refresh thread before daemon is synced
         // targetBlock = currentBlock = 1 before network connection is established.
@@ -537,6 +658,9 @@ ApplicationWindow {
             if(persistentSettings.is_recovering) {
                 persistentSettings.is_recovering = false
             }
+            if (persistentSettings.is_recovering_from_device) {
+                persistentSettings.is_recovering_from_device = false;
+            }
         }
 
         // Update history on every refresh if it's empty
@@ -544,6 +668,15 @@ ApplicationWindow {
             currentWallet.history.refresh(currentWallet.currentSubaddressAccount)
 
         onWalletUpdate();
+    }
+
+    function onWalletRefresh() {
+        console.log(">>> wallet refreshed")
+
+        // Daemon connected
+        leftPanel.networkStatus.connected = currentWallet.connected()
+
+        currentWallet.refreshHeightAsync();
     }
 
     function startDaemon(flags){
@@ -610,24 +743,31 @@ ApplicationWindow {
 
     function onWalletMoneyReceived(txId, amount) {
         // refresh transaction history here
-        currentWallet.refresh()
         console.log("Confirmed money found")
         // history refresh is handled by walletUpdated
         currentWallet.history.refresh(currentWallet.currentSubaddressAccount) // this will refresh model
         currentWallet.subaddress.refresh(currentWallet.currentSubaddressAccount)
+
+        if(middlePanel.state == "History")
+            middlePanel.historyView.update();
     }
 
     function onWalletUnconfirmedMoneyReceived(txId, amount) {
         // refresh history
         console.log("unconfirmed money found")
-        currentWallet.history.refresh(currentWallet.currentSubaddressAccount)
+        currentWallet.history.refresh(currentWallet.currentSubaddressAccount);
+
+        if(middlePanel.state == "History")
+            middlePanel.historyView.update();
     }
 
     function onWalletMoneySent(txId, amount) {
         // refresh transaction history here
         console.log("Toklio sent found")
-        currentWallet.refresh()
-        currentWallet.history.refresh(currentWallet.currentSubaddressAccount) // this will refresh model
+        currentWallet.history.refresh(currentWallet.currentSubaddressAccount); // this will refresh model
+
+        if(middlePanel.state == "History")
+            middlePanel.historyView.update();
     }
 
     function walletsFound() {
@@ -801,16 +941,6 @@ ApplicationWindow {
 
     // called after user confirms transaction
     function handleTransactionConfirmed(fileName) {
-        // grab transaction.txid before commit, since it clears it.
-        // we actually need to copy it, because QML will incredibly
-        // call the function multiple times when the variable is used
-        // after commit, where it returns another result...
-        // Of course, this loop is also calling the function multiple
-        // times, but at least with the same result.
-        var txid = [], txid_org = transaction.txid, txid_text = ""
-        for (var i = 0; i < txid_org.length; ++i)
-          txid[i] = txid_org[i]
-
         // View only wallet - we save the tx
         if(viewOnly && saveTxDialog.fileUrl){
             // No file specified - abort
@@ -825,12 +955,19 @@ ApplicationWindow {
             transaction.setFilename(path);
         }
 
-        if (!transaction.commit()) {
+        appWindow.showProcessingSplash(qsTr("Sending transaction ..."));
+        currentWallet.commitTransactionAsync(transaction);
+    }
+
+    function onTransactionCommitted(success, transaction, txid) {
+        hideProcessingSplash();
+        if (!success) {
             console.log("Error committing transaction: " + transaction.errorString);
             informationPopup.title = qsTr("Error") + translationManager.emptyString
             informationPopup.text  = qsTr("Couldn't send the money: ") + transaction.errorString
             informationPopup.icon  = StandardIcon.Critical
         } else {
+            var txid_text = ""
             informationPopup.title = qsTr("Information") + translationManager.emptyString
             for (var i = 0; i < txid.length; ++i) {
                 if (txid_text.length > 0)
@@ -862,11 +999,21 @@ ApplicationWindow {
                     ", address: ", address,
                     ", message: ", message);
 
-        var result;
+        function spendProofFallback(txid, result){
+            if (!result || result.indexOf("error|") === 0) {
+                currentWallet.getSpendProofAsync(txid, message, txProofComputed);
+            } else {
+                txProofComputed(txid, result);
+            }
+        }
+
         if (address.length > 0)
-            result = currentWallet.getTxProof(txid, address, message);
-        if (!result || result.indexOf("error|") === 0)
-            result = currentWallet.getSpendProof(txid, message);
+            currentWallet.getTxProofAsync(txid, address, message, spendProofFallback);
+        else
+            spendProofFallback(txid, null);
+    }
+
+    function txProofComputed(txid, result){
         informationPopup.title  = qsTr("Payment proof") + translationManager.emptyString;
         if (result.indexOf("error|") === 0) {
             var errorString = result.split("|")[1];
@@ -942,7 +1089,6 @@ ApplicationWindow {
     function enableUI(enable) {
         middlePanel.enabled = enable;
         leftPanel.enabled = enable;
-        rightPanel.enabled = enable;
     }
 
     function showProcessingSplash(message) {
@@ -951,28 +1097,42 @@ ApplicationWindow {
             splash.messageText = message
             splash.heightProgressText = ""
         }
-        splash.show()
+
+        leftPanel.enabled = false;
+        middlePanel.enabled = false;
+        titleBar.enabled = false;
+        inactiveOverlay.visible = true;
+        splash.show();
     }
 
     function hideProcessingSplash() {
         console.log("Hiding processing splash")
-        splash.close()
+        splash.close();
+
+        if (!passwordDialog.visible) {
+            leftPanel.enabled = true
+            middlePanel.enabled = true
+            titleBar.enabled = true
+            inactiveOverlay.visible = false;
+        }
     }
 
     // close wallet and show wizard
     function showWizard(){
         clearMoneroCardLabelText();
         walletInitialized = false;
-        closeWallet();
-        currentWallet = undefined;
-        wizard.restart();
-        wizard.wizardState = "wizardHome";
-        rootItem.state = "wizard"
-        // reset balance
-        leftPanel.balanceText = leftPanel.unlockedBalanceText = walletManager.displayAmount(0);
-        // disable timers
-        userInActivityTimer.running = false;
-        simpleModeConnectionTimer.running = false;
+        closeWallet(function() {
+            currentWallet = undefined;
+            wizard.restart();
+            wizard.wizardState = "wizardHome";
+            rootItem.state = "wizard"
+            // reset balance
+            leftPanel.balanceText = leftPanel.unlockedBalanceText = walletManager.displayAmount(0);
+            fiatApiUpdateBalance(0, 0);
+            // disable timers
+            userInActivityTimer.running = false;
+            simpleModeConnectionTimer.running = false;
+        });
     }
 
     function hideMenu() {
@@ -988,27 +1148,166 @@ ApplicationWindow {
 
     objectName: "appWindow"
     visible: true
-//    width: screenWidth //rightPanelExpanded ? 1269 : 1269 - 300
-//    height: 900 //300//maxWindowHeight;
-    color: "#FFFFFF"
+    width: screenWidth > 980 ? 980 : 800
+    height: screenHeight > maxWindowHeight ? maxWindowHeight : 700
+    color: MoneroComponents.Style.appWindowBackgroundColor
     flags: persistentSettings.customDecorations ? Windows.flagsCustomDecorations : Windows.flags
     onWidthChanged: x -= 0
+
+    Timer {
+        id: fiatPriceTimer
+        interval: 1000 * 60;
+        running: persistentSettings.fiatPriceEnabled;
+        repeat: true
+        onTriggered: {
+            if(persistentSettings.fiatPriceEnabled)
+                appWindow.fiatApiRefresh();
+        }
+        triggeredOnStart: false
+    }
+
+    function fiatApiParseTicker(resp, currency){
+        // parse & validate incoming JSON
+        if(resp._url.startsWith("https://api.kraken.com/0/")){
+            if(resp.hasOwnProperty("error") && resp.error.length > 0 || !resp.hasOwnProperty("result")){
+                appWindow.fiatApiError("Kraken API has error(s)");
+                return;
+            }
+
+            var key = currency === "xmreur" ? "XXMRZEUR" : "XXMRZUSD";
+            var ticker = resp.result[key]["o"];
+            return ticker;
+        } else if(resp._url.startsWith("https://api.coingecko.com/api/v3/")){
+            var key = currency === "xmreur" ? "eur" : "usd";
+            if(!resp.hasOwnProperty("monero") || !resp["monero"].hasOwnProperty(key)){
+                appWindow.fiatApiError("Coingecko API has error(s)");
+                return;
+            }
+            return resp["monero"][key];
+        } else if(resp._url.startsWith("https://min-api.cryptocompare.com/data/")){
+            var key = currency === "xmreur" ? "EUR" : "USD";
+            if(!resp.hasOwnProperty(key)){
+                appWindow.fiatApiError("cryptocompare API has error(s)");
+                return;
+            }
+            return resp[key];
+        }
+    }
+
+    function fiatApiGetCurrency(resp){
+        // map response to `appWindow.fiatPriceAPIs` object
+        if (!resp.hasOwnProperty('_url')){
+            appWindow.fiatApiError("invalid JSON");
+            return;
+        }
+
+        var apis = appWindow.fiatPriceAPIs;
+        for (var api in apis){
+            if (!apis.hasOwnProperty(api))
+               continue;
+
+            for (var cur in apis[api]){
+                if(!apis[api].hasOwnProperty(cur))
+                    continue;
+
+                var url = apis[api][cur];
+                if(url === resp._url){
+                    return cur;
+                }
+            }
+        }
+    }
+
+    function fiatApiJsonReceived(resp){
+        // handle incoming JSON, set ticker
+        var currency = appWindow.fiatApiGetCurrency(resp);
+        if(typeof currency == "undefined"){
+            appWindow.fiatApiError("could not get currency");
+            return;
+        }
+
+        var ticker = appWindow.fiatApiParseTicker(resp, currency);
+        if(ticker <= 0){
+            appWindow.fiatApiError("could not get ticker");
+            return;
+        }
+
+        if(persistentSettings.fiatPriceCurrency === "xmrusd")
+            appWindow.fiatPriceXMRUSD = ticker;
+        else if(persistentSettings.fiatPriceCurrency === "xmreur")
+            appWindow.fiatPriceXMREUR = ticker;
+
+        appWindow.updateBalance();
+    }
+
+    function fiatApiRefresh(){
+        // trigger API call
+        if(!persistentSettings.fiatPriceEnabled)
+            return;
+
+        var userProvider = persistentSettings.fiatPriceProvider;
+        if(!appWindow.fiatPriceAPIs.hasOwnProperty(userProvider)){
+            appWindow.fiatApiError("provider \"" + userProvider + "\" not implemented");
+            return;
+        }
+
+        var provider = appWindow.fiatPriceAPIs[userProvider];
+        var userCurrency = persistentSettings.fiatPriceCurrency;
+        if(!provider.hasOwnProperty(userCurrency)){
+            appWindow.fiatApiError("currency \"" + userCurrency + "\" not implemented");
+        }
+
+        var url = provider[userCurrency];
+        Prices.getJSON(url);
+    }
+
+    function fiatApiUpdateBalance(balance, unlocked_balance){
+        // update balance card
+        var ticker = persistentSettings.fiatPriceCurrency === "xmrusd" ? appWindow.fiatPriceXMRUSD : appWindow.fiatPriceXMREUR;
+        var symbol = persistentSettings.fiatPriceCurrency === "xmrusd" ? "$" : "€"
+        if(ticker <= 0){
+            console.log(fiatApiError("Could not update balance card; invalid ticker value"));
+            leftPanel.unlockedBalanceTextFiat = "N/A";
+            leftPanel.balanceTextFiat = "N/A";
+            return;
+        }
+
+        var uFiat = Utils.formatMoney(unlocked_balance * ticker);
+        var bFiat = Utils.formatMoney(balance * ticker);
+
+        leftPanel.unlockedBalanceTextFiat = symbol + uFiat;
+        leftPanel.balanceTextFiat = symbol + bFiat;
+    }
+
+    function fiatTimerStart(){
+        fiatPriceTimer.start();
+    }
+
+    function fiatTimerStop(){
+        fiatPriceTimer.stop();
+    }
+
+    function fiatApiError(msg){
+        console.log("fiatPriceError: " + msg);
+    }
 
     Component.onCompleted: {
         x = (Screen.width - width) / 2
         y = (Screen.height - maxWindowHeight) / 2
         //
         walletManager.walletOpened.connect(onWalletOpened);
-        walletManager.walletClosed.connect(onWalletClosed);
+        walletManager.deviceButtonRequest.connect(onDeviceButtonRequest);
+        walletManager.deviceButtonPressed.connect(onDeviceButtonPressed);
         walletManager.checkUpdatesComplete.connect(onWalletCheckUpdatesComplete);
+        walletManager.walletPassphraseNeeded.connect(onWalletPassphraseNeeded);
+        IPC.uriHandler.connect(onUriHandler);
+        Prices.priceJsonReceived.connect(appWindow.fiatApiJsonReceived);
 
         if(typeof daemonManager != "undefined") {
             daemonManager.daemonStarted.connect(onDaemonStarted);
             daemonManager.daemonStartFailure.connect(onDaemonStartFailure);
             daemonManager.daemonStopped.connect(onDaemonStopped);
         }
-
-
 
         // Connect app exit to qml window exit handling
         mainApp.closing.connect(appWindow.close);
@@ -1041,17 +1340,21 @@ ApplicationWindow {
         }
 
         checkUpdates();
-    }
 
-    onRightPanelExpandedChanged: {
-        if (rightPanelExpanded) {
-            rightPanel.updateTweets()
+        if(persistentSettings.fiatPriceEnabled){
+            appWindow.fiatApiRefresh();
+            appWindow.fiatTimerStart();
         }
     }
 
-
-    Settings {
+    MoneroSettings {
         id: persistentSettings
+        fileName: {
+            if(isTails && tailsUsePersistence)
+                return homePath + "/Persistent/Monero/monero-core.conf";
+            return "";
+        }
+
         property string language
         property string locale
         property string account_name
@@ -1061,7 +1364,6 @@ ApplicationWindow {
         property bool   allow_background_mining : false
         property bool   miningIgnoreBattery : true
         property var    nettype: NetworkType.MAINNET
-        property string daemon_address: "localhost:" + getDefaultDaemonRpcPort(nettype)
         property string payment_id
         property int    restore_height : 0
         property bool   is_trusted_daemon : false
@@ -1075,6 +1377,8 @@ ApplicationWindow {
         property string daemonPassword: ""
         property bool transferShowAdvanced: false
         property bool receiveShowAdvanced: false
+        property bool historyShowAdvanced: false
+        property bool historyHumanDates: true
         property string blockchainDataDir: ""
         property bool useRemoteNode: false
         property string remoteNodeAddress: ""
@@ -1090,6 +1394,16 @@ ApplicationWindow {
         property string remoteNodeService: ""
         property int lockOnUserInActivityInterval: 10  // minutes
         property bool showPid: false
+        property bool blackTheme: true
+
+        property bool fiatPriceEnabled: false
+        property bool fiatPriceToggle: false
+        property string fiatPriceProvider: "kraken"
+        property string fiatPriceCurrency: "xmrusd"
+
+        Component.onCompleted: {
+            MoneroComponents.Style.blackTheme = persistentSettings.blackTheme
+        }
     }
 
     // Information dialog
@@ -1122,7 +1436,7 @@ ApplicationWindow {
                         handleTransactionConfirmed()
                     }
                 } else {
-                    passwordDialog.showError(qsTr("Wrong password"));
+                    passwordDialog.showError(qsTr("Wrong password") + translationManager.emptyString);
                 }
             }
             passwordDialog.onRejectedCallback = null;
@@ -1144,42 +1458,6 @@ ApplicationWindow {
             if (onRejectedCallback)
                 onRejectedCallback();
         }
-    }
-
-
-    //Open Wallet from file
-    FileDialog {
-        id: fileDialog
-        title: qsTr("Please choose a file")
-        folder: "file://" + moneroAccountsDir
-        nameFilters: [ "Wallet files (*.keys)"]
-        sidebarVisible: false
-        visible: false
-
-        onAccepted: {
-            persistentSettings.wallet_path = walletManager.urlToLocalPath(fileDialog.fileUrl)
-            if(isIOS)
-                persistentSettings.wallet_path = persistentSettings.wallet_path.replace(moneroAccountsDir,"")
-            console.log("ÖPPPPNA")
-            console.log(moneroAccountsDir)
-            console.log(fileDialog.fileUrl)
-            console.log(persistentSettings.wallet_path)
-            passwordDialog.onAcceptedCallback = function() {
-                walletPassword = passwordDialog.password;
-                initialize();
-            }
-            passwordDialog.onRejectedCallback = function() {
-                console.log("Canceled");
-                wizard.wizardState = "wizardHome";
-                rootItem.state = "wizard";
-            }
-            passwordDialog.open(usefulName(walletPath()));
-        }
-        onRejected: {
-            console.log("Canceled")
-            rootItem.state = "wizard";
-        }
-
     }
 
     // Choose blockchain folder
@@ -1235,6 +1513,8 @@ ApplicationWindow {
         anchors.fill: parent
         property var onAcceptedCallback
         property var onRejectedCallback
+        property var onAcceptedPassphraseCallback
+        property var onRejectedPassphraseCallback
         onAccepted: {
             if (onAcceptedCallback)
                 onAcceptedCallback();
@@ -1243,16 +1523,9 @@ ApplicationWindow {
             if (onRejectedCallback)
                 onRejectedCallback();
         }
-    }
-
-    NewPasswordDialog {
-        id: newPasswordDialog
-        z: parent.z + 1
-        visible:false
-        anchors.fill: parent
-        onAccepted: {
-            if (currentWallet.setPassword(newPasswordDialog.password)) {
-                appWindow.walletPassword = newPasswordDialog.password;
+        onAcceptedNewPassword: {
+            if (currentWallet.setPassword(passwordDialog.password)) {
+                appWindow.walletPassword = passwordDialog.password;
                 informationPopup.title = qsTr("Information") + translationManager.emptyString;
                 informationPopup.text  = qsTr("Password changed successfully") + translationManager.emptyString;
                 informationPopup.icon  = StandardIcon.Information;
@@ -1264,7 +1537,14 @@ ApplicationWindow {
             informationPopup.onCloseCallback = null;
             informationPopup.open();
         }
-        onRejected: {
+        onRejectedNewPassword: {}
+        onAcceptedPassphrase: {
+            if (onAcceptedPassphraseCallback)
+                onAcceptedPassphraseCallback();
+        }
+        onRejectedPassphrase: {
+            if (onRejectedPassphraseCallback)
+                onRejectedPassphraseCallback();
         }
     }
 
@@ -1290,7 +1570,6 @@ ApplicationWindow {
         onRejected: {
             middlePanel.settingsView.settingsStateViewState = "Node";
             loadPage("Settings");
-            startLocalNodeCancelled = true
         }
 
     }
@@ -1301,7 +1580,7 @@ ApplicationWindow {
         height: appWindow.height / 2
         x: (appWindow.width - width) / 2
         y: (appWindow.height - height) / 2
-        messageText: qsTr("Please wait...")
+        messageText: qsTr("Please wait...") + translationManager.emptyString
     }
 
     Item {
@@ -1314,33 +1593,19 @@ ApplicationWindow {
             State {
                 name: "wizard"
                 PropertyChanges { target: leftPanel; visible: false }
-                PropertyChanges { target: rightPanel; visible: false }
                 PropertyChanges { target: middlePanel; visible: false }
                 PropertyChanges { target: wizard; visible: true }
-                PropertyChanges { target: appWindow; width: (screenWidth < 969 || isAndroid || isIOS)? screenWidth : 969 } //rightPanelExpanded ? 1269 : 1269 - 300;
-                PropertyChanges { target: appWindow; height: maxWindowHeight; }
                 PropertyChanges { target: resizeArea; visible: true }
-//                PropertyChanges { target: frameArea; blocked: true }
                 PropertyChanges { target: mobileHeader; visible: false }
-                PropertyChanges { target: titleBar; basicButtonVisible: false }
-                PropertyChanges { target: titleBar; showMaximizeButton: true }
-                PropertyChanges { target: titleBar; visible: true }
-                PropertyChanges { target: titleBar; title: qsTr("Monero") + translationManager.emptyString }
+                PropertyChanges { target: titleBar; state: "essentials" }
             }, State {
                 name: "normal"
                 PropertyChanges { target: leftPanel; visible: (isMobile)? false : true }
-                PropertyChanges { target: rightPanel; visible: true }
                 PropertyChanges { target: middlePanel; visible: true }
                 PropertyChanges { target: titleBar; basicButtonVisible: true }
                 PropertyChanges { target: wizard; visible: false }
-                PropertyChanges { target: appWindow; width: (screenWidth < 969 || isAndroid || isIOS)? screenWidth : 969 } //rightPanelExpanded ? 1269 : 1269 - 300;
-                PropertyChanges { target: appWindow; height: maxWindowHeight; }
                 PropertyChanges { target: resizeArea; visible: true }
-                PropertyChanges { target: titleBar; showMaximizeButton: true }
-//                PropertyChanges { target: frameArea; blocked: true }
-                PropertyChanges { target: titleBar; visible: true }
-//                PropertyChanges { target: titleBar; y: 0 }
-                PropertyChanges { target: titleBar; title: qsTr("Toklio") + translationManager.emptyString }
+                PropertyChanges { target: titleBar; state: "default" }
                 PropertyChanges { target: mobileHeader; visible: isMobile ? true : false }
             }
         ]
@@ -1350,7 +1615,7 @@ ApplicationWindow {
             visible: isMobile
             anchors.left: parent.left
             anchors.right: parent.right
-            height: visible? 65 * scaleRatio : 0
+            height: visible? 65 : 0
 
             MouseArea {
                 enabled: persistentSettings.customDecorations
@@ -1467,8 +1732,6 @@ ApplicationWindow {
                 }
                 updateBalance();
             }
-
-            onKeysClicked: Utils.showSeedPage();
             
             onAccountClicked: {
                 middlePanel.state = "Account";
@@ -1480,14 +1743,6 @@ ApplicationWindow {
             }
         }
 
-        RightPanel {
-            id: rightPanel
-            anchors.right: parent.right
-            anchors.bottom: parent.bottom
-            width: appWindow.rightPanelExpanded ? 300 : 0
-            visible: appWindow.rightPanelExpanded
-        }
-
 
         MiddlePanel {
             id: middlePanel
@@ -1496,12 +1751,6 @@ ApplicationWindow {
             anchors.left: leftPanel.visible ?  leftPanel.right : parent.left
             anchors.right: parent.right
             state: "Transfer"
-        }
-
-        TipItem {
-            id: tipItem
-            text: qsTr("send to the same destination") + translationManager.emptyString
-            visible: false
         }
 
         SequentialAnimation {
@@ -1537,7 +1786,7 @@ ApplicationWindow {
 //                value: 326
 //            }
             PropertyAction {
-                targets: [leftPanel, rightPanel]
+                target: leftPanel
                 properties: "visible"
                 value: false
             }
@@ -1555,7 +1804,6 @@ ApplicationWindow {
 
             onStopped: {
                 // middlePanel.visible = false
-                rightPanel.visible = false
                 leftPanel.visible = false
             }
         }
@@ -1573,15 +1821,10 @@ ApplicationWindow {
                 value: false
             }
             PropertyAction {
-                targets: [leftPanel, middlePanel, rightPanel, resizeArea]
+                targets: [leftPanel, middlePanel, resizeArea]
                 properties: "visible"
                 value: true
             }
-//            PropertyAction {
-//                target: appWindow
-//                properties: "width"
-//                value: rightPanelExpanded ? 1269 : 1269 - 300
-//            }
 //            PropertyAction {
 //                target: appWindow
 //                properties: "height"
@@ -1620,21 +1863,20 @@ ApplicationWindow {
             id: resizeArea
             enabled: persistentSettings.customDecorations
             hoverEnabled: true
+            cursorShape: persistentSettings.customDecorations ? Qt.PointingHandCursor : Qt.ArrowCursor
             anchors.right: parent.right
             anchors.bottom: parent.bottom
-            height: 30
-            width: 30
+            height: 34
+            width: 34
 
-            Rectangle {
-                anchors.fill: parent
-                color: parent.containsMouse || parent.pressed ? "#111111" : "transparent"
-            }
-
-            Image {
+            MoneroEffects.ImageMask {
                 anchors.centerIn: parent
                 visible: persistentSettings.customDecorations
-                source: parent.containsMouse || parent.pressed ? "images/resizeHovered.png" :
-                                                                 "images/resize.png"
+                image: "qrc:///images/resize.png"
+                color: MoneroComponents.Style.defaultFontColor
+                width: 12
+                height: 12
+                opacity: (parent.containsMouse || parent.pressed) ? 0.5 : 1.0
             }
 
             property var previousPosition
@@ -1663,19 +1905,12 @@ ApplicationWindow {
 
         TitleBar {
             id: titleBar
-            x: 0
-            y: 0
+            visible: persistentSettings.customDecorations && middlePanel.state !== "Merchant"
             anchors.left: parent.left
             anchors.right: parent.right
-            showMinimizeButton: true
-            showMaximizeButton: true
-            showWhatIsButton: false
-            showMoneroLogo: true
             onCloseClicked: appWindow.close();
-            onMaximizeClicked: {
-                appWindow.visibility = appWindow.visibility !== Window.Maximized ? Window.Maximized :
-                                                                                    Window.Windowed
-            }
+            onLanguageClicked: appWindow.toggleLanguageView();
+            onMaximizeClicked: appWindow.visibility = appWindow.visibility !== Window.Maximized ? Window.Maximized : Window.Windowed
             onMinimizeClicked: appWindow.visibility = Window.Minimized
             onGoToBasicVersion: {
                 if (yes) {
@@ -1686,25 +1921,16 @@ ApplicationWindow {
                     goToProAnimation.start()
                 }
             }
+        }
 
-            MouseArea {
-                enabled: persistentSettings.customDecorations
-                property var previousPosition
-                anchors.fill: parent
-                propagateComposedEvents: true
-                onPressed: previousPosition = globalCursor.getPosition()
-                onPositionChanged: {
-                    if (pressedButtons == Qt.LeftButton) {
-                        var pos = globalCursor.getPosition()
-                        var dx = pos.x - previousPosition.x
-                        var dy = pos.y - previousPosition.y
-
-                        appWindow.x += dx
-                        appWindow.y += dy
-                        previousPosition = pos
-                    }
-                }
-            }
+        MoneroMerchant.MerchantTitlebar {
+            id: titleBarOrange
+            visible: persistentSettings.customDecorations && middlePanel.state === "Merchant"
+            anchors.left: parent.left
+            anchors.right: parent.right
+            onCloseClicked: appWindow.close();
+            onMaximizeClicked: appWindow.visibility = appWindow.visibility !== Window.Maximized ? Window.Maximized : Window.Windowed
+            onMinimizeClicked: appWindow.visibility = Window.Minimized
         }
 
         // new ToolTip
@@ -1722,16 +1948,16 @@ ApplicationWindow {
                 anchors.top: parent.bottom
                 anchors.right: parent.right
                 anchors.rightMargin: 5
-                source: "../images/tip.png"
+                source: "qrc:///images/tip.png"
             }
 
-            Text {
+            MoneroComponents.TextPlain {
                 id: content
                 anchors.horizontalCenter: parent.horizontalCenter
                 y: 6
                 lineHeight: 0.7
                 font.family: "Arial"
-                font.pixelSize: 12 * scaleRatio
+                font.pixelSize: 12
                 color: "#FFFFFF"
             }
         }
@@ -1745,6 +1971,7 @@ ApplicationWindow {
     function toggleLanguageView(){
         middlePanel.visible = !middlePanel.visible;
         languageView.visible = !languageView.visible
+        resetLanguageFields()
         // update after changing language from settings page
         if (persistentSettings.language != wizard.language_language) {
             persistentSettings.language = wizard.language_language
@@ -1766,6 +1993,15 @@ ApplicationWindow {
         id: userInActivityTimer
         interval: 2000; running: false; repeat: true
         onTriggered: checkInUserActivity()
+    }
+
+    Timer {
+        // enables theme transition animations after 500ms
+        id: appThemeTransition
+        running: true
+        repeat: false
+        interval: 500
+        onTriggered: appWindow.themeTransition = true;
     }
 
     function checkSimpleModeConnection(){
@@ -1818,16 +2054,17 @@ ApplicationWindow {
         visible: false
         property alias text: statusMessageText.text
         anchors.bottom: parent.bottom
-        width: statusMessageText.contentWidth + 20 * scaleRatio
+        width: statusMessageText.contentWidth + 20
         anchors.horizontalCenter: parent.horizontalCenter
-        color: "black"
-        height: 40 * scaleRatio
-        Text {
+        color: MoneroComponents.Style.blackTheme ? "black" : "white"
+        height: 40
+        MoneroComponents.TextPlain {
             id: statusMessageText
             anchors.fill: parent
-            anchors.margins: 10 * scaleRatio
-            font.pixelSize: 14 * scaleRatio
-            color: "white"
+            anchors.margins: 10
+            font.pixelSize: 14
+            color: MoneroComponents.Style.defaultFontColor
+            themeTransition: false
         }
     }
 
@@ -1865,8 +2102,7 @@ ApplicationWindow {
         }
 
         // If daemon is running - prompt user before exiting
-        if(typeof daemonManager != "undefined" && daemonManager.running(persistentSettings.nettype)) {
-
+        if(typeof daemonManager != "undefined" && daemonRunning) {
             // Show confirmation dialog
             confirmationDialog.title = qsTr("Daemon is running") + translationManager.emptyString;
             confirmationDialog.text  = qsTr("Daemon will still be running in background when GUI is closed.");
@@ -1892,8 +2128,8 @@ ApplicationWindow {
         console.log("close accepted");
         // Close wallet non async on exit
         daemonManager.exit();
-        walletManager.closeWallet();
-        Qt.quit();
+        
+        closeWallet(Qt.quit);
     }
 
     function onWalletCheckUpdatesComplete(update) {
@@ -1902,15 +2138,23 @@ ApplicationWindow {
         print("Update found: " + update)
         var parts = update.split("|")
         if (parts.length == 4) {
-          var version = parts[0]
-          var hash = parts[1]
-          var user_url = parts[2]
-          var auto_url = parts[3]
-          var msg = qsTr("New version of toklio-wallet-gui is available: %1<br>%2").arg(version).arg(user_url) + translationManager.emptyString
-          notifier.show(msg)
-        }
-        else {
-          print("Failed to parse update spec")
+            var version = parts[0]
+            var hash = parts[1]
+            //var user_url = parts[2]
+            //var auto_url = parts[3]
+            var osBuildTag = isMac ? "mac-x64" : isWindows ? "win-x64" : isLinux ? "linux-x64" : "unknownBuildTag"
+            var extension = isMac || isLinux ? ".tar.bz2" : isWindows ? ".zip" : ".unknownExtension"
+            var base_url = "https://tokl.io/gui/toklio-gui-"
+            var download_url = base_url + osBuildTag + "-v" + version + extension
+            var msg = ""
+            if (osBuildTag !== "unknownBuildTag") {
+                msg = qsTr("New version of Toklio v.%1 is available.<br><br>Download:<br>%2<br><br>SHA256 Hash:<br>%3").arg(version).arg(download_url).arg(hash) + translationManager.emptyString
+            } else {
+                msg = qsTr("New version of Toklio is available. Check out tokl.io") + translationManager.emptyString
+            }
+            notifier.show(msg)
+        } else {
+            print("Failed to parse update spec")
         }
     }
 
@@ -1922,15 +2166,6 @@ ApplicationWindow {
         id: updatesTimer
         interval: 3600*1000; running: true; repeat: true
         onTriggered: checkUpdates()
-    }
-
-    function titlebarToggleOrange(flag){
-        // toggle titlebar orange style
-        if(flag !== undefined){
-            titleBar.orange = flag;
-        } else {
-            titleBar.orange = !titleBar.orange;
-        }
     }
 
     function releaseFocus() {
@@ -1948,6 +2183,12 @@ ApplicationWindow {
         leftPanel.balanceLabelText = qsTr("Balance")
     }
 
+    // some fields need an extra nudge when changing languages
+    function resetLanguageFields(){
+        clearMoneroCardLabelText()
+        onWalletRefresh()
+    }
+
     function userActivity() {
         // register user activity
         var epoch = Math.floor((new Date).getTime()/1000);
@@ -1957,6 +2198,7 @@ ApplicationWindow {
     function checkInUserActivity() {
         if(rootItem.state !== "normal") return;
         if(!persistentSettings.lockOnUserInActivity) return;
+        if(passwordDialog.visible) return;
 
         // prompt password after X seconds of inactivity
         var epoch = Math.floor((new Date).getTime() / 1000);
@@ -2005,13 +2247,84 @@ ApplicationWindow {
         }
     }
 
-    // background gradient
     Rectangle {
         id: inactiveOverlay
         visible: false
         anchors.fill: parent
-        color: "black"
-        opacity: 0.8
+        anchors.topMargin: titleBar.height
+        color: MoneroComponents.Style.blackTheme ? "black" : "white"
+        opacity: MoneroComponents.Style.blackTheme ? 0.8 : 0.9
+
+        MoneroEffects.ColorTransition {
+            targetObj: parent
+            blackColor: "black"
+            whiteColor: "white"
+        }
+    }
+
+    // borders on white theme + linux
+    Rectangle {
+        visible: isLinux && !MoneroComponents.Style.blackTheme && middlePanel.state !== "Merchant"
+        z: parent.z + 1
+        anchors.left: parent.left
+        anchors.top: parent.top
+        anchors.bottom: parent.bottom
+        width: 1
+        color: MoneroComponents.Style.appWindowBorderColor
+
+        MoneroEffects.ColorTransition {
+            targetObj: parent
+            blackColor: MoneroComponents.Style._b_appWindowBorderColor
+            whiteColor: MoneroComponents.Style._w_appWindowBorderColor
+        }
+    }
+
+    Rectangle {
+        visible: isLinux && !MoneroComponents.Style.blackTheme && middlePanel.state !== "Merchant"
+        z: parent.z + 1
+        anchors.right: parent.right
+        anchors.top: parent.top
+        anchors.bottom: parent.bottom
+        width: 1
+        color: MoneroComponents.Style.appWindowBorderColor
+
+        MoneroEffects.ColorTransition {
+            targetObj: parent
+            blackColor: MoneroComponents.Style._b_appWindowBorderColor
+            whiteColor: MoneroComponents.Style._w_appWindowBorderColor
+        }
+    }
+
+    Rectangle {
+        visible: isLinux && !MoneroComponents.Style.blackTheme && middlePanel.state !== "Merchant"
+        z: parent.z + 1
+        anchors.right: parent.right
+        anchors.top: parent.top
+        anchors.left: parent.left
+        height: 1
+        color: MoneroComponents.Style.appWindowBorderColor
+
+        MoneroEffects.ColorTransition {
+            targetObj: parent
+            blackColor: MoneroComponents.Style._b_appWindowBorderColor
+            whiteColor: MoneroComponents.Style._w_appWindowBorderColor
+        }
+    }
+
+    Rectangle {
+        visible: isLinux && !MoneroComponents.Style.blackTheme && middlePanel.state !== "Merchant"
+        z: parent.z + 1
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        anchors.left: parent.left
+        height: 1
+        color: MoneroComponents.Style.appWindowBorderColor
+
+        MoneroEffects.ColorTransition {
+            targetObj: parent
+            blackColor: MoneroComponents.Style._b_appWindowBorderColor
+            whiteColor: MoneroComponents.Style._w_appWindowBorderColor
+        }
     }
 
 // @TODO: QML type 'Drawer' has issues with buildbot; debug after Qt 5.9 migration

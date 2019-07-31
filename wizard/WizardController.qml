@@ -26,17 +26,21 @@
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import QtQuick 2.7
+import QtQml 2.0
+import QtQuick 2.9
+import QtQuick.Controls 2.0
 import QtQuick.Controls 1.4
+import QtGraphicalEffects 1.0
 import QtQuick.Controls.Styles 1.4
 import QtQuick.Layouts 1.2
 import QtQuick.Dialogs 1.2
-
 import moneroComponents.Wallet 1.0
+
 import "../js/Wizard.js" as Wizard
 import "../js/Windows.js" as Windows
 import "../js/Utils.js" as Utils
 import "../components" as MoneroComponents
+import "../components/effects/" as MoneroEffects
 import "../pages"
 
 Rectangle {
@@ -44,8 +48,12 @@ Rectangle {
     anchors.fill: parent
 
     signal useMoneroClicked()
+    signal walletCreatedFromDevice(bool success)
 
     function restart() {
+        // Clear up any state, including `m_wallet`, which
+        // is the temp. wallet object whilst creating new wallets.
+        // This function is called automatically by navigating to `wizardHome`.
         wizardStateView.state = "wizardHome"
         wizardController.walletOptionsName = defaultAccountName;
         wizardController.walletOptionsLocation = '';
@@ -65,13 +73,20 @@ Rectangle {
         wizardController.walletRestoreMode = 'seed'
         wizardController.walletOptionsSubaddressLookahead = '';
         wizardController.remoteNodes = {};
+        disconnect();
+
+        if (typeof wizardController.m_wallet !== 'undefined'){
+            walletManager.closeWallet();
+            wizardController.m_wallet = undefined;
+        }
     }
 
     property var m_wallet;
     property alias wizardState: wizardStateView.state
     property alias wizardStatePrevious: wizardStateView.previousView
-    property int wizardSubViewWidth: 780 * scaleRatio
-    property int wizardSubViewTopMargin: persistentSettings.customDecorations ? 90 * scaleRatio : 32 * scaleRatio
+    property alias wizardStackView: stackView
+    property int wizardSubViewWidth: 780
+    property int wizardSubViewTopMargin: persistentSettings.customDecorations ? 90 : 32
     property bool skipModeSelection: false
 
     // wallet variables
@@ -102,6 +117,9 @@ Rectangle {
     // recovery made (restore wallet)
     property string walletRestoreMode: 'seed'  // seed, keys, qr
 
+    // flickable margin
+    property int flickableHeightMargin: 200
+
     property int layoutScale: {
         if(isMobile){
             return 0;
@@ -112,11 +130,6 @@ Rectangle {
         }
     }
 
-    Image {
-        opacity: 1.0
-        anchors.fill: parent
-        source: "../images/middlePanelBg.jpg"
-    }
 
     Rectangle {
         id: wizardStateView
@@ -157,10 +170,10 @@ Rectangle {
                if (typeof previousView.onPageClosed === "function") {
                    previousView.onPageClosed();
                }
-
-               // Combined with NumberAnimation to fade out views
-               previousView.opacity = 0;
             }
+
+            if(previousView !== null && currentView.viewName === "wizardHome")
+                wizardController.restart();
 
             if (currentView) {
                 stackView.replace(currentView)
@@ -168,87 +181,136 @@ Rectangle {
                 if (typeof currentView.onPageCompleted === "function") {
                     currentView.onPageCompleted(previousView);
                 }
-
-                // Combined with NumberAnimation to fade in views
-                currentView.opacity = 1;
             }
 
             previousView = currentView;
+
+            // reset push direction
+            if(wizardController.wizardState == "wizardHome")
+                wizardController.wizardStackView.backTransition = false;
         }
 
         states: [
             State {
                 name: "wizardLanguage"
                 PropertyChanges { target: wizardStateView; currentView: wizardStateView.wizardLanguageView }
+                PropertyChanges { target: wizardFlickable; contentHeight: wizardStateView.wizardLanguageView.childrenRect.height + wizardController.flickableHeightMargin }
             }, State {
                 name: "wizardHome"
                 PropertyChanges { target: wizardStateView; currentView: wizardStateView.wizardHomeView }
+                PropertyChanges { target: wizardFlickable; contentHeight: wizardStateView.wizardHomeView.childrenRect.height + wizardController.flickableHeightMargin }
             }, State {
                 name: "wizardCreateWallet1"
                 PropertyChanges { target: wizardStateView; currentView: wizardStateView.wizardCreateWallet1View }
+                PropertyChanges { target: wizardFlickable; contentHeight: wizardStateView.wizardCreateWallet1View.childrenRect.height + wizardController.flickableHeightMargin }
             }, State {
                 name: "wizardCreateWallet2"
                 PropertyChanges { target: wizardStateView; currentView: wizardStateView.wizardCreateWallet2View }
+                PropertyChanges { target: wizardFlickable; contentHeight: wizardStateView.wizardCreateWallet2View.childrenRect.height + wizardController.flickableHeightMargin }
             }, State {
                 name: "wizardCreateWallet3"
                 PropertyChanges { target: wizardStateView; currentView: wizardStateView.wizardCreateWallet3View }
+                PropertyChanges { target: wizardFlickable; contentHeight: wizardStateView.wizardCreateWallet3View.height + wizardController.flickableHeightMargin + 400 }
             }, State {
                 name: "wizardCreateWallet4"
                 PropertyChanges { target: wizardStateView; currentView: wizardStateView.wizardCreateWallet4View }
+                PropertyChanges { target: wizardFlickable; contentHeight: wizardStateView.wizardCreateWallet4View.childrenRect.height + wizardController.flickableHeightMargin }
             }, State {
                 name: "wizardRestoreWallet1"
                 PropertyChanges { target: wizardStateView; currentView: wizardStateView.wizardRestoreWallet1View }
+                PropertyChanges { target: wizardFlickable; contentHeight: wizardStateView.wizardRestoreWallet1View.childrenRect.height + wizardController.flickableHeightMargin }
             }, State {
                 name: "wizardRestoreWallet2"
                 PropertyChanges { target: wizardStateView; currentView: wizardStateView.wizardRestoreWallet2View }
+                PropertyChanges { target: wizardFlickable; contentHeight: wizardStateView.wizardRestoreWallet2View.childrenRect.height + wizardController.flickableHeightMargin }
             }, State {
                 name: "wizardRestoreWallet3"
                 PropertyChanges { target: wizardStateView; currentView: wizardStateView.wizardRestoreWallet3View }
+                PropertyChanges { target: wizardFlickable; contentHeight: wizardStateView.wizardRestoreWallet3View.childrenRect.height + wizardController.flickableHeightMargin + 400 }
             }, State {
                 name: "wizardRestoreWallet4"
                 PropertyChanges { target: wizardStateView; currentView: wizardStateView.wizardRestoreWallet4View }
+                PropertyChanges { target: wizardFlickable; contentHeight: wizardStateView.wizardRestoreWallet4View.childrenRect.height + wizardController.flickableHeightMargin }
             }, State {
                 name: "wizardCreateDevice1"
                 PropertyChanges { target: wizardStateView; currentView: wizardStateView.wizardCreateDevice1View }
+                PropertyChanges { target: wizardFlickable; contentHeight: wizardStateView.wizardCreateDevice1View.childrenRect.height + wizardController.flickableHeightMargin }
             }, State {
                 name: "wizardOpenWallet1"
                 PropertyChanges { target: wizardStateView; currentView: wizardStateView.wizardOpenWallet1View }
+                PropertyChanges { target: wizardFlickable; contentHeight: wizardStateView.wizardOpenWallet1View.childrenRect.height + wizardController.flickableHeightMargin }
             }, State {
                 name: "wizardModeSelection"
                 PropertyChanges { target: wizardStateView; currentView: wizardStateView.wizardModeSelectionView }
+                PropertyChanges { target: wizardFlickable; contentHeight: wizardStateView.wizardModeSelectionView.childrenRect.height + wizardController.flickableHeightMargin }
             }, State {
                 name: "wizardModeRemoteNodeWarning"
                 PropertyChanges { target: wizardStateView; currentView: wizardStateView.wizardModeRemoteNodeWarningView }
+                PropertyChanges { target: wizardFlickable; contentHeight: wizardStateView.wizardModeRemoteNodeWarningView.childrenRect.height + wizardController.flickableHeightMargin }
             }, State {
                 name: "wizardModeBootstrap"
                 PropertyChanges { target: wizardStateView; currentView: wizardStateView.wizardModeBootstrapView }
+                PropertyChanges { target: wizardFlickable; contentHeight: wizardStateView.wizardModeBootstrapView.childrenRect.height + wizardController.flickableHeightMargin }
             }
         ]
 
-        StackView {
-            id: stackView
-            initialItem: wizardStateView.wizardLanguageView
+        MoneroEffects.GradientBackground {
             anchors.fill: parent
-            clip: false
+            fallBackColor: MoneroComponents.Style.middlePanelBackgroundColor
+            initialStartColor: MoneroComponents.Style.wizardBackgroundGradientStart
+            initialStopColor: MoneroComponents.Style.middlePanelBackgroundGradientStop
+            blackColorStart: MoneroComponents.Style._b_wizardBackgroundGradientStart
+            blackColorStop: MoneroComponents.Style._b_middlePanelBackgroundGradientStop
+            whiteColorStart: MoneroComponents.Style._w_wizardBackgroundGradientStart
+            whiteColorStop: MoneroComponents.Style._w_middlePanelBackgroundGradientStop
+            start: Qt.point(0, 0)
+            end: Qt.point(height, width)
+        }
 
-            delegate: StackViewDelegate {
-                pushTransition: StackViewTransition {
-                     PropertyAnimation {
-                         target: enterItem
-                         property: "x"
-                         from: target.width
-                         to: 0
-                         duration: 300
-                         easing.type: Easing.OutCubic
-                     }
-                     PropertyAnimation {
-                         target: exitItem
-                         property: "x"
-                         from: 0
-                         to: 0 - target.width
-                         duration: 300
-                         easing.type: Easing.OutCubic
-                     }
+        Flickable {
+            id: wizardFlickable
+            anchors.fill: parent
+            clip: true
+
+            ScrollBar.vertical: ScrollBar {
+                parent: wizardFlickable.parent
+                anchors.left: parent.right
+                anchors.leftMargin: 3
+                anchors.top: parent.top
+                anchors.topMargin: 4
+                anchors.bottom: parent.bottom
+            }
+
+            onFlickingChanged: {
+                releaseFocus();
+            }
+
+            StackView {
+                id: stackView
+                property bool backTransition: false
+                initialItem: wizardStateView.wizardLanguageView
+                anchors.fill: parent
+                clip: true
+
+                delegate: StackViewDelegate {
+                    pushTransition: StackViewTransition {
+                         PropertyAnimation {
+                             target: enterItem
+                             property: "x"
+                             from: stackView.backTransition ? -target.width : target.width
+                             to: 0
+                             duration: 300
+                             easing.type: Easing.OutCubic
+                         }
+                         PropertyAnimation {
+                             target: exitItem
+                             property: "x"
+                             from: 0
+                             to: stackView.backTransition ? target.width : -target.width
+                             duration: 300
+                             easing.type: Easing.OutCubic
+                         }
+                    }
                 }
             }
         }
@@ -366,6 +428,28 @@ Rectangle {
         return success;
     }
 
+    function disconnect(){
+        walletManager.walletCreated.disconnect(onWalletCreated);
+        walletManager.walletPassphraseNeeded.disconnect(onWalletPassphraseNeeded);
+        walletManager.deviceButtonRequest.disconnect(onDeviceButtonRequest);
+        walletManager.deviceButtonPressed.disconnect(onDeviceButtonPressed);
+    }
+
+    function connect(){
+        walletManager.walletCreated.connect(onWalletCreated);
+        walletManager.walletPassphraseNeeded.connect(onWalletPassphraseNeeded);
+        walletManager.deviceButtonRequest.connect(onDeviceButtonRequest);
+        walletManager.deviceButtonPressed.connect(onDeviceButtonPressed);
+    }
+
+    function deviceAttentionSplash(){
+        appWindow.showProcessingSplash(qsTr("Please proceed to the device..."));
+    }
+
+    function creatingWalletDeviceSplash(){
+        appWindow.showProcessingSplash(qsTr("Creating wallet from device..."));
+    }
+
     function createWalletFromDevice() {
         // TODO: create wallet in temporary filename and a) move it to the path specified by user after the final
         // page submitted or b) delete it when program closed before reaching final page
@@ -376,30 +460,61 @@ Rectangle {
             console.log("deleting wallet")
         }
 
-        var tmp_wallet_filename = oshelper.temporaryFilename();
-        console.log("Creating temporary wallet", tmp_wallet_filename)
+        tmpWalletFilename = oshelper.temporaryFilename();
+        console.log("Creating temporary wallet", tmpWalletFilename)
         var nettype = persistentSettings.nettype;
         var restoreHeight = wizardController.walletOptionsRestoreHeight;
         var subaddressLookahead = wizardController.walletOptionsSubaddressLookahead;
         var deviceName = wizardController.walletOptionsDeviceName;
 
-        var wallet = walletManager.createWalletFromDevice(tmp_wallet_filename, "", nettype, deviceName, restoreHeight, subaddressLookahead);
+        connect();
+        walletManager.createWalletFromDeviceAsync(tmpWalletFilename, "", nettype, deviceName, restoreHeight, subaddressLookahead);
+        creatingWalletDeviceSplash();
+    }
+
+    function onWalletCreated(wallet) {
+        splash.close()
 
         var success = wallet.status === Wallet.Status_Ok;
         if (success) {
             wizardController.m_wallet = wallet;
             wizardController.walletOptionsIsRecoveringFromDevice = true;
-            wizardController.tmpWalletFilename = tmp_wallet_filename;
             if (!wizardController.walletOptionsDeviceIsRestore) {
                 // User creates a hardware wallet for the first time. Use a recent block height from API.
                 wizardController.walletOptionsRestoreHeight = wizardController.m_wallet.walletCreationHeight;
             }
         } else {
             console.log(wallet.errorString)
+            wizardController.tmpWalletFilename = '';
             appWindow.showStatusMessage(qsTr(wallet.errorString), 5);
             walletManager.closeWallet();
         }
-        return success;
+
+        disconnect();
+        walletCreatedFromDevice(success);
+    }
+
+    function onWalletPassphraseNeeded(){
+        splash.close()
+
+        console.log(">>> wallet passphrase needed: ");
+        passwordDialog.onAcceptedPassphraseCallback = function() {
+            walletManager.onPassphraseEntered(passwordDialog.password);
+            creatingWalletDeviceSplash();
+        }
+        passwordDialog.onRejectedPassphraseCallback = function() {
+            walletManager.onPassphraseEntered("", true);
+            creatingWalletDeviceSplash();
+        }
+        passwordDialog.openPassphraseDialog()
+    }
+
+    function onDeviceButtonRequest(code){
+        deviceAttentionSplash();
+    }
+
+    function onDeviceButtonPressed(){
+        creatingWalletDeviceSplash();
     }
 
     function openWallet(){
@@ -413,6 +528,7 @@ Rectangle {
     function openWalletFile(fn) {
         persistentSettings.restore_height = 0;
         persistentSettings.is_recovering = false;
+        persistentSettings.is_recovering_from_device = false;
 
         appWindow.restoreHeight = 0;
         appWindow.walletPassword = "";

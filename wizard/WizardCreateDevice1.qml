@@ -26,13 +26,14 @@
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import QtQuick 2.7
+import QtQuick 2.9
 import QtQuick.Dialogs 1.2
 import QtQuick.Layouts 1.2
 import QtQuick.Controls 2.0
 
 import moneroComponents.Wallet 1.0
 import "../js/Wizard.js" as Wizard
+import "../js/Utils.js" as Utils
 import "../components"
 import "../components" as MoneroComponents
 
@@ -46,8 +47,9 @@ Rectangle {
 
     ListModel {
         id: deviceNameModel
-        ListElement { column1: qsTr("Ledger") ; column2: "Ledger"; }
-//        ListElement { column1: qsTr("Trezor") ; column2: "Trezor"; }
+        ListElement { column1: qsTr("Choose your hardware device"); column2: "";}
+        ListElement { column1: "Ledger"; column2: "Ledger";}
+        ListElement { column1: "Trezor"; column2: "Trezor";}
     }
 
     function update(){
@@ -68,7 +70,7 @@ Rectangle {
             Layout.topMargin: wizardController.wizardSubViewTopMargin
             Layout.maximumWidth: wizardController.wizardSubViewWidth
             Layout.alignment: Qt.AlignHCenter
-            spacing: 20 * scaleRatio
+            spacing: 20
 
             WizardHeader {
                 title: qsTr("Create a new wallet") + translationManager.emptyString
@@ -81,14 +83,13 @@ Rectangle {
 
             ColumnLayout {
                 spacing: 0
-
-                Layout.topMargin: 10 * scaleRatio
+                Layout.topMargin: 10
                 Layout.fillWidth: true
 
                 MoneroComponents.RadioButton {
                     id: newDeviceWallet
                     text: qsTr("Create a new wallet from device.") + translationManager.emptyString
-                    fontSize: 16 * scaleRatio
+                    fontSize: 16
                     checked: true
                     onClicked: {
                         checked = true;
@@ -99,9 +100,9 @@ Rectangle {
 
                 MoneroComponents.RadioButton {
                     id: restoreDeviceWallet
-                    Layout.topMargin: 10 * scaleRatio
+                    Layout.topMargin: 10
                     text: qsTr("Restore a wallet from device. Use this if you used your hardware wallet before.") + translationManager.emptyString
-                    fontSize: 16 * scaleRatio
+                    fontSize: 16
                     checked: false
                     onClicked: {
                         checked = true;
@@ -111,20 +112,17 @@ Rectangle {
                 }
             }
 
-            GridLayout {
-                Layout.topMargin: 10 * scaleRatio
+            ColumnLayout {
                 Layout.fillWidth: true
-
-                columnSpacing: 20 * scaleRatio
-                columns: 2
+                spacing: 20
 
                 MoneroComponents.LineEdit {
                     id: restoreHeight
                     visible: !newDeviceWallet.checked
                     Layout.fillWidth: true
                     labelText: qsTr("Wallet creation date as `YYYY-MM-DD` or restore height") + translationManager.emptyString
-                    labelFontSize: 14 * scaleRatio
-                    placeholderFontSize: 16 * scaleRatio
+                    labelFontSize: 14
+                    placeholderFontSize: 16
                     placeholderText: qsTr("Restore height") + translationManager.emptyString
                     validator: RegExpValidator {
                         regExp: /^(\d+|\d{4}-\d{2}-\d{2})$/
@@ -132,33 +130,29 @@ Rectangle {
                     text: "0"
                 }
 
+                MoneroComponents.StandardDropdown {
+                    id: deviceNameDropdown
+                    dataModel: deviceNameModel
+                    Layout.fillWidth: true
+                    Layout.topMargin: 6
+                    z: 3
+                }
+
+                CheckBox2 {
+                    id: showAdvancedCheckbox
+                    checked: false
+                    text: qsTr("Advanced options") + translationManager.emptyString
+                }
+
                 MoneroComponents.LineEdit {
                     id: lookahead
                     Layout.fillWidth: true
-
+                    visible: showAdvancedCheckbox.checked
                     labelText: qsTr("Subaddress lookahead (optional)") + translationManager.emptyString
-                    labelFontSize: 14 * scaleRatio
+                    labelFontSize: 14
                     placeholderText: "<major>:<minor>"
-                    placeholderFontSize: 16 * scaleRatio
+                    placeholderFontSize: 16
                     validator: RegExpValidator { regExp: /(\d+):(\d+)?$/ }
-                }
-            }
-
-            ColumnLayout {
-                spacing: 0
-
-                Layout.topMargin: 10 * scaleRatio
-                Layout.fillWidth: true
-
-                ColumnLayout{
-                    MoneroComponents.StandardDropdown {
-                        id: deviceNameDropdown
-                        dataModel: deviceNameModel
-                        Layout.fillWidth: true
-                        Layout.topMargin: 6 * scaleRatio
-                        releasedColor: "#363636"
-                        pressedColor: "#202020"
-                    }
                 }
             }
 
@@ -169,10 +163,10 @@ Rectangle {
                 Layout.fillWidth: true
                 font.family: MoneroComponents.Style.fontRegular.name
                 color: MoneroComponents.Style.errorColor
-                font.pixelSize: 16 * scaleRatio
+                font.pixelSize: 16
 
-                selectionColor: MoneroComponents.Style.dimmedFontColor
-                selectedTextColor: MoneroComponents.Style.defaultFontColor
+                selectionColor: MoneroComponents.Style.textSelectionColor
+                selectedTextColor: MoneroComponents.Style.textSelectedColor
 
                 selectByMouse: true
                 wrapMode: Text.WordWrap
@@ -186,7 +180,7 @@ Rectangle {
             WizardNav {
                 progressSteps: 4
                 progress: 1
-                btnNext.enabled: walletInput.verify();
+                btnNext.enabled: walletInput.verify() && wizardCreateDevice1.deviceName;
                 btnPrev.text: qsTr("Back to menu") + translationManager.emptyString
                 btnNext.text: qsTr("Create wallet") + translationManager.emptyString
                 onPrevClicked: {
@@ -202,19 +196,15 @@ Rectangle {
                     if(restoreHeight.text){
                         // Parse date string or restore height as integer
                         if(restoreHeight.text.indexOf('-') === 4 && restoreHeight.text.length === 10){
-                            _restoreHeight = Wizard.getApproximateBlockchainHeight(restoreHeight.text);
+                            _restoreHeight = Wizard.getApproximateBlockchainHeight(restoreHeight.text, Utils.netTypeToString());
                         } else {
                             _restoreHeight = parseInt(restoreHeight.text)
                         }
                         wizardController.walletOptionsRestoreHeight = _restoreHeight;
                     }
-                    var written = wizardController.createWalletFromDevice();
-                    if(written){
-                        wizardController.walletOptionsIsRecoveringFromDevice = true;
-                        wizardStateView.state = "wizardCreateWallet2";
-                    } else {
-                        errorMsg.text = qsTr("Error writing wallet from hardware device. Check application logs.") + translationManager.emptyString;
-                    }
+
+                    wizardController.walletCreatedFromDevice.connect(onCreateWalletFromDeviceCompleted);
+                    wizardController.createWalletFromDevice();
                 }
             }
         }
@@ -230,5 +220,15 @@ Rectangle {
         if(previousView.viewName == "wizardHome"){
             walletInput.reset();
         }
+    }
+
+    function onCreateWalletFromDeviceCompleted(written){
+        hideProcessingSplash();
+        if(written){
+            wizardStateView.state = "wizardCreateWallet2";
+        } else {
+            errorMsg.text = qsTr("Error writing wallet from hardware device. Check application logs.") + translationManager.emptyString;
+        }
+        wizardController.walletCreatedFromDevice.disconnect(onCreateWalletFromDeviceCompleted);
     }
 }

@@ -26,7 +26,7 @@
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import QtQuick 2.7
+import QtQuick 2.9
 import QtQuick.Layouts 1.2
 import QtQuick.Controls 2.0
 import moneroComponents.NetworkType 1.0
@@ -59,21 +59,9 @@ ColumnLayout {
 
     WizardSummaryItem {
         Layout.fillWidth: true
-        header: qsTr("Wallet name") + translationManager.emptyString
-        value: walletOptionsName
-    }
-
-    WizardSummaryItem {
-        Layout.fillWidth: true
         header: qsTr("Restore height") + translationManager.emptyString
         value: wizardController.walletOptionsRestoreHeight
-        visible: {
-            if (walletOptionsIsRecoveringFromDevice && !wizardController.walletOptionsDeviceIsRestore) {
-                return false;
-            } else {
-                return (wizardController.walletOptionsRestoreHeight > 0);
-            }
-        }
+        visible: wizardStateView.state === "wizardRestoreWallet4" || wizardController.walletOptionsIsRecoveringFromDevice
     }
 
     WizardSummaryItem {

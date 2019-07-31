@@ -17,7 +17,7 @@ if [ ! -d $MONERO_DIR/src ]; then
 fi
 git submodule update --remote
 git -C $MONERO_DIR fetch
-git -C $MONERO_DIR checkout origin/release-v0.13
+git -C $MONERO_DIR checkout release-v0.14
 
 # get monero core tag
 pushd $MONERO_DIR
@@ -94,6 +94,7 @@ BUILD_TREZOR_FLAGS=" -DUSE_DEVICE_TREZOR=ON"
 if [ "$BUILD_TREZOR" == false ]; then
     BUILD_TREZOR_FLAGS=" -DUSE_DEVICE_TREZOR=OFF"
 fi
+BUILD_TREZOR_FLAGS=" -DUSE_DEVICE_TREZOR_UDP_RELEASE=ON ${BUILD_TREZOR_FLAGS}"
 
 STATIC=false
 ANDROID=false

@@ -27,13 +27,13 @@
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import QtQuick.Controls 2.0
-import QtQuick 2.7
+import QtQuick 2.9
 
 import "../js/TxUtils.js" as TxUtils
 import "../components" as MoneroComponents
 
 TextArea {
-    property int fontSize: 18 * scaleRatio
+    property int fontSize: 18
     property bool fontBold: false
     property string fontColor: MoneroComponents.Style.defaultFontColor
 
@@ -48,10 +48,10 @@ TextArea {
     font.bold: fontBold
     horizontalAlignment: TextInput.AlignLeft
     selectByMouse: mouseSelection
-    selectionColor: MoneroComponents.Style.dimmedFontColor
-    selectedTextColor: MoneroComponents.Style.defaultFontColor
+    selectionColor: MoneroComponents.Style.textSelectionColor
+    selectedTextColor: MoneroComponents.Style.textSelectedColor
 
-    property int minimumHeight: 100 * scaleRatio
+    property int minimumHeight: 100
     height: contentHeight > minimumHeight ? contentHeight : minimumHeight
 
     onTextChanged: {

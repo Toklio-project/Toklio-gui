@@ -26,7 +26,7 @@
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import QtQuick 2.7
+import QtQuick 2.9
 import QtQuick.Layouts 1.2
 import QtQuick.Controls 2.0
 
@@ -52,7 +52,7 @@ Rectangle {
             Layout.topMargin: wizardController.wizardSubViewTopMargin
             Layout.maximumWidth: wizardController.wizardSubViewWidth
             Layout.alignment: Qt.AlignHCenter
-            spacing: 20 * scaleRatio
+            spacing: 20
 
             WizardHeader {
                 title: qsTr("You're all set up!") + translationManager.emptyString
@@ -62,8 +62,8 @@ Rectangle {
             WizardSummary {}
 
             WizardNav {
-                Layout.topMargin: 24 * scaleRatio
-                btnNextText: qsTr("Open wallet")
+                Layout.topMargin: 24
+                btnNextText: qsTr("Open wallet") + translationManager.emptyString
                 progressSteps: 4
                 progress: 4
 

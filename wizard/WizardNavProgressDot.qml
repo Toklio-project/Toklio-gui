@@ -26,7 +26,7 @@
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import QtQuick 2.7
+import QtQuick 2.9
 import QtQuick.Layouts 1.2
 import QtQuick.Controls 2.0
 
@@ -34,18 +34,18 @@ import "../components" as MoneroComponents
 
 Rectangle {
     property bool active: false
-    Layout.preferredWidth: 30 * scaleRatio
+    Layout.preferredWidth: 30
     Layout.fillHeight: true
     property string activeColor: MoneroComponents.Style.defaultFontColor
-    property string inactiveColor: "#333333"
+    property string inactiveColor: MoneroComponents.Style.progressBarBackgroundColor
     color: "transparent"
 
     Rectangle {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.verticalCenter: parent.verticalCenter
-        width: 10 * scaleRatio
-        height: 10 * scaleRatio
-        radius: 10 * scaleRatio
+        width: 10
+        height: 10
+        radius: 10
         color: parent.active ? parent.activeColor : parent.inactiveColor
     }
 }

@@ -28,7 +28,7 @@
 
 import "../components" as MoneroComponents
 
-import QtQuick 2.7
+import QtQuick 2.9
 import QtQuick.XmlListModel 2.0
 import QtQuick.Layouts 1.2
 import QtQuick.Controls 2.0
@@ -48,7 +48,7 @@ Drawer {
         isOpened = true;
     }
 
-    width: 240 * scaleRatio
+    width: 240
     height: parent.height - (persistentSettings.customDecorations ? 50 : 0)
     y: titleBar.height
 
@@ -77,13 +77,13 @@ Drawer {
                 id: item
                 color: "transparent"
                 width: sideBar.width
-                height: 32 * scaleRatio
+                height: 32
 
-                Text {
+                MoneroComponents.TextPlain {
                     anchors.left: parent.left
-                    anchors.leftMargin: 16 * scaleRatio
+                    anchors.leftMargin: 16
                     font.bold: true
-                    font.pixelSize: 14 * scaleRatio
+                    font.pixelSize: 14
                     color: MoneroComponents.Style.defaultFontColor
                     text: display_name
                     anchors.verticalCenter: parent.verticalCenter
@@ -101,7 +101,7 @@ Drawer {
                 // button gradient while checked
                 Image {
                     anchors.fill: parent
-                    source: "../images/menuButtonGradient.png"
+                    source: "qrc:///images/menuButtonGradient.png"
                     opacity: 0.65
                     visible: true
 

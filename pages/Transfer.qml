@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2018, The Monero Project
+// Copyright (c) 2014-2019, The Monero Project
 // 
 // All rights reserved.
 // 
@@ -26,13 +26,14 @@
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import QtQuick 2.0
+import QtQuick 2.9
 import QtQuick.Layouts 1.1
 import QtQuick.Dialogs 1.2
 import moneroComponents.Clipboard 1.0
 import moneroComponents.PendingTransaction 1.0
 import moneroComponents.Wallet 1.0
 import moneroComponents.NetworkType 1.0
+import FontAwesome 1.0
 import "../components"
 import "../components" as MoneroComponents
 import "." 1.0
@@ -46,10 +47,16 @@ Rectangle {
     signal sweepUnmixableClicked()
 
     color: "transparent"
+    property alias transferHeight1: pageRoot.height
+    property alias transferHeight2: advancedLayout.height
     property int mixin: 10  // (ring size 11)
     property string warningContent: ""
+    property string sendButtonWarning: ""
     property string startLinkText: qsTr("<style type='text/css'>a {text-decoration: none; color: #FF6C3C; font-size: 14px;}</style><font size='2'> (</font><a href='#'>Start daemon</a><font size='2'>)</font>") + translationManager.emptyString
     property bool showAdvanced: false
+    // @TODO: remove after pid removal hardfork
+    property bool warningLongPidTransfer: false
+    property bool warningLongPidDescription: false
 
     Clipboard { id: clipboard }
 
@@ -80,10 +87,22 @@ Rectangle {
         paymentIdCheckbox.checked = paymentIdLine.text != "";
     }
 
+    function isLongPidService(text) {
+        // @TODO: remove after pid removal hardfork
+        return text.length == 95 &&
+               [ "44tLjmXrQNrWJ5NBsEj2R77ZBEgDa3fEe9GLpSf2FRmhexPvfYDUAB7EXX1Hdb3aMQ9FLqdJ56yaAhiXoRsceGJCRS3Jxkn", // Binance
+                 "4AQ3ZREb53FMYKBmpPn7BD7hphPk6G1ceinQX6gefAvhFJsNbeFsGwebZWCNxoJAbZhD9cjetBAqmLhfXmcNLBpPMsBL6yM", // KuCoin
+                 "47YzEcMrU2S42UitURo7ukUDaSaL485Z1QbmFgq1vSs5g3JesL4rChwWf2uWk1va99JAaRxt65jhX9uAqQnjeFM44ckgZtp", // AnycoinDirect
+                 "4BCeEPhodgPMbPWFN1dPwhWXdRX8q4mhhdZdA1dtSMLTLCEYvAj9QXjXAfF7CugEbmfBhgkqHbdgK9b2wKA6nqRZQCgvCDm", // Bitfinex
+                 "463tWEBn5XZJSxLU6uLQnQ2iY9xuNcDbjLSjkn3XAXHCbLrTTErJrBWYgHJQyrCwkNgYvyV3z8zctJLPCZy24jvb3NiTcTJ"  // Bittrex
+               ].indexOf(text) > -1
+    }
+
     function clearFields() {
         addressLine.text = ""
         setPaymentId("");
         amountLine.text = ""
+        root.sendButtonWarning = ""
         setDescription("");
         priorityDropdown.currentIndex = 0
         updatePriorityDropdown()
@@ -104,14 +123,14 @@ Rectangle {
 
     ColumnLayout {
       id: pageRoot
-      anchors.margins: (isMobile)? 17 * scaleRatio : 20 * scaleRatio
-      anchors.topMargin: 40 * scaleRatio
+      anchors.margins: (isMobile)? 17 : 20
+      anchors.topMargin: 40
 
       anchors.left: parent.left
       anchors.top: parent.top
       anchors.right: parent.right
 
-      spacing: 30 * scaleRatio
+      spacing: 30
 
       RowLayout {
           visible: root.warningContent !== ""
@@ -125,13 +144,13 @@ Rectangle {
       }
 
       GridLayout {
-          columns: (isMobile)? 1 : 2
+          columns: (isMobile || !(appWindow.walletMode >= 2)) ? 1 : 2
           Layout.fillWidth: true
           columnSpacing: 32
 
           ColumnLayout {
               Layout.fillWidth: true
-              Layout.minimumWidth: 200 * scaleRatio
+              Layout.minimumWidth: 200
 
               // Amount input
               LineEdit {
@@ -145,8 +164,8 @@ Rectangle {
                       middlePanel.accountView.selectAndSend = true;
                       appWindow.showPageRequest("Account")
                   }
-                  placeholderText: qsTr("") + translationManager.emptyString
-                  width: 100 * scaleRatio
+                  placeholderText: "0.00"
+                  width: 100
                   fontBold: true
                   inlineButtonText: qsTr("All") + translationManager.emptyString
                   inlineButton.onClicked: amountLine.text = "(all)"
@@ -163,13 +182,14 @@ Rectangle {
           }
 
           ColumnLayout {
+              visible: appWindow.walletMode >= 2
               Layout.fillWidth: true
               Label {
                   id: transactionPriority
-                  Layout.topMargin: 12 * scaleRatio
+                  Layout.topMargin: 12
                   text: qsTr("Transaction priority") + translationManager.emptyString
                   fontBold: false
-                  fontSize: 16 * scaleRatio
+                  fontSize: 16
               }
               // Note: workaround for translations in listElements
               // ListElement: cannot use script for property value, so
@@ -192,11 +212,7 @@ Rectangle {
               StandardDropdown {
                   Layout.fillWidth: true
                   id: priorityDropdown
-                  Layout.topMargin: 5 * scaleRatio
-                  shadowReleasedColor: "#FF4304"
-                  shadowPressedColor: "#B32D00"
-                  releasedColor: "#363636"
-                  pressedColor: "#202020"
+                  Layout.topMargin: 5
                   currentIndex: 0
               }
           }
@@ -244,7 +260,14 @@ Rectangle {
                      addressLine.text = clipboardText; 
                   }
               }
-              inlineButton.icon: "../images/qr.png"
+              onTextChanged: {
+                  // @TODO: remove after pid removal hardfork
+                  warningLongPidTransfer = !persistentSettings.showPid && isLongPidService(text)
+              }
+              inlineButton.text: FontAwesome.qrcode
+              inlineButton.fontPixelSize: 22
+              inlineButton.fontFamily: FontAwesome.fontFamily
+              inlineButton.textColor: MoneroComponents.Style.defaultFontColor
               inlineButton.buttonColor: MoneroComponents.Style.orange
               inlineButton.onClicked: {
                   cameraUi.state = "Capture"
@@ -256,7 +279,7 @@ Rectangle {
 
       StandardButton {
           id: resolveButton
-          width: 80 * scaleRatio
+          width: 80
           text: qsTr("Resolve") + translationManager.emptyString
           visible: TxUtils.isValidOpenAliasAddress(addressLine.text)
           enabled : visible
@@ -301,97 +324,87 @@ Rectangle {
       }
 
       ColumnLayout {
-          visible: appWindow.persistentSettings.showPid || paymentIdCheckbox.checked 
+          spacing: 15
 
-          CheckBox {
-              id: paymentIdCheckbox
-              border: false
-              checkedIcon: "qrc:///images/minus-white.png"
-              uncheckedIcon: "qrc:///images/plus-white.png"
-              fontSize: paymentIdLine.labelFontSize
-              iconOnTheLeft: false
-              Layout.fillWidth: true
-              text: qsTr("Payment ID <font size='2'>( Optional )</font>") + translationManager.emptyString
-              onClicked: {
-                  if (!paymentIdCheckbox.checked) {
-                    paymentIdLine.text = "";
+          ColumnLayout {
+              CheckBox {
+                  id: descriptionCheckbox
+                  border: false
+                  checkedIcon: "qrc:///images/plus-in-circle-medium-white.png"
+                  uncheckedIcon: "qrc:///images/plus-in-circle-medium-white.png"
+                  fontSize: descriptionLine.labelFontSize
+                  iconOnTheLeft: true
+                  Layout.fillWidth: true
+                  text: qsTr("Add description") + translationManager.emptyString
+                  onClicked: {
+                      if (!descriptionCheckbox.checked) {
+                        descriptionLine.text = "";
+                      }
                   }
+              }
+
+              LineEditMulti {
+                  id: descriptionLine
+                  placeholderText: qsTr("Saved to local wallet history") + translationManager.emptyString
+                  Layout.fillWidth: true
+                  visible: descriptionCheckbox.checked
               }
           }
 
-          // payment id input
-          LineEditMulti {
-              id: paymentIdLine
-              fontBold: true
-              placeholderText: qsTr("64 hexadecimal characters") + translationManager.emptyString
-              Layout.fillWidth: true
-              wrapMode: Text.WrapAnywhere
-              addressValidation: false
-              visible: paymentIdCheckbox.checked
+          ColumnLayout {
+              visible: appWindow.persistentSettings.showPid || paymentIdCheckbox.checked
+              // @TODO: remove after pid removal hardfork
+              CheckBox {
+                  id: paymentIdCheckbox
+                  border: false
+                  checkedIcon: "qrc:///images/plus-in-circle-medium-white.png"
+                  uncheckedIcon: "qrc:///images/plus-in-circle-medium-white.png"
+                  fontSize: paymentIdLine.labelFontSize
+                  iconOnTheLeft: true
+                  Layout.fillWidth: true
+                  text: qsTr("Add payment ID") + translationManager.emptyString
+                  onClicked: {
+                      if (!paymentIdCheckbox.checked) {
+                        paymentIdLine.text = "";
+                      }
+                  }
+              }
+
+              // payment id input
+              LineEditMulti {
+                  id: paymentIdLine
+                  fontBold: true
+                  placeholderText: qsTr("64 hexadecimal characters") + translationManager.emptyString
+                  Layout.fillWidth: true
+                  wrapMode: Text.WrapAnywhere
+                  addressValidation: false
+                  visible: paymentIdCheckbox.checked
+              }
           }
       }
 
-      ColumnLayout {
-        CheckBox {
-              id: descriptionCheckbox
-              border: false
-              checkedIcon: "qrc:///images/minus-white.png"
-              uncheckedIcon: "qrc:///images/plus-white.png"
-              fontSize: descriptionLine.labelFontSize
-              iconOnTheLeft: false
-              Layout.fillWidth: true
-              text: qsTr("Description <font size='2'>( Optional )</font>") + translationManager.emptyString
-              onClicked: {
-                  if (!descriptionCheckbox.checked) {
-                    descriptionLine.text = "";
-                  }
-              }
-          }
+      MoneroComponents.WarningBox {
+          // @TODO: remove after pid removal hardfork
+          id: paymentIdWarningBox
+          text: qsTr("You can enable transfers with payment ID on the settings page.") + translationManager.emptyString;
+          visible: !persistentSettings.showPid && (warningLongPidTransfer || warningLongPidDescription)
+      }
 
-          LineEditMulti {
-              id: descriptionLine
-              placeholderText: qsTr("Saved to local wallet history") + translationManager.emptyString
-              Layout.fillWidth: true
-              visible: descriptionCheckbox.checked
-          }
+      MoneroComponents.WarningBox {
+          id: sendButtonWarningBox
+          text: root.sendButtonWarning
+          visible: root.sendButtonWarning !== ""
       }
 
       RowLayout {
           StandardButton {
               id: sendButton
-              rightIcon: "../images/rightArrow.png"
-              rightIconInactive: "../images/rightArrowInactive.png"
-              Layout.topMargin: 4 * scaleRatio
+              rightIcon: "qrc:///images/rightArrow.png"
+              rightIconInactive: "qrc:///images/rightArrowInactive.png"
+              Layout.topMargin: 4
               text: qsTr("Send") + translationManager.emptyString
-              // Send button is enabled when:
-              enabled : {
-                  // Currently opened wallet is not view-only
-                  if(appWindow.viewOnly){
-                      return false;
-                  }
-                  
-                  // There is no warning box displayed
-                  if(root.warningContent !== ''){
-                      return false;
-                  }
-                  
-                  // The transactional information is correct
-                  if(!pageRoot.checkInformation(amountLine.text, addressLine.text, paymentIdLine.text, appWindow.persistentSettings.nettype)){
-                      return false;
-                  }
-                  
-                  // There are sufficient unlocked funds available
-                  if(parseFloat(amountLine.text) > parseFloat(unlockedBalanceText)){
-                      return false;
-                  }
-
-                  // The amount does not start with a period (example: `.4`)
-                  // @TODO: replace with .startsWith() after Qt >=5.8
-                  if(amountLine.text.indexOf('.') === 0){
-                      return false;
-                  }
-
-                  return true;
+              enabled: {
+                updateSendButton()
               }
               onClicked: {
                   console.log("Transfer: paymentClicked")
@@ -425,21 +438,14 @@ Rectangle {
 
     } // pageRoot
 
-    Rectangle {
-        id: desaturate
-        color:"black"
-        anchors.fill: parent
-        opacity: 0.1
-        visible: (pageRoot.enabled)? 0 : 1;
-    }
-
     ColumnLayout {
+        id: advancedLayout
         anchors.top: pageRoot.bottom
         anchors.left: parent.left
         anchors.right: parent.right
-        anchors.margins: (isMobile)? 17 * scaleRatio : 20 * scaleRatio
-        anchors.topMargin: 32 * scaleRatio
-        spacing: 26 * scaleRatio
+        anchors.margins: (isMobile)? 17 : 20
+        anchors.topMargin: 32
+        spacing: 26
         enabled: !viewOnly || pageRoot.enabled
 
         RowLayout {
@@ -712,9 +718,49 @@ Rectangle {
     }
 
     // Popuplate fields from addressbook.
-    function sendTo(address, paymentId, description){
-        addressLine.text = address
-        setPaymentId(paymentId);
-        setDescription(description);
+    function sendTo(address, paymentId, description, amount){
+        middlePanel.state = 'Transfer';
+
+        if(typeof address !== 'undefined')
+            addressLine.text = address
+
+        if(typeof paymentId !== 'undefined')
+            setPaymentId(paymentId);
+
+        if(typeof description !== 'undefined')
+            setDescription(description);
+
+        if(typeof amount !== 'undefined')
+            amountLine.text = amount;
+    }
+
+    function updateSendButton(){
+        // reset message
+        root.sendButtonWarning = "";
+
+        // Currently opened wallet is not view-only
+        if(appWindow.viewOnly){
+            root.sendButtonWarning = qsTr("Wallet is view-only and sends are not possible.") + translationManager.emptyString;
+            return false;
+        }
+
+        // There are sufficient unlocked funds available
+        if(parseFloat(amountLine.text) > parseFloat(middlePanel.unlockedBalanceText)){
+            root.sendButtonWarning = qsTr("Amount is more than unlocked balance.") + translationManager.emptyString;
+            return false;
+        }
+
+        // There is no warning box displayed
+        if(root.warningContent !== ""){
+            return false;
+        }
+
+        // The transactional information is correct
+        if(!pageRoot.checkInformation(amountLine.text, addressLine.text, paymentIdLine.text, appWindow.persistentSettings.nettype)){
+            if(amountLine.text && addressLine.text)
+                root.sendButtonWarning = qsTr("Transaction information is incorrect.") + translationManager.emptyString;
+            return false;
+        }
+        return true;
     }
 }

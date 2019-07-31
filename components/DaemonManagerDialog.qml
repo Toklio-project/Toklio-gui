@@ -26,7 +26,7 @@
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import QtQuick 2.0
+import QtQuick 2.9
 import QtQuick.Controls 1.4
 import QtQuick.Dialogs 1.2
 import QtQuick.Layouts 1.1
@@ -89,12 +89,14 @@ Window {
                 }
             }
 
-            Text {
-                text: qsTr("Starting local node in %1 seconds").arg(countDown);
+            MoneroComponents.TextPlain {
+                text: qsTr("Starting local node in %1 seconds").arg(countDown) + translationManager.emptyString;
                 font.pixelSize: 18
                 Layout.alignment: Qt.AlignHCenter
                 Layout.fillWidth: true
                 horizontalAlignment: Text.AlignHCenter
+                themeTransition: false
+                color: "black"
             }
 
         }
@@ -108,7 +110,7 @@ Window {
                 id: okButton
                 visible:false
                 fontSize: 14
-                text: qsTr("Start daemon (%1)").arg(countDown)
+                text: qsTr("Start daemon (%1)").arg(countDown) + translationManager.emptyString
                 KeyNavigation.tab: cancelButton
                 onClicked: {
                     timer.stop();
@@ -121,7 +123,7 @@ Window {
             MoneroComponents.StandardButton {
                 id: cancelButton
                 fontSize: 14
-                text: qsTr("Use custom settings")
+                text: qsTr("Use custom settings") + translationManager.emptyString
 
                 onClicked: {
                     timer.stop();

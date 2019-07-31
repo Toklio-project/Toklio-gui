@@ -1,21 +1,28 @@
-# qml components require at least QT 5.7.0
-lessThan (QT_MAJOR_VERSION, 5) | lessThan (QT_MINOR_VERSION, 7) {
-  error("Can't build with Qt $${QT_VERSION}. Use at least Qt 5.7.0")
+# qml components require at least QT 5.9.0
+lessThan (QT_MAJOR_VERSION, 5) | lessThan (QT_MINOR_VERSION, 9) {
+  error("Can't build with Qt $${QT_VERSION}. Use at least Qt 5.9.0")
 }
 
 TEMPLATE = app
 
-QT += qml quick widgets
+QT += svg qml gui-private quick widgets
 
 WALLET_ROOT=$$PWD/Toklio
 
 CONFIG += c++11 link_pkgconfig
+packagesExist(libusb-1.0) {
+    PKGCONFIG += libusb-1.0
+}
 packagesExist(hidapi-libusb) {
     PKGCONFIG += hidapi-libusb
 }
 !win32 {
     QMAKE_CXXFLAGS += -fPIC -fstack-protector -fstack-protector-strong
     QMAKE_LFLAGS += -fstack-protector -fstack-protector-strong
+
+    packagesExist(protobuf) {
+        PKGCONFIG += protobuf
+    }
 }
 
 # cleaning "auto-generated" bitmonero directory on "make distclean"
@@ -55,7 +62,15 @@ HEADERS += \
     src/zxcvbn-c/zxcvbn.h \
     src/libwalletqt/UnsignedTransaction.h \
     Logger.h \
-    MainApp.h
+    MainApp.h \
+    src/qt/FutureScheduler.h \
+    src/qt/ipc.h \
+    src/qt/KeysFiles.h \
+    src/qt/utils.h \
+    src/qt/prices.h \
+    src/qt/macoshelper.h \
+    src/qt/MoneroSettings.h \
+    src/qt/TailsOS.h
 
 SOURCES += main.cpp \
     filter.cpp \
@@ -83,7 +98,14 @@ SOURCES += main.cpp \
     src/zxcvbn-c/zxcvbn.c \
     src/libwalletqt/UnsignedTransaction.cpp \
     Logger.cpp \
-    MainApp.cpp
+    MainApp.cpp \
+    src/qt/FutureScheduler.cpp \
+    src/qt/ipc.cpp \
+    src/qt/KeysFiles.cpp \
+    src/qt/utils.cpp \
+    src/qt/prices.cpp \
+    src/qt/MoneroSettings.cpp \
+    src/qt/TailsOS.cpp
 
 CONFIG(DISABLE_PASS_STRENGTH_METER) {
     HEADERS -= src/zxcvbn-c/zxcvbn.h
@@ -99,6 +121,7 @@ CONFIG(DISABLE_PASS_STRENGTH_METER) {
 lupdate_only {
 SOURCES = *.qml \
           components/*.qml \
+          components/effects/*.qml \
           pages/*.qml \
           pages/settings/*.qml \
           pages/merchant/*.qml \
@@ -238,7 +261,16 @@ win32 {
     LIBS+=-L$$BOOST_PATH/lib
     LIBS+=-L$$BOOST_MINGW_PATH/lib
     
+    QMAKE_LFLAGS += -static-libgcc -static-libstdc++
+
     LIBS+= \
+        -Wl,-Bdynamic \
+        -lwinscard \
+        -lwsock32 \
+        -lIphlpapi \
+        -lcrypt32 \
+        -lhidapi \
+        -lgdi32 $$TREZOR_LINKER \
         -Wl,-Bstatic \
         -lboost_serialization-mt \
         -lboost_thread-mt \
@@ -255,17 +287,12 @@ win32 {
         -licudt \
         -licutu \
         -liconv \
+        -lpthread \
+        -lsetupapi \
         -lssl \
         -lsodium \
         -lcrypto \
-        -Wl,-Bdynamic \
-        -lwinscard \
-        -lws2_32 \
-        -lwsock32 \
-        -lIphlpapi \
-        -lcrypt32 \
-        -lhidapi \
-        -lgdi32 $$TREZOR_LINKER
+        -lws2_32
     
     !contains(QMAKE_TARGET.arch, x86_64) {
         message("Target is 32bit")
@@ -285,6 +312,7 @@ linux {
         message("using static libraries")
         LIBS+= -Wl,-Bstatic    
         QMAKE_LFLAGS += -static-libgcc -static-libstdc++
+        QMAKE_LIBDIR += /usr/local/ssl/lib
    #     contains(QT_ARCH, x86_64) {
             LIBS+= -lunbound \
                    -lusb-1.0 \
@@ -309,7 +337,8 @@ linux {
         -llmdb \
         -lsodium \
         -lhidapi-libusb \
-        -lcrypto $$TREZOR_LINKER
+        -lcrypto $$TREZOR_LINKER \
+        -lX11
 
     if(!android) {
         LIBS+= \
@@ -334,12 +363,13 @@ macx {
     #     message("using static libraries")
     #     LIBS+= -Wl,-Bstatic
     # }
+    QT += macextras
+    OBJECTIVE_SOURCES += src/qt/macoshelper.mm
     LIBS+= \
         -L/usr/local/lib \
         -L/usr/local/opt/openssl/lib \
         -L/usr/local/opt/boost/lib \
         -lboost_serialization \
-        -lhidapi \
         -lboost_thread-mt \
         -lboost_system \
         -lboost_date_time \
@@ -347,6 +377,9 @@ macx {
         -lboost_regex \
         -lboost_chrono \
         -lboost_program_options \
+        -framework CoreFoundation \
+        -framework AppKit \
+        -lhidapi \
         -lssl \
         -lsodium \
         -lcrypto \
@@ -361,7 +394,7 @@ TRANSLATIONS = $$files($$PWD/translations/monero-core_*.ts)
 
 CONFIG(release, debug|release) {
     DESTDIR = release/bin
-    LANGUPD_OPTIONS = -locations relative -no-ui-lines
+    LANGUPD_OPTIONS = -locations none -no-ui-lines -no-obsolete
     LANGREL_OPTIONS = -compress -nounfinished -removeidentical
 
 } else {

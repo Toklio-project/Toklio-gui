@@ -26,7 +26,7 @@
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import QtQuick 2.0
+import QtQuick 2.9
 import QtQuick.Controls 2.0
 import QtQuick.Dialogs 1.2
 import QtQuick.Layouts 1.1
@@ -34,6 +34,7 @@ import QtQuick.Controls.Styles 1.4
 import QtQuick.Window 2.0
 
 import "../components" as MoneroComponents
+import "effects/" as MoneroEffects
 
 Rectangle {
     id: root
@@ -56,12 +57,18 @@ Rectangle {
     signal rejected()
     signal closeCallback();
 
-    Image {
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.top: parent.top
-        anchors.bottom: parent.bottom
-        source: "../images/middlePanelBg.jpg"
+    // background
+    MoneroEffects.GradientBackground {
+        anchors.fill: parent
+        fallBackColor: MoneroComponents.Style.middlePanelBackgroundColor
+        initialStartColor: MoneroComponents.Style.middlePanelBackgroundGradientStart
+        initialStopColor: MoneroComponents.Style.middlePanelBackgroundGradientStop
+        blackColorStart: MoneroComponents.Style._b_middlePanelBackgroundGradientStart
+        blackColorStop: MoneroComponents.Style._b_middlePanelBackgroundGradientStop
+        whiteColorStart: MoneroComponents.Style._w_middlePanelBackgroundGradientStart
+        whiteColorStop: MoneroComponents.Style._w_middlePanelBackgroundGradientStop
+        start: Qt.point(0, 0)
+        end: Qt.point(height, width)
     }
 
     // Make window draggable
@@ -79,7 +86,6 @@ Rectangle {
             root.x = parent.width/2 - root.width/2
             root.y = 100
         }
-        show()
         root.z = 11
         root.visible = true;
     }
@@ -90,23 +96,23 @@ Rectangle {
     }
 
     // TODO: implement without hardcoding sizes
-    width: isMobile ? screenWidth : 520 * scaleRatio
-    height: isMobile ? screenHeight : 380 * scaleRatio
+    width: isMobile ? screenWidth : 520
+    height: isMobile ? screenHeight : 380
 
     ColumnLayout {
         id: mainLayout
-        spacing: 10 * scaleRatio
+        spacing: 10
         anchors.fill: parent
-        anchors.margins: (isMobile? 17 : 20) * scaleRatio
+        anchors.margins: (isMobile? 17 : 20)
 
         RowLayout {
             id: column
-            Layout.topMargin: 14 * scaleRatio
+            Layout.topMargin: 14
             Layout.fillWidth: true
 
             MoneroComponents.Label {
                 id: dialogTitle
-                fontSize: 18 * scaleRatio
+                fontSize: 18
                 fontFamily: "Arial"
                 color: MoneroComponents.Style.defaultFontColor
             }
@@ -115,7 +121,7 @@ Rectangle {
         Item {
             Layout.fillHeight: true
             Layout.fillWidth: true
-            Layout.preferredHeight: 240 * scaleRatio
+            Layout.preferredHeight: 240
 
             Flickable {
                 id: flickable
@@ -130,7 +136,7 @@ Rectangle {
                     font.family: MoneroComponents.Style.fontLight.name
                     textFormat: TextEdit.AutoText
                     readOnly: true
-                    font.pixelSize: 14 * scaleRatio
+                    font.pixelSize: 14
                     selectByMouse: false
                     wrapMode: TextEdit.Wrap
                     color: MoneroComponents.Style.defaultFontColor
@@ -155,7 +161,7 @@ Rectangle {
         // Ok/Cancel buttons
         RowLayout {
             id: buttons
-            spacing: 60 * scaleRatio
+            spacing: 60
             Layout.alignment: Qt.AlignHCenter
 
             MoneroComponents.StandardButton {
@@ -184,15 +190,17 @@ Rectangle {
         id: closeButton
         anchors.top: parent.top
         anchors.right: parent.right
-        width: 48 * scaleRatio
-        height: 48 * scaleRatio
+        width: 48
+        height: 48
         color: "transparent"
 
-        Image {
+        MoneroEffects.ImageMask {
             anchors.centerIn: parent
-            width: 16 * scaleRatio
-            height: 16 * scaleRatio
-            source: "../images/close.png"
+            width: 16
+            height: 16
+            image: MoneroComponents.Style.titleBarCloseSource
+            color: MoneroComponents.Style.defaultFontColor
+            opacity: 0.75
         }
 
         MouseArea {
@@ -209,7 +217,7 @@ Rectangle {
 
     // window borders
     Rectangle{
-        width: 1 * scaleRatio
+        width: 1
         color: MoneroComponents.Style.grey
         anchors.left: parent.left
         anchors.top: parent.top
@@ -217,7 +225,7 @@ Rectangle {
     }
 
     Rectangle{
-        width: 1 * scaleRatio
+        width: 1
         color: MoneroComponents.Style.grey
         anchors.right: parent.right
         anchors.top: parent.top
@@ -225,7 +233,7 @@ Rectangle {
     }
 
     Rectangle{
-        height: 1 * scaleRatio
+        height: 1
         color: MoneroComponents.Style.grey
         anchors.left: parent.left
         anchors.top: parent.top
@@ -233,7 +241,7 @@ Rectangle {
     }
 
     Rectangle{
-        height: 1 * scaleRatio
+        height: 1
         color: MoneroComponents.Style.grey
         anchors.left: parent.left
         anchors.bottom: parent.bottom

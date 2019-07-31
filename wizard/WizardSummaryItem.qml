@@ -26,7 +26,7 @@
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import QtQuick 2.7
+import QtQuick 2.9
 import QtQuick.Layouts 1.2
 import QtQuick.Controls 2.0
 
@@ -47,7 +47,7 @@ ColumnLayout {
 
         Rectangle {
             Layout.fillWidth: true
-            Layout.preferredHeight: 20 * scaleRatio
+            Layout.preferredHeight: 20
             color: "transparent"
 
             MoneroComponents.TextBlock {
@@ -61,7 +61,7 @@ ColumnLayout {
 
         Rectangle {
             Layout.fillWidth: true
-            Layout.preferredHeight: 20 * scaleRatio
+            Layout.preferredHeight: 20
             color: "transparent"
 
             MoneroComponents.TextBlock {
@@ -75,9 +75,9 @@ ColumnLayout {
     }
 
     Rectangle {
-        Layout.preferredHeight: 1 * scaleRatio
-        Layout.topMargin: 2 * scaleRatio
-        Layout.bottomMargin: 2 * scaleRatio
+        Layout.preferredHeight: 1
+        Layout.topMargin: 2
+        Layout.bottomMargin: 2
         Layout.fillWidth: true
         color: MoneroComponents.Style.dividerColor
         opacity: MoneroComponents.Style.dividerOpacity
