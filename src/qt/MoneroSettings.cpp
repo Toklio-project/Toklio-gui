@@ -44,7 +44,7 @@
 
 /*!
     \qmlmodule moneroSettings 1.0
-    \title Monero Settings QML Component
+    \title Toklio Settings QML Component
     \ingroup qmlmodules
     \brief Provides persistent platform-independent application settings.
 

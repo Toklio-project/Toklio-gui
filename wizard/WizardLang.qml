@@ -99,7 +99,7 @@ Rectangle {
             visible: parent.subtitle !== ""
 
             color: MoneroComponents.Style.dimmedFontColor
-            text: qsTr("Change the language of the Monero GUI.") + translationManager.emptyString
+            text: qsTr("Change the language of the Toklio GUI.") + translationManager.emptyString
 
             font.family: MoneroComponents.Style.fontRegular.name
             font.pixelSize: {

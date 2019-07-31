@@ -92,16 +92,16 @@ ApplicationWindow {
     property var fiatPriceAPIs: {
         return {
             "kraken": {
-                "xmrusd": "https://api.kraken.com/0/public/Ticker?pair=XMRUSD",
-                "xmreur": "https://api.kraken.com/0/public/Ticker?pair=XMREUR"
+                "xmrusd": "https://api.kraken.com/0/public/Ticker?pair=TOKLUSD",
+                "xmreur": "https://api.kraken.com/0/public/Ticker?pair=TOKLEUR"
             },
             "coingecko": {
                 "xmrusd": "https://api.coingecko.com/api/v3/simple/price?ids=monero&vs_currencies=usd",
                 "xmreur": "https://api.coingecko.com/api/v3/simple/price?ids=monero&vs_currencies=eur"
             },
             "cryptocompare": {
-                "xmrusd": "https://min-api.cryptocompare.com/data/price?fsym=XMR&tsyms=USD",
-                "xmreur": "https://min-api.cryptocompare.com/data/price?fsym=XMR&tsyms=EUR",
+                "xmrusd": "https://min-api.cryptocompare.com/data/price?fsym=TOKL&tsyms=USD",
+                "xmreur": "https://min-api.cryptocompare.com/data/price?fsym=TOKL&tsyms=EUR",
             }
         }
     }
@@ -427,8 +427,8 @@ ApplicationWindow {
     }
 
     function onUriHandler(uri){
-        if(uri.startsWith("monero://")){
-            var address = uri.substring("monero://".length);
+        if(uri.startsWith("Toklio://")){
+            var address = uri.substring("Toklio://".length);
 
             var params = {}
             if(address.length === 0) return;

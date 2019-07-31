@@ -654,7 +654,7 @@ Rectangle {
                                 MoneroComponents.TextPlain {
                                     font.family: MoneroComponents.Style.fontRegular.name
                                     font.pixelSize: 15
-                                    text: _amount + " XMR"
+                                    text: _amount + " TOKL"
                                     color: MoneroComponents.Style.defaultFontColor
                                     anchors.verticalCenter: parent.verticalCenter
 
@@ -706,7 +706,7 @@ Rectangle {
                                     font.pixelSize: 15
                                     text: {
                                         if(!isout && confirmationsRequired === 60) return qsTr("Yes") + translationManager.emptyString;
-                                        if(fee !== "") return fee + " XMR";
+                                        if(fee !== "") return fee + " TOKL";
                                         return "-";
                                     }
 
